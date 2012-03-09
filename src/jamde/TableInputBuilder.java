@@ -6,7 +6,6 @@ package jamde;
 
 import jamde.estimator.EstimatorBuilder;
 import jamde.distribution.DistributionBuilder;
-import jamde.distribution.Distribution;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -37,54 +36,76 @@ public class TableInputBuilder {
         ArrayList<Integer> sizeOfSample = new ArrayList<Integer>();
         ArrayList<EstimatorBuilder> estimators = new ArrayList<EstimatorBuilder>();
         EstimatorBuilder e = new EstimatorBuilder(estType, estPar);
+        input.setSizeOfEstimator(0);
         DistributionBuilder distBuilder = new DistributionBuilder(estType, estPar, estPar, estPar);
-        Distribution distr;
+        Double[] errProb = new Double[2];
+        ArrayList<Double[]> errProbs = new ArrayList<Double[]>();
+        String line;
+        
         int lineNumber = 1;
         
         while (sc.hasNext()) {    
             if (sc.hasNext("#")) {
-                if (!(input.getContaminated()==null)) {
+                if ((input.getSizeOfEstimator()!=0)) {
                     tableInputs.add(input);
                 }
                 sizeOfSample.clear();
                 estimators.clear();
                 input = new TableInput();
-                
                 lineNumber = 1;
                 sc.next();
                 
             } else if (lineNumber == 1) {
-                sContaminated = sc.next();
-                contaminatedPar1 = sc.nextDouble();
-                contaminatedPar2 = sc.nextDouble();
-                contaminatedPar3 = sc.nextDouble();
-                distBuilder.setDistribution(sContaminated, contaminatedPar1, contaminatedPar2, contaminatedPar3);
-                distr = distBuilder.getDistribution();
-                input.setContaminated(distr);
+                line = sc.nextLine(); // sc is still at the end of #-line, so the first nextLine() loads just ""
+                line = sc.nextLine(); // from now on sc is on the second line!
+                Scanner scl = new Scanner(line);
+                String tmp = scl.next(); // for the first line we use scl
+                if (tmp.equals("file")) { // We either load a file, or we generate dataset 
+                    String filePath = scl.next();
+                    input.setContaminated(null);
+                    /*
+                     * TODO neco jako input.setData(load(filePath));
+                     */
+                    throw new UnsupportedOperationException("Not supported yet.");
+                } else {
+                    input.setData(null);
+                    sContaminated = tmp;
+                    contaminatedPar1 = scl.nextDouble();
+                    contaminatedPar2 = scl.nextDouble();
+                    contaminatedPar3 = scl.nextDouble();
+                    distBuilder.setDistribution(sContaminated, contaminatedPar1, contaminatedPar2, contaminatedPar3);
+                    input.setContaminated(distBuilder.getDistribution());
+                    tmp = scl.next();
+                    if (tmp.equals("errorOfOrder")) { // We either generate dataset with mixture of distributions or distribution with errors
+                        while (scl.hasNextDouble()) {
+                            errProb[0] = scl.nextDouble();
+                            errProb[1] = scl.nextDouble();
+                            errProbs.add(errProb);
+                        }
+                        input.setOrderErrors(errProbs);
+                    } else {
+                        input.setOrderErrors(null);
+                        sContaminating = tmp;
+                        contaminatingPar1 = scl.nextDouble();
+                        contaminatingPar2 = scl.nextDouble();
+                        contaminatingPar3 = scl.nextDouble();
+                        distBuilder.setDistribution(sContaminating, contaminatingPar1, contaminatingPar2, contaminatingPar3);
+                        input.setContaminating(distBuilder.getDistribution());
+                        input.setContamination(scl.nextDouble());
+                    }
+                }
                 lineNumber++;
             } else if (lineNumber == 2) {
-                sContaminating = sc.next();
-                contaminatingPar1 = sc.nextDouble();
-                contaminatingPar2 = sc.nextDouble();
-                contaminatingPar3 = sc.nextDouble();
-                distBuilder.setDistribution(sContaminating, contaminatingPar1, contaminatingPar2, contaminatingPar3);
-                distr = distBuilder.getDistribution();
-                input.setContaminating(distr);
-                lineNumber++;
-            } else if (lineNumber == 3) {
-                input.setContamination(sc.nextDouble());
-                lineNumber++;
-            } else if (lineNumber == 4) {
                 input.setParamsCounted(sc.next());
                 input.setSizeOfEstimator(sc.nextInt());
                 lineNumber++;
-            } else if (lineNumber == 5) {
+            } else if (lineNumber == 3) {
                 while (sc.hasNextInt()) {
                     sizeOfSample.add(sc.nextInt());
                 }
                 input.setSizeOfSample(sizeOfSample);
                 lineNumber++;
-            } else if (lineNumber == 6) {
+            } else if (lineNumber == 4) {
                 estType = sc.next();
                 estPar = sc.nextDouble();
                 e = new EstimatorBuilder(estType, estPar);

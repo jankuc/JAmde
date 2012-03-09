@@ -11,10 +11,21 @@ package jamde.estimator;
 public class EstimatorBuilder {
     private String type;
     private double par;
+    private Estimator estimator;
 
     public EstimatorBuilder(String type, double par) {
-        this.type = type;
+        setEstimator(type, par);
+    }
+    
+    public void setEstimator(String type, double par) {
         this.par = par;
+        this.type = type;
+        if (type.equals("Renyi")) estimator = new RenyiEstimator(par);
+        if (type.equals("LeCam")) estimator = new LeCamEstimator(par);
+    }
+
+    public Estimator getEstimator() {
+        return estimator;
     }
     
     public double getPar() {

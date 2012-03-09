@@ -204,4 +204,5 @@ public class NormalDistribution extends Distribution {
     public String toString() {
         return "Normal";
     }
+    
 }

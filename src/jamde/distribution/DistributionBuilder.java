@@ -4,15 +4,6 @@
  */
 package jamde.distribution;
 
-import jamde.distribution.LaplaceDistribution;
-import jamde.distribution.NormalDistribution;
-import jamde.distribution.AlternativeDistribution;
-import jamde.distribution.WeibullDistribution;
-import jamde.distribution.CauchyDistribution;
-import jamde.distribution.LogisticDistribution;
-import jamde.distribution.UniformDistribution;
-import jamde.distribution.Distribution;
-
 /**
  *
  * @author honza

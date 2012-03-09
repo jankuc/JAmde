@@ -54,8 +54,12 @@ public class Main {
                 System.out.println("File you chose does not contain what it should. Program is terminating.");
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
         }
+        
+        
+        
+        
+        
         
     }
 }

@@ -1,6 +1,8 @@
 package jamde.distribution;
 
 
+import jamde.estimator.Estimator;
+import jamde.estimator.EstimatorBuilder;
 import java.io.*;
 
 /**
@@ -55,6 +57,14 @@ public abstract class Distribution {
     //public abstract Parameters getStandParameters(double[] array, int size);
     public abstract double getfunctionValue(double x);
     public abstract double getFunctionValue(double x);
+    
+    
+    public double getDistance(String type, double par, double[] data){
+        EstimatorBuilder eB = new EstimatorBuilder(type, par);
+        Estimator e = eB.getEstimator();
+        return e.countDistance(this, data);
+    }
+    
 
 //    public Distribution(String type, double par1, double par2) {
 //        if (type.equals("Normal")) {
