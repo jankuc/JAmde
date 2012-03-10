@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package jamde;
+package jamde.table;
 
 import jamde.estimator.EstimatorBuilder;
 import jamde.distribution.Distribution;
@@ -13,7 +13,7 @@ import java.util.Collection;
  *
  * @author honza
  */
-public class TableInput {
+public class TableInput implements Cloneable{
 
     private Distribution contaminated;
     private Distribution contaminating;
@@ -96,4 +96,23 @@ public class TableInput {
     public void setSizeOfSample(Collection<Integer> sizeOfSample) {
         this.sizeOfSample = sizeOfSample;
     }
+    
+    @Override
+    protected TableInput clone() {
+        TableInput input = new TableInput();
+        
+        input.sizeOfEstimator = this.sizeOfEstimator;
+        input.sizeOfSample = this.sizeOfSample;
+        input.contaminated = this.contaminated;
+        input.contaminating = this.contaminating;
+        input.contamination = this.contamination;
+        input.paramsCounted = this.paramsCounted;
+     
+        input.sizeOfSample = this.sizeOfSample;
+        input.data = this.data;
+        input.estimators = this.estimators;
+        input.orderErrors = this.orderErrors;
+        return input;
+    }
+    
 }

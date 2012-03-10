@@ -4,6 +4,8 @@
  */
 package jamde;
 
+import jamde.table.TableInput;
+import jamde.table.Table;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,6 +24,7 @@ public class Main {
      */
     public static void main(String[] args) throws FileNotFoundException, IOException {
         String nameOfFile = "initializedValue";
+        Table table = new Table();
         
         if (args.length == 0) {
             System.out.println("Not enough arguments.");
@@ -41,14 +44,15 @@ public class Main {
              
         File confFile = new File(nameOfFile);
         ArrayList<TableInput> tableInput = new ArrayList();
-        TableInputBuilder tableInputBuilder = new TableInputBuilder(tableInput);
+        //TableInputBuilder tableInputBuilder = new TableInputBuilder(tableInput);
+        
         if (! confFile.exists()) {
             System.out.println("File you chose does not exist. Program is terminating.");
             return;
         } else {
             try {
-                tableInputBuilder.loadFromFile(confFile); // Here it finally loads the data into the tableInput.
-                tableInput = tableInputBuilder.getTableInputs();
+                
+                table.loadInputsFromFile(confFile);
                 System.out.println("Table input was succesfully loaded from the file.");
             } catch (Exception ex) {
                 System.out.println("File you chose does not contain what it should. Program is terminating.");

@@ -17,7 +17,8 @@ public class EstimatorBuilder {
         setEstimator(type, par);
     }
     
-    public void setEstimator(String type, double par) {
+    
+    public final void setEstimator(String type, double par) {
         this.par = par;
         this.type = type;
         if (type.equals("Renyi")) estimator = new RenyiEstimator(par);
