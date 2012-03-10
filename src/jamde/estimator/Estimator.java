@@ -4,7 +4,9 @@
  */
 package jamde.estimator;
 
+import jamde.MathUtil;
 import jamde.distribution.Distribution;
+import jamde.distribution.UniformDistribution;
 
 /**
  *
@@ -28,6 +30,14 @@ public abstract class Estimator {
         /*
          * TODO minimalizace
          */
+        if (par == 0) {
+            double EV = MathUtil.getExpVal(dataArray);
+            closestDistribution.setParameters(EV,MathUtil.getStandVar(EV, dataArray), 0);
+        } else {
+            closestDistribution = simulatedAnnealing(closestDistribution, dataArray);
+        }
+        
+        
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
@@ -44,6 +54,47 @@ public abstract class Estimator {
          */
         throw new UnsupportedOperationException("Not yet implemented");
     }
-    
-    
+
+    private Distribution simulatedAnnealing(Distribution distr, double[] dataArray) {
+        double distOld, distNew;
+        Distribution rand = new UniformDistribution(0, 1);
+        double y1,y2;
+        double x1 = distr.getP1(); // jen nahodna inicializace
+        double x2 = distr.getP2();
+        
+        distr.setParameters(x1, x2, 0);
+        distOld = countDistance(distr, dataArray);
+        
+        double T = 0.00000010; // Temperature
+	double lambda = 1; // cooling rate
+	int i = 1;
+	int numOfIterations = 1000;
+        double eps = 0.5; // radius of the vicinity of (x1,x2)
+
+        while (i < numOfIterations) {
+            eps *= 0.9999999999; // zmensuje se prohledavane okoli pro (konec=500; eps*=0.99;)
+            i = i + 1;
+            do {
+                y1 = x1 + (rand.getRealization()) * 2 * eps - eps;
+            } while ((y1 < distr.LowB1) || (y1 > distr.UpB1));
+            do {
+                y2 = x2 + (rand.getRealization()) * 2 * eps - eps;
+            } while ((y2 < distr.LowB2) || (y2 > distr.UpB2));
+            distr.setParameters(y1, y2, 0);
+            distNew = countDistance(distr, dataArray);
+            if (distOld > distNew) {
+                distOld = distNew;
+                x1 = y1;
+                x2 = y2;
+            } else {
+                if ((rand.getRealization()) < Math.exp(-(distNew - distOld) / T)) {
+                    distOld = distNew;
+                    x1 = y1;
+                    x2 = y2;
+                }
+            }
+            T = lambda * T;
+        }
+        return distr;
+    }
 }
