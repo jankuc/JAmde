@@ -30,6 +30,10 @@ public class DistributionBuilder {
     }
     
     
+    public DistributionBuilder(){
+        this.setDistribution("Normal", 0, 0, 0);
+    }
+    
     public DistributionBuilder(String type, double par1, double par2, double par3){
         this.setDistribution(type, par1, par2, par3);
     }

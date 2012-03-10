@@ -23,6 +23,27 @@ public abstract class Estimator {
     }
     
     public abstract double countDistance(Distribution distr, double[] data);
+
+    public Distribution minimalize(Distribution closestDistribution, double[] dataArray) {
+        /*
+         * TODO minimalizace
+         */
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public Distribution minimalizeFirstPar(Distribution closestDistribution, double[] dataArray) {
+        /*
+         * TODO minimalizace par1
+         */
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public Distribution minimalizeSeconPar(Distribution closestDistribution, double[] dataArray) {
+        /*
+         * TODO minimalizace par2
+         */
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
     
     
 }

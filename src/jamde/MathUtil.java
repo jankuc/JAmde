@@ -62,12 +62,20 @@ public class MathUtil{
         return EV;
     }
 
+    public static double getStandVar(double EV, double[] array) {
+        double DV = 0;
+        for (int i = 0; i < array.length; i++) {
+            DV += Math.pow(array[i] - EV, 2);
+        }
+        DV =  DV / (array.length);
+        return DV;
+    }
+    
     public static double getStandDev(double EV, double[] array) {
         double DV = 0;
         for (int i = 0; i < array.length; i++) {
             DV += Math.pow(array[i] - EV, 2);
         }
-//        DV = Math.sqrt( DV / (size - 1));
         DV = Math.sqrt( DV / (array.length));
         return DV;
     }

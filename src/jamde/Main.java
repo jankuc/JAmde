@@ -4,12 +4,10 @@
  */
 package jamde;
 
-import jamde.table.TableInput;
 import jamde.table.Table;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,8 +41,6 @@ public class Main {
         }
              
         File confFile = new File(nameOfFile);
-        ArrayList<TableInput> tableInput = new ArrayList();
-        //TableInputBuilder tableInputBuilder = new TableInputBuilder(tableInput);
         
         if (! confFile.exists()) {
             System.out.println("File you chose does not exist. Program is terminating.");
@@ -58,7 +54,9 @@ public class Main {
                 System.out.println("File you chose does not contain what it should. Program is terminating.");
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+        } // Now we have loaded the tableInput in Table from the file
+        
+        table.count();
         
         
         

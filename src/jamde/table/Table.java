@@ -4,10 +4,12 @@
  */
 package jamde.table;
 
+import jamde.MathUtil;
 import jamde.distribution.*;
 import jamde.estimator.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Scanner;
 
@@ -63,8 +65,6 @@ public class Table {
         tableInputs = inputs;
     }
     
-    
-    
     private TableInput loadInputFromFile(Scanner sc) throws Exception {
         TableInput input = new TableInput();
         String sContaminated, sContaminating, estType = "";
@@ -74,7 +74,7 @@ public class Table {
         ArrayList<EstimatorBuilder> estimators = new ArrayList<EstimatorBuilder>();
         EstimatorBuilder e = new EstimatorBuilder(estType, estPar);
         input.setSizeOfEstimator(0);
-        DistributionBuilder distBuilder = new DistributionBuilder(estType, estPar, estPar, estPar);
+        DistributionBuilder distBuilder = new DistributionBuilder();
         Double[] errProb = new Double[2];
         ArrayList<Double[]> errProbs = new ArrayList<Double[]>();
         String line;
@@ -94,7 +94,14 @@ public class Table {
                 String tmp = scl.next(); // for the first line we use scl
                 if (tmp.equals("file")) { // We either load a file, or we generate dataset 
                     String filePath = scl.next();
-                    input.setContaminated(null);
+                    sContaminated = scl.next();
+                    contaminatedPar1 = scl.nextDouble();
+                    contaminatedPar2 = scl.nextDouble();
+                    contaminatedPar3 = scl.nextDouble();
+                    distBuilder.setDistribution(sContaminated, contaminatedPar1, contaminatedPar2, contaminatedPar3);
+                    input.setContaminated(distBuilder.getDistribution());
+                    input.setContaminating(null);
+                    input.setOrderErrors(null);
                     /*
                      * TODO neco jako input.setData(load(filePath));
                      */
@@ -148,5 +155,114 @@ public class Table {
         return null;
     }
     
-    
+    public void count() {  
+        for (TableInput input : tableInputs) { // cycle over all tables
+            int numOfPars = 1;
+            if (input.getParamsCounted().equals("both")) {
+                numOfPars = 2;
+            }
+            TableOutput tableOutput = new TableOutput((ArrayList) input.getEstimators(),(ArrayList) input.getSizeOfSample() , numOfPars);
+                   
+            for (EstimatorBuilder estimatorBuilder : input.getEstimators()) { //cycle over all estimators in one table (lines of the table)
+                Estimator estimator = estimatorBuilder.getEstimator();
+
+                Distribution contaminated = input.getContaminated();
+                Distribution[] estimatorArray = new Distribution[input.getSizeOfEstimator()]; // for every dsitribution in this array, we will find parameters which minimize the distance from this distribution to the current data.
+                Arrays.fill(estimatorArray, contaminated); // if we don't want to find both parameters of the distribution, the one which we aren't counting is correctly in its place
+
+                for (int sizeOfSample : input.getSizeOfSample()) { // cycle over all the sizes of dataArray. (columns in the table)
+                    double[] dataArray = new double[sizeOfSample];
+                    if (input.getContaminating()==null){ // if true then it's not mixture of distributions
+                        if (input.getOrderErrors() == null) { // if true then data was loaded from file
+                            System.arraycopy(input.getData(), 0, dataArray, 0, dataArray.length);
+                        } else { // data will be created as a distribution with errors in order
+                            Distribution alt = new AlternativeDistribution(input.getContamination());
+                            /*
+                             * TODO vytvoreni dat s ustrely o rad
+                             */
+                        }
+                    } else { // data will be created as mixture of two distributions
+                        Distribution contaminating = input.getContaminating();
+                        Distribution alternative = new AlternativeDistribution(input.getContamination());
+                        for (int i = 0; i < dataArray.length; i++) {
+                            if (alternative.getRealization() < 0.5) { // if alternative = 0.0 <=> we do not contaminate (we do not use equality because of rounding errors)
+                                dataArray[i] = contaminated.getRealization();
+                            } else {
+                                dataArray[i] = contaminating.getRealization();
+                            }
+                        }
+                    }
+                    
+                    for (Distribution closestDistribution : estimatorArray) { // cycle counting all the best distributions in estimator Array
+                        if (input.getParamsCounted().equals("both")){
+                            closestDistribution = estimator.minimalize(closestDistribution, dataArray);
+                        } else if (input.getParamsCounted().equals("first")) {
+                            closestDistribution = estimator.minimalizeFirstPar(closestDistribution, dataArray);
+                        } else {
+                            closestDistribution = estimator.minimalizeSeconPar(closestDistribution, dataArray);
+                        }
+                    } // END for (Distribution closestDistribution : estimatorArray)
+                    if (input.getParamsCounted().equals("both")) {
+                        double[] firstPar = new double[input.getSizeOfEstimator()];
+                        double[] secondPar = new double[input.getSizeOfEstimator()];
+                        for (int i = 0; i < firstPar.length; i++) {
+                            firstPar[i] = estimatorArray[i].getP1();
+                            secondPar[i] = estimatorArray[i].getP2();
+                        }
+                        double expVal1 = MathUtil.getExpVal(firstPar);
+                        double standVar1 = MathUtil.getStandVar(expVal1, firstPar);
+                        double eref1 = Math.pow(tableOutput.getDeviation(estimator, sizeOfSample, 1),2)  / standVar1 ;
+                        double standDev1 = Math.sqrt(standVar1);
+                        
+                        tableOutput.setMeanValue(estimator, sizeOfSample, 1, expVal1);
+                        tableOutput.setDeviation(estimator, sizeOfSample, 1, standDev1);
+                        tableOutput.setEfficiency(estimator, sizeOfSample, 1, eref1);
+                        
+                        double expVal2 = MathUtil.getExpVal(secondPar);
+                        double standVar2 = MathUtil.getStandVar(expVal2, secondPar);
+                        double eref2 = Math.pow(tableOutput.getDeviation(estimator, sizeOfSample, 2),2)  / standVar2 ;
+                        double standDev2 = Math.sqrt(standVar2);
+                        
+                        tableOutput.setMeanValue(estimator, sizeOfSample, 2, expVal2);
+                        tableOutput.setDeviation(estimator, sizeOfSample, 2, standDev2);
+                        tableOutput.setEfficiency(estimator, sizeOfSample, 2, eref2);
+                        
+                        
+                        break;
+                    } else if (input.getParamsCounted().equals("first")) {
+                        double[] firstPar = new double[input.getSizeOfEstimator()];
+                        for (int i = 0; i < firstPar.length; i++) {
+                            firstPar[i] = estimatorArray[i].getP1();
+                        }
+                        double expVal1 = MathUtil.getExpVal(firstPar);
+                        double standVar1 = MathUtil.getStandVar(expVal1, firstPar);
+                        double eref1 = Math.pow(tableOutput.getDeviation(estimator, sizeOfSample, 1),2)  / standVar1 ;
+                        double standDev1 = Math.sqrt(standVar1);
+                        
+                        tableOutput.setMeanValue(estimator, sizeOfSample, 1, expVal1);
+                        tableOutput.setDeviation(estimator, sizeOfSample, 1, standDev1);
+                        tableOutput.setEfficiency(estimator, sizeOfSample, 1, eref1);
+                        
+                        
+                        break;
+                    } else {
+                        double[] secondPar = new double[input.getSizeOfEstimator()];
+                        for (int i = 0; i < secondPar.length; i++) {
+                            secondPar[i] = estimatorArray[i].getP2();
+                        }
+                        double expVal2 = MathUtil.getExpVal(secondPar);
+                        double standVar2 = MathUtil.getStandVar(expVal2, secondPar);
+                        double eref2 = Math.pow(tableOutput.getDeviation(estimator, sizeOfSample, 2),2)  / standVar2 ;
+                        double standDev2 = Math.sqrt(standVar2);
+                        
+                        tableOutput.setMeanValue(estimator, sizeOfSample, 2, expVal2);
+                        tableOutput.setDeviation(estimator, sizeOfSample, 2, standDev2);
+                        tableOutput.setEfficiency(estimator, sizeOfSample, 2, eref2);
+                    }       
+                } // END for (int sizeOfSample : input.getSizeOfSample())
+            }// END for (EstimatorBuilder estimatorBuilder : input.getEstimators())
+            
+            tableOutputs.add(tableOutput);
+        }// END for (TableInput input : tableInputs)
+    } // END count()
 }
