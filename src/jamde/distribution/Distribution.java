@@ -82,9 +82,9 @@ public abstract class Distribution {
 
     public double Uniform_0_1() {
         double U;
-        int X = 0;
-        int Y = 0;
-        int Z = 0;
+        double X = Math.random() * Integer.MAX_VALUE;
+        double Y = Math.random() * Integer.MAX_VALUE;
+        double Z = Math.random() * Integer.MAX_VALUE;
         do {
             X = (171 * X) % 30269;
             Y = (172 * Y) % 30307;

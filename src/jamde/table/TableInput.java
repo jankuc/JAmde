@@ -21,7 +21,7 @@ public class TableInput implements Cloneable{
     private double contamination;
     private Collection<Integer> sizeOfSample = new ArrayList<Integer>();
     private int sizeOfEstimator;
-    private Collection<EstimatorBuilder> estimators = new ArrayList<EstimatorBuilder>();
+    private ArrayList<EstimatorBuilder> estimators = new ArrayList<EstimatorBuilder>();
     private String paramsCounted; // {"first", "second", "both"}
     private Collection<Double[]> orderErrors = new ArrayList<Double[]>();
     
@@ -41,7 +41,7 @@ public class TableInput implements Cloneable{
         return contamination;
     }
 
-    public Collection<EstimatorBuilder> getEstimators() {
+    public ArrayList<EstimatorBuilder> getEstimators() {
         return estimators;
     }
 
@@ -81,7 +81,7 @@ public class TableInput implements Cloneable{
         this.data = data;
     }
     
-    public void setEstimators(Collection<EstimatorBuilder> estimators) {
+    public void setEstimators(ArrayList<EstimatorBuilder> estimators) {
         this.estimators = estimators;
     }
 

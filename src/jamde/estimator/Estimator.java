@@ -6,6 +6,7 @@ package jamde.estimator;
 
 import jamde.MathUtil;
 import jamde.distribution.Distribution;
+import jamde.distribution.DistributionBuilder;
 import jamde.distribution.UniformDistribution;
 
 /**
@@ -26,26 +27,29 @@ public abstract class Estimator {
     
     public abstract double countDistance(Distribution distr, double[] data);
 
-    public Distribution minimalize(Distribution closestDistribution, double[] dataArray) {
+    public Distribution minimalize(Distribution distr1, double[] dataArray) {
         /*
          * TODO minimalizace
          */
+        //DistributionBuilder dB = new DistributionBuilder(distr.toString(),distr.getP1(),  distr.getP2(),distr.getP3());
+        //Distribution distr1 = dB.getDistribution();
+
         if (par == 0) {
             double EV = MathUtil.getExpVal(dataArray);
-            closestDistribution.setParameters(EV,MathUtil.getStandVar(EV, dataArray), 0);
+            
+            distr1.setParameters(EV,MathUtil.getStandVar(EV, dataArray), 0);
         } else {
-            closestDistribution = simulatedAnnealing(closestDistribution, dataArray);
+            distr1 = simulatedAnnealing(distr1, dataArray);
         }
-        
-        
-        throw new UnsupportedOperationException("Not yet implemented");
+        return distr1;
     }
 
     public Distribution minimalizeFirstPar(Distribution closestDistribution, double[] dataArray) {
         /*
          * TODO minimalizace par1
          */
-        throw new UnsupportedOperationException("Not yet implemented");
+        return closestDistribution;
+        //throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public Distribution minimalizeSeconPar(Distribution closestDistribution, double[] dataArray) {

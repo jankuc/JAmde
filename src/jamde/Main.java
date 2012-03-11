@@ -57,7 +57,8 @@ public class Main {
         } // Now we have loaded the tableInput in Table from the file
         
         table.count();
-        
+        table.printClassic("/home/honza/Downloads/pokusnaTabulka.tex");
+        Runtime.getRuntime().exec("pdflatex /home/honza/Downloads/pokusnaTabulka.tex");
         
         
         
