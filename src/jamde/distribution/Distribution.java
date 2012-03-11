@@ -80,20 +80,24 @@ public abstract class Distribution {
      * Metoda Uniform_0_1 generuje jednu realizaci rovnomìrného rozdìlení
      */
 
-    public double Uniform_0_1() {
-        double U;
-        double X = Math.random() * Integer.MAX_VALUE;
-        double Y = Math.random() * Integer.MAX_VALUE;
-        double Z = Math.random() * Integer.MAX_VALUE;
-        do {
-            X = (171 * X) % 30269;
-            Y = (172 * Y) % 30307;
-            Z = (170 * Z) % 30323;
-            U = (X * 1.0 / 30269 + Y * 1.0 / 30307 + Z * 1.0 / 30323);
-            U = U - Math.floor(U);
-        } while ((U == 0) || (U == 1));
-
-        return U;
+//    public double Uniform_0_1() {
+//        double U;
+//        double X = Math.random() * Integer.MAX_VALUE;
+//        double Y = Math.random() * Integer.MAX_VALUE;
+//        double Z = Math.random() * Integer.MAX_VALUE;
+//        do {
+//            X = (171 * X) % 30269;
+//            Y = (172 * Y) % 30307;
+//            Z = (170 * Z) % 30323;
+//            U = (X * 1.0 / 30269 + Y * 1.0 / 30307 + Z * 1.0 / 30323);
+//            U = U - Math.floor(U);
+//        } while ((U == 0) || (U == 1));
+//
+//        return U;
+//    }
+    
+    public double Uniform_0_1(){
+        return Math.random();
     }
 }
   

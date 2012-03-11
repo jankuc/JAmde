@@ -36,13 +36,13 @@ public class NormalDistribution extends Distribution {
         return y1;
     }
 
-    public NormalDistribution(double mu, double sigma) {
+    public NormalDistribution(double mu, double sigma2) {
         this.mu = mu;
-        this.sigma = Math.sqrt(sigma);
-        this.UpB1 = 5;
-        this.LowB1 = -5;
-        this.UpB2 = 100;
-        this.LowB2 = 0;
+        this.sigma = Math.sqrt(sigma2);
+        this.UpB1 = 10;
+        this.LowB1 = -10;
+        this.UpB2 = 20;
+        this.LowB2 = 0.00001;
         this.PI = 3.141593;
         this.a[0] = 0.2316419;
         this.a[1] = 0.3193815;

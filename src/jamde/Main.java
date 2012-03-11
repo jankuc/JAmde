@@ -57,8 +57,9 @@ public class Main {
         } // Now we have loaded the tableInput in Table from the file
         
         table.count();
-        table.printClassic("/home/honza/Downloads/pokusnaTabulka.tex");
-        Runtime.getRuntime().exec("pdflatex /home/honza/Downloads/pokusnaTabulka.tex");
+        String tab = "./pokusnaTabulka1.tex";
+        table.printClassic(tab);
+        Runtime.getRuntime().exec("pdflatex --file-line-error-style " + tab);
         
         
         

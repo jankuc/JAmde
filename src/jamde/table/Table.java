@@ -8,6 +8,7 @@ import jamde.MathUtil;
 import jamde.distribution.*;
 import jamde.estimator.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -158,15 +159,16 @@ public class Table {
         return null;
     }
     
-    public void count() {  
+    public void count() throws FileNotFoundException {  
         for (TableInput input : tableInputs) { // cycle over all tables
             int numOfPars = 1;
             if (input.getParamsCounted().equals("both")) {
                 numOfPars = 2;
             }
             TableOutput tableOutput = new TableOutput((ArrayList) input.getEstimators(),(ArrayList) input.getSizeOfSample() , numOfPars);
-                   
+            EstimatorBuilder estimatorBuilderL1 = input.getEstimators().get(0); 
             for (EstimatorBuilder estimatorBuilder : input.getEstimators()) { //cycle over all estimators in one table (lines of the table)
+                
                 Estimator estimator = estimatorBuilder.getEstimator();
 
                 Distribution contaminated = input.getContaminated();
@@ -176,6 +178,7 @@ public class Table {
 
                 for (int sizeOfSample : input.getSizeOfSample()) { // cycle over all the sizes of dataArray. (columns in the table)
                     for (int i = 0; i < estimatorArray.length; i++) { // cycle counting all the best distributions in estimator Array
+                        // DATA creation
                         double[] dataArray = new double[sizeOfSample];
                         if (input.getContaminating() == null) { // if true then it's not mixture of distributions
                             if (input.getOrderErrors() == null) { // if true then data was loaded from file
@@ -196,10 +199,38 @@ public class Table {
                                     dataArray[j] = contaminating.getRealization();
                                 }
                             }
-                        } // Here the daraArray is completely filled with data
+                        } // Here the dataArray is completely filled with data
+                        //printDataArray:
+//                        for(double k : dataArray){
+//                            System.out.println(k);
+//                        }
+//                        
+                        if (false) {
+                            PrintWriter w = new PrintWriter("./distances");
+                            double mu;
+                            double sigma2;
+                            double dist;
+                            Distribution d = new NormalDistribution(0, 1);
+                            double N = 200;
+                            double delkaIntervalu = 1;
+                            for (int j = 0; j < N; j++) {
+                                mu = -0.5*delkaIntervalu + j*delkaIntervalu/ N;
+                                for (int k = 0; k < N; k++) {
+                                    sigma2 = 0.0001 + k * 2 * delkaIntervalu / N;
+                                    d.setParameters(mu, sigma2, 0);
+                                    dist = estimator.countDistance(d, dataArray);
+                                    w.format(" %.6f ", dist);
+                                }
+                                w.format(" \n ");
+                            }
+                            w.format(" \n ");
+                            w.close();
+                            System.out.println("Vypsani Distance souboru skonceno.");
+                            return;
+                        }
                         // this is where the minimalization begins     
                         if (input.getParamsCounted().equals("both")) {
-                            DistributionBuilder dB = new DistributionBuilder(input.getContaminated().toString(), input.getContaminated().getP1(), input.getContaminated().getP2(), input.getContaminated().getP3());
+                            DistributionBuilder dB = new DistributionBuilder(input.getContaminated().toString(), input.getContaminated().getP1() ,  input.getContaminated().getP2(), input.getContaminated().getP3());
                             estimatorArray[i] = estimator.minimalize(dB.getDistribution(), dataArray);
                         } else if (input.getParamsCounted().equals("first")) {
                             /*
@@ -216,7 +247,7 @@ public class Table {
                         double[] secondPar = new double[input.getSizeOfEstimator()];
                         for (int i = 0; i < firstPar.length; i++) {
                             firstPar[i] = estimatorArray[i].getP1();
-                            secondPar[i] = estimatorArray[i].getP2();
+                            secondPar[i] = Math.sqrt(estimatorArray[i].getP2());
                         }
                         double expVal1 = MathUtil.getExpVal(firstPar);
                         double standVar1 = MathUtil.getStandVar(expVal1, firstPar);
@@ -225,7 +256,7 @@ public class Table {
                         
                         tableOutput.setMeanValue(estimatorBuilder, sizeOfSample, 1, expVal1);
                         tableOutput.setDeviation(estimatorBuilder, sizeOfSample, 1, standDev1);
-                        double eref1 = Math.pow(tableOutput.getDeviation(estimatorBuilder, sizeOfSample, 1),2)  / standVar1 ;
+                        double eref1 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, 1),2)  / standVar1 ;
                         tableOutput.setEfficiency(estimatorBuilder, sizeOfSample, 1, eref1);
                         
                         double expVal2 = MathUtil.getExpVal(secondPar);
@@ -235,7 +266,7 @@ public class Table {
                         
                         tableOutput.setMeanValue(estimatorBuilder, sizeOfSample, 2, expVal2);
                         tableOutput.setDeviation(estimatorBuilder, sizeOfSample, 2, standDev2);
-                        double eref2 = Math.pow(tableOutput.getDeviation(estimatorBuilder, sizeOfSample, 2),2)  / standVar2 ;
+                        double eref2 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, 2),2)  / standVar2 ;
                         tableOutput.setEfficiency(estimatorBuilder, sizeOfSample, 2, eref2);
                                           
                         break;
@@ -251,7 +282,7 @@ public class Table {
                         
                         tableOutput.setMeanValue(estimatorBuilder, sizeOfSample, 1, expVal1);
                         tableOutput.setDeviation(estimatorBuilder, sizeOfSample, 1, standDev1);
-                        double eref1 = Math.pow(tableOutput.getDeviation(estimatorBuilder, sizeOfSample, 1),2)  / standVar1 ;
+                        double eref1 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, 1),2)  / standVar1 ;
                         tableOutput.setEfficiency(estimatorBuilder, sizeOfSample, 1, eref1);
                         
                         
@@ -268,7 +299,7 @@ public class Table {
                         
                         tableOutput.setMeanValue(estimatorBuilder, sizeOfSample, 2, expVal2);
                         tableOutput.setDeviation(estimatorBuilder, sizeOfSample, 2, standDev2);
-                        double eref2 = Math.pow(tableOutput.getDeviation(estimatorBuilder, sizeOfSample, 2),2)  / standVar2 ;
+                        double eref2 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, 2),2)  / standVar2 ;
                         tableOutput.setEfficiency(estimatorBuilder, sizeOfSample, 2, eref2);
                     }       
                 } // END for (int sizeOfSample : input.getSizeOfSample())
