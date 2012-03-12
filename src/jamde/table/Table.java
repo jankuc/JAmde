@@ -161,6 +161,7 @@ public class Table {
     }
 
     public void count() throws FileNotFoundException {
+        System.out.println("Enumeration has begun");
         /*
          * TODO merit zbyvajici cas
          * TODO dat mistoa nazev souboru pro ulozeni do config souboru
