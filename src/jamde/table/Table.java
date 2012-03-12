@@ -168,10 +168,11 @@ public class Table {
          * TODO pri nacitani umisteni tabulky toto umisteni vytvori
          * TODO vytvorit funkci pro vykreslovani vzdalenostnich obrazku
          */
-
+        int numOfTables = tableInputs.size();
+        int countedTable = 0;
         for (TableInput input : tableInputs) { // cycle over all tables
-            int numOfTables = tableInputs.size();
-            int countedTable = 0;
+            
+            
             countedTable ++;
             Long tableStartTime = System.currentTimeMillis();
             
@@ -250,8 +251,8 @@ public class Table {
 
                         tableOutput.setMeanValue(estimatorBuilder, sizeOfSample, 1, expVal1);
                         tableOutput.setDeviation(estimatorBuilder, sizeOfSample, 1, standDev1);
-                        double eref1 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, 1), 2) / standVar1;
-                        eref1 = Math.sqrt(eref1);
+                        double eref1 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, 1), 2) / standVar1; // radim pocital  eef =  varX/varL1 (bez odmocniny)
+                        //eref1 = Math.sqrt(eref1);
                         tableOutput.setEfficiency(estimatorBuilder, sizeOfSample, 1, eref1);
                     } 
                     if (input.getParamsCounted().equals("both") || input.getParamsCounted().equals("second")) {
@@ -265,7 +266,7 @@ public class Table {
                         tableOutput.setMeanValue(estimatorBuilder, sizeOfSample, numOfPars, expVal2);
                         tableOutput.setDeviation(estimatorBuilder, sizeOfSample, numOfPars, standDev2);
                         double eref2 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, numOfPars), 2) / standVar2;
-                        eref2 = Math.sqrt(eref2);
+                        //eref2 = Math.sqrt(eref2);
                         tableOutput.setEfficiency(estimatorBuilder, sizeOfSample, numOfPars, eref2);
                     } // END of the printout
                     //System.out.println("Size of Sample " + sizeOfSample + " has ended.");

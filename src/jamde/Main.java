@@ -67,7 +67,7 @@ public class Main {
         }
         
         table.count(numOfThreads);
-        String tab = "./pokusnaTabulka1.tex";
+        String tab = "./pokusnaTabulka4.tex";
         table.printClassic(tab);
         Runtime.getRuntime().exec("pdflatex --file-line-error-style " + tab);
         

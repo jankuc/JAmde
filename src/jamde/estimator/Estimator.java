@@ -38,7 +38,7 @@ public abstract class Estimator {
             double EV = MathUtil.getExpVal(dataArray);
             distr1.setParameters(EV,MathUtil.getStandDev(EV, dataArray), 0);
         } else {
-            distr1 = simulatedAnnealing(distr1, dataArray);
+            distr1 = searchAndDescent(distr1, dataArray);
         }
         return distr1;
     }
@@ -58,6 +58,56 @@ public abstract class Estimator {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    private Distribution searchAndDescent(Distribution distr, double[] dataArray) {
+        double[] x = new double[9];
+        double[] y = new double[9];
+        x[0] = distr.getP1(); // initiation position is near the minimum
+        y[0] = distr.getP2();
+        double[] distance  = new double[9];
+        double eps = 0.5;
+        int iMin = 0;
+        distance[0] = countDistance(distr, dataArray);
+        while (eps > 0.0009) {
+            x[1] = x[0] - eps;
+            x[7] = x[1];
+            x[8] = x[1];
+            x[2] = x[0];
+            x[6] = x[0];
+            x[3] = x[0] + eps;
+            x[4] = x[3];
+            x[5] = x[3];
+            y[1] = y[0] - eps;
+            y[2] = y[1];
+            y[3] = y[1];
+            y[4] = y[0];
+            y[8] = y[0];
+            y[7] = y[0] + eps;
+            y[6] = y[7];
+            y[6] = y[7];        
+            for (int i = 1; i < distance.length; i++) {
+                if (distr.isParametersOK(x[i], y[i],0)){
+                    distr.setParameters(x[i], y[i], 0);
+                    distance[i] = countDistance(distr, dataArray);
+                    if (distance[i] < distance[iMin]) {
+                        iMin = i;
+                    }
+                }
+            }
+            if (iMin == 0) {
+                eps *= 0.5;
+            } else {
+                x[0] =x[iMin];
+                y[0] = y[iMin];
+                distance[0] = distance[iMin];
+                iMin = 0;
+            }
+        }
+        distr.setParameters(x[iMin], y[iMin], 0);
+        return distr;
+    }
+    
+    
+    
     private Distribution simulatedAnnealing(Distribution distr, double[] dataArray) {
         double distOld, distNew;
         Distribution rand = new UniformDistribution(0, 1);
