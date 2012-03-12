@@ -170,6 +170,12 @@ public class Table {
          */
 
         for (TableInput input : tableInputs) { // cycle over all tables
+            int numOfTables = tableInputs.size();
+            int countedTable = 0;
+            countedTable ++;
+            Long tableStartTime = System.currentTimeMillis();
+            
+            
             int numOfPars = 1;
             if (input.getParamsCounted().equals("both")) {
                 numOfPars = 2;
@@ -268,7 +274,11 @@ public class Table {
             }// END for (EstimatorBuilder estimatorBuilder : input.getEstimators())
 
             tableOutputs.add(tableOutput);
-            System.out.println("Table has ended.");
+            
+            Long tableEndTime = System.currentTimeMillis();
+            Long tableTime = tableEndTime - tableStartTime;
+            System.out.println("Table " + countedTable + "/" + numOfTables + " has ended. It took " + MathUtil.Long2time(tableTime) + ". It could take another " +  MathUtil.Long2time((numOfTables-countedTable) * tableTime));
+            
         }// END for (TableInput input : tableInputs)
         System.out.println("Enumeration has ended.");
     } // END count()

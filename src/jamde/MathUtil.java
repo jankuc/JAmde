@@ -100,4 +100,14 @@ public class MathUtil{
         result =  MathUtil.getMedian(newarray);
         return result;
     }
+    
+    public static String Long2time(Long runTime){
+        runTime /= 1000;
+        Long hours = runTime/3600;
+        runTime -= hours*3600;
+        Long mins = runTime/60;
+        runTime -= mins*60;
+        Long secs = runTime;
+        return String.format("%02d:%02d:%02d",hours, mins, secs );
+    }
 }

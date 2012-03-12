@@ -72,14 +72,10 @@ public class Main {
         Runtime.getRuntime().exec("pdflatex --file-line-error-style " + tab);
         
         Long timeEnd = System.currentTimeMillis();
+        
+        
         Long runTime = timeEnd - timeStart;
-        runTime /= 1000;
-        Long hours = runTime/3600;
-        runTime -= hours*3600;
-        Long mins = runTime/60;
-        runTime -= mins*60;
-        Long secs = runTime;
-        System.out.println("Runtime = " + hours + ":" + mins + ":" + secs + "." );
+        System.out.println("Runtime = " + MathUtil.Long2time(runTime) + "." );
         
     }
 }
