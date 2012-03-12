@@ -22,17 +22,18 @@ import java.util.Scanner;
  * @author honza
  */
 public class Table {
-    private ArrayList<TableInput> tableInputs = new ArrayList<TableInput>();;
+
+    private ArrayList<TableInput> tableInputs = new ArrayList<TableInput>();
+    ;
     private ArrayList<TableOutput> tableOutputs = new ArrayList<TableOutput>(); // elements in the list are in the same order as the elements in the input
 
     public ArrayList<TableInput> getTableInputs() {
         return tableInputs;
     }
-    
+
 //    public void setTableInputs(ArrayList<TableInput> tableInputs) {
 //        this.tableInputs = tableInputs;
 //    }
-    
     public void addTableInput(TableInput tableInput) {
         this.tableInputs.add(tableInput);
     }
@@ -44,19 +45,19 @@ public class Table {
     public void setTableOutputs(ArrayList<TableOutput> tableOutputs) {
         this.tableOutputs = tableOutputs;
     }
-    
+
     public void addTableOutput(TableOutput tableOutput) {
         this.tableOutputs.add(tableOutput);
     }
-    
+
     public void loadInputsFromFile(File confFile) throws Exception {
         System.out.println("You have opened configuration file " + confFile.toString() + "\n");
-        
+
         ArrayList<TableInput> inputs = new ArrayList<TableInput>();
         TableInput input = new TableInput();
-        
+
         Scanner sc = new Scanner(confFile);
-        
+
         while (sc.hasNext()) {
             if (sc.hasNext("#")) {
                 sc.next();
@@ -65,16 +66,16 @@ public class Table {
                     inputs.add(input);
                 }
             }
-        }       
+        }
         tableInputs = inputs;
     }
-    
+
     private TableInput loadInputFromFile(Scanner sc) throws Exception {
         TableInput input = new TableInput();
         String sContaminated, sContaminating, estType = "";
         double contaminatedPar1 = 0, contaminatedPar2 = 1, contaminatedPar3 = 0, contaminatingPar1 = 0, contaminatingPar2 = 1, contaminatingPar3 = 1, estPar = 0;
         ArrayList<Integer> sizeOfSample = new ArrayList<Integer>();
-        
+
         ArrayList<EstimatorBuilder> estimators = new ArrayList<EstimatorBuilder>();
         EstimatorBuilder e = new EstimatorBuilder(estType, estPar);
         input.setSizeOfEstimator(0);
@@ -82,12 +83,12 @@ public class Table {
         Double[] errProb = new Double[2];
         ArrayList<Double[]> errProbs = new ArrayList<Double[]>();
         String line;
-        
+
         int lineNumber = 1;
-        
-        while (sc.hasNext()) {    
+
+        while (sc.hasNext()) {
             if (sc.hasNext("#")) {
-                if ((input.getSizeOfEstimator()!=0)) {
+                if ((input.getSizeOfEstimator() != 0)) {
                     return input;
                 }
                 sc.next();
@@ -158,26 +159,69 @@ public class Table {
         }//END while(sc.hasNext()) 
         return null;
     }
-    
-    public void count() throws FileNotFoundException {  
+
+    public void count() throws FileNotFoundException {
+        /*
+         * TODO merit zbyvajici cas
+         * TODO dat mistoa nazev souboru pro ulozeni do config souboru
+         * TODO pri nacitani umisteni tabulky toto umisteni vytvori
+         * TODO vytvorit funkci pro vykreslovani vzdalenostnich obrazku
+         */
+
         for (TableInput input : tableInputs) { // cycle over all tables
             int numOfPars = 1;
             if (input.getParamsCounted().equals("both")) {
                 numOfPars = 2;
             }
-            TableOutput tableOutput = new TableOutput((ArrayList) input.getEstimators(),(ArrayList) input.getSizeOfSample() , numOfPars);
-            EstimatorBuilder estimatorBuilderL1 = input.getEstimators().get(0); 
+            TableOutput tableOutput = new TableOutput((ArrayList) input.getEstimators(), (ArrayList) input.getSizeOfSample(), numOfPars);
+            EstimatorBuilder estimatorBuilderL1 = input.getEstimators().get(0);
             for (EstimatorBuilder estimatorBuilder : input.getEstimators()) { //cycle over all estimators in one table (lines of the table)
-                
-                Estimator estimator = estimatorBuilder.getEstimator();
 
-                Distribution contaminated = input.getContaminated();
+//                Estimator estimator = estimatorBuilder.getEstimator();
+//
+//                Distribution contaminated = input.getContaminated();
                 Distribution[] estimatorArray = new Distribution[input.getSizeOfEstimator()]; // for every dsitribution in this array, we will find parameters which minimize the distance from this distribution to the current data.
-                //DistributionBuilder dB = new DistributionBuilder(input.getContaminated().toString(),input.getContaminated().getP1(),  input.getContaminated().getP2(),input.getContaminated().getP3());
-                //Arrays.fill(estimatorArray, dB.getDistribution()); // if we don't want to find both parameters of the distribution, the one which we aren't counting is correctly in its place
 
-                for (int sizeOfSample : input.getSizeOfSample()) { // cycle over all the sizes of dataArray. (columns in the table)
-                    for (int i = 0; i < estimatorArray.length; i++) { // cycle counting all the best distributions in estimator Array
+                for (int sizeOfSample : input.getSizeOfSample()) { // cycle over all the sizes of dataArray. (columns in the table) [20, 50, 100, 200, 500]
+                    
+                        // Preparation for Threads:
+                        int numOfThreads = 6;
+                        int threadLoad = (int) (estimatorArray.length / numOfThreads); // Load which will be covered by each Thread
+                        int leftover = estimatorArray.length - threadLoad * numOfThreads; // It will be distributed between Threads
+                        int[] threadLoads = new int[numOfThreads];
+                        for (int i = 0; i < threadLoads.length; i++) {
+                            if (leftover > 0) {
+                                threadLoads[i] = threadLoad + 1;
+                                leftover--;
+                            } else {
+                                threadLoads[i] = threadLoad;
+                            }
+                        }
+                    
+                    // to dlasi uz bych chtel dat do Thread:
+                    Estimator estimator = estimatorBuilder.getEstimator();
+                    Distribution contaminated = input.getContaminated();
+
+                    // konec obsahu thread
+// tady je priprava pro vlakna                    
+                    if (false) {
+                        CountThread[] threadArray = new CountThread[numOfThreads]; // Array of Threads
+                        Distribution[][] threadResult = new Distribution[numOfThreads][];
+
+                        for (int i = 0; i < threadArray.length; i++) {
+                            threadArray[i] = new CountThread(input, threadLoads[i]);
+                            threadResult[i] = new Distribution[threadLoads[i]];
+
+                            threadResult[i] = threadArray[i].startCount();
+
+                            for (int j = 0; j < threadResult.length; j++) { // copying of result from thread to estimatorArray
+                                int posun1 = i * threadLoads[i];
+                                estimatorArray[posun1 + j] = threadResult[i][j];
+                            }
+                        }
+                    }
+// tady konci prioprava pro lvakna
+                    for (int i = 0; i < estimatorArray.length; i++) { // cycle counting all the best distributions in estimator Array [1:K]
                         // DATA creation
                         double[] dataArray = new double[sizeOfSample];
                         if (input.getContaminating() == null) { // if true then it's not mixture of distributions
@@ -214,7 +258,7 @@ public class Table {
                             double N = 200;
                             double delkaIntervalu = 1;
                             for (int j = 0; j < N; j++) {
-                                mu = -0.5*delkaIntervalu + j*delkaIntervalu/ N;
+                                mu = -0.5 * delkaIntervalu + j * delkaIntervalu / N;
                                 for (int k = 0; k < N; k++) {
                                     sigma2 = 0.0001 + k * 2 * delkaIntervalu / N;
                                     d.setParameters(mu, sigma2, 0);
@@ -230,7 +274,7 @@ public class Table {
                         }
                         // this is where the minimalization begins     
                         if (input.getParamsCounted().equals("both")) {
-                            DistributionBuilder dB = new DistributionBuilder(input.getContaminated().toString(), input.getContaminated().getP1() ,  input.getContaminated().getP2(), input.getContaminated().getP3());
+                            DistributionBuilder dB = new DistributionBuilder(input.getContaminated().toString(), input.getContaminated().getP1(), input.getContaminated().getP2(), input.getContaminated().getP3());
                             estimatorArray[i] = estimator.minimalize(dB.getDistribution(), dataArray);
                         } else if (input.getParamsCounted().equals("first")) {
                             /*
@@ -251,25 +295,27 @@ public class Table {
                         }
                         double expVal1 = MathUtil.getExpVal(firstPar);
                         double standVar1 = MathUtil.getStandVar(expVal1, firstPar);
-                        
+
                         double standDev1 = Math.sqrt(standVar1);
-                        
+
                         tableOutput.setMeanValue(estimatorBuilder, sizeOfSample, 1, expVal1);
                         tableOutput.setDeviation(estimatorBuilder, sizeOfSample, 1, standDev1);
-                        double eref1 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, 1),2)  / standVar1 ;
+                        double eref1 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, 1), 2) / standVar1;
+                        eref1 = Math.sqrt(eref1);
                         tableOutput.setEfficiency(estimatorBuilder, sizeOfSample, 1, eref1);
-                        
+
                         double expVal2 = MathUtil.getExpVal(secondPar);
                         double standVar2 = MathUtil.getStandVar(expVal2, secondPar);
-                       
+
                         double standDev2 = Math.sqrt(standVar2);
-                        
+
                         tableOutput.setMeanValue(estimatorBuilder, sizeOfSample, 2, expVal2);
                         tableOutput.setDeviation(estimatorBuilder, sizeOfSample, 2, standDev2);
-                        double eref2 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, 2),2)  / standVar2 ;
+                        double eref2 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, 2), 2) / standVar2;
+                        eref2 = Math.sqrt(eref2);
                         tableOutput.setEfficiency(estimatorBuilder, sizeOfSample, 2, eref2);
-                                          
-                        break;
+
+
                     } else if (input.getParamsCounted().equals("first")) {
                         double[] firstPar = new double[input.getSizeOfEstimator()];
                         for (int i = 0; i < firstPar.length; i++) {
@@ -277,16 +323,17 @@ public class Table {
                         }
                         double expVal1 = MathUtil.getExpVal(firstPar);
                         double standVar1 = MathUtil.getStandVar(expVal1, firstPar);
-                        
+
                         double standDev1 = Math.sqrt(standVar1);
-                        
+
                         tableOutput.setMeanValue(estimatorBuilder, sizeOfSample, 1, expVal1);
                         tableOutput.setDeviation(estimatorBuilder, sizeOfSample, 1, standDev1);
-                        double eref1 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, 1),2)  / standVar1 ;
+                        double eref1 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, 1), 2) / standVar1;
+                        eref1 = Math.sqrt(eref1);
                         tableOutput.setEfficiency(estimatorBuilder, sizeOfSample, 1, eref1);
-                        
-                        
-                        break;
+
+
+
                     } else {
                         double[] secondPar = new double[input.getSizeOfEstimator()];
                         for (int i = 0; i < secondPar.length; i++) {
@@ -294,92 +341,97 @@ public class Table {
                         }
                         double expVal2 = MathUtil.getExpVal(secondPar);
                         double standVar2 = MathUtil.getStandVar(expVal2, secondPar);
-                        
+
                         double standDev2 = Math.sqrt(standVar2);
-                        
+
                         tableOutput.setMeanValue(estimatorBuilder, sizeOfSample, 2, expVal2);
                         tableOutput.setDeviation(estimatorBuilder, sizeOfSample, 2, standDev2);
-                        double eref2 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, 2),2)  / standVar2 ;
+                        double eref2 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, 2), 2) / standVar2;
+                        eref2 = Math.sqrt(eref2);
                         tableOutput.setEfficiency(estimatorBuilder, sizeOfSample, 2, eref2);
-                    }       
+                    }
+                    //System.out.println("Size of Sample " + sizeOfSample + " has ended.");
                 } // END for (int sizeOfSample : input.getSizeOfSample())
+                System.out.println("Estimator " + estimatorBuilder.getType() + "(" + estimatorBuilder.getPar() + ") has ended.");
             }// END for (EstimatorBuilder estimatorBuilder : input.getEstimators())
-            
+
             tableOutputs.add(tableOutput);
+            System.out.println("Table has ended.");
         }// END for (TableInput input : tableInputs)
+        System.out.println("Enumeration has ended.");
     } // END count()
-    
+
     public void printClassic(String fileName) throws IOException {
         File file = new File(fileName);
         if (file.exists()) {
             /*
              * TODO dodelat dotaz na prepsani stareho souboru/vytvoreni noveho jmena souboru 
-             */ 
+             */
         } // at the end of this condition we have desired fileName (it was changed, if there were collisions)
         file.createNewFile();
         printClassicHeadTex(file);
         for (TableInput input : tableInputs) {
-            printClassicHeadTable(file,input);
+            printClassicHeadTable(file, input);
             int index = tableInputs.indexOf(input);
             TableOutput output = tableOutputs.get(index);
-            for (EstimatorBuilder estBuilder : input.getEstimators() ) {
+            for (EstimatorBuilder estBuilder : input.getEstimators()) {
                 printClassicLine(file, input, output, estBuilder);
             }
-            printClassicEndTable(file,input);
+            printClassicEndTable(file, input);
         }
         printClassicEndTex(file);
     } // END printClassic(String fileName)
-    
+
     public void printClassicHeadTex(File file) throws IOException {
         FileWriter w = new FileWriter(file);
         w.write("\\documentclass[11pt]{article}\n");
-	w.write("\\usepackage[utf8]{inputenc}\n");
-	w.write("\\usepackage[czech]{babel}\n");
-	w.write("\\usepackage[landscape]{geometry}\n");
-	w.write("\\usepackage{pdflscape}\n");
-	w.write("\\textwidth 210mm \\textheight 275mm \\oddsidemargin -5mm\n");
-	w.write("\\evensidemargin 3mm \\topmargin -25mm\n");
-	w.write("\\newlength{\\defbaselineskip}\n");
-	w.write("\\setlength{\\defbaselineskip}{\\baselineskip}\n");
-	w.write("\\newcommand{\\setlinespacing}[1]\n");
-	w.write("   {\\setlength{\\baselineskip}{#1 \\defbaselineskip}}\n");
-	w.write("\\pagestyle{empty}\n");
-	w.write("\\begin{document}\n");
+        w.write("\\usepackage[utf8]{inputenc}\n");
+        w.write("\\usepackage[czech]{babel}\n");
+        w.write("\\usepackage[landscape]{geometry}\n");
+        w.write("\\usepackage{pdflscape}\n");
+        w.write("\\textwidth 210mm \\textheight 275mm \\oddsidemargin -5mm\n");
+        w.write("\\evensidemargin 3mm \\topmargin -25mm\n");
+        w.write("\\newlength{\\defbaselineskip}\n");
+        w.write("\\setlength{\\defbaselineskip}{\\baselineskip}\n");
+        w.write("\\newcommand{\\setlinespacing}[1]\n");
+        w.write("   {\\setlength{\\baselineskip}{#1 \\defbaselineskip}}\n");
+        w.write("\\pagestyle{empty}\n");
+        w.write("\\begin{document}\n");
         w.close();
     }
-    
+
     public void printClassicEndTex(File file) throws IOException {
-        FileWriter w = new FileWriter(file,true); // so it appends
-	w.write("\\end{document}\n");
+        FileWriter w = new FileWriter(file, true); // so it appends
+        w.write("\\end{document}\n");
         w.close();
     }
-    
+
     public void printClassicHeadTable(File file, TableInput input) throws IOException {
-        
-        Integer[] sizeOfSample =  input.getSizeOfSample().toArray(new Integer[0]);
-        FileWriter w = new FileWriter(file,true); // so it appends
-	w.write("\\begin{table}[ht] \\footnotesize \n");
+
+        Integer[] sizeOfSample = input.getSizeOfSample().toArray(new Integer[0]);
+        FileWriter w = new FileWriter(file, true); // so it appends
+        w.write("\\begin{table}[ht] \\footnotesize \n");
         w.write("\\begin{center} \n");
         w.write("\\begin{tabular}{|c|");
-        for (int i : sizeOfSample){
+        for (int i : sizeOfSample) {
             w.write("ccc|");
         }
         w.write("} \n");
         w.write("\\hline \n"); // the upper border line
-        w.write("$\\alpha\\backslash n$ &&  $"+ sizeOfSample[0] +"$"); // line with sizes of sample
-        for (int i = 1; i < sizeOfSample.length; i ++) { // I really want to go through items {1 : end} not {0:end}
+        w.write("$\\alpha\\backslash n$ &&  $" + sizeOfSample[0] + "$"); // line with sizes of sample
+        for (int i = 1; i < sizeOfSample.length; i++) { // I really want to go through items {1 : end} not {0:end}
             w.write(" &&&  $" + sizeOfSample[i] + "$");
         }
         w.write(" & \\\\ \n"); // ending of line with sizes of sample
         w.write("\\hline \n"); // borderline
         if (input.getParamsCounted().equals("first") || input.getParamsCounted().equals("both")) { // line in the head of the parameter mu
-            for(int i = 0; i < sizeOfSample.length; i++) {
+            for (int i = 0; i < sizeOfSample.length; i++) {
                 w.write("& $m(\\mu)$ & $s(\\mu)$ & $eef(\\mu)$ ");
             }
             w.write("\\\\ \n");
         }
         if (input.getParamsCounted().equals("second") || input.getParamsCounted().equals("both")) { // line in the head of the parameter sigma
-            for(int i = 0; i < sizeOfSample.length; i++) {
+            for (int i = 0; i < sizeOfSample.length; i++) {
                 w.write("& $m(\\sigma)$ & $s(\\sigma)$ & $eef(\\sigma)$ ");
             }
             w.write("\\\\ \n");
@@ -387,13 +439,13 @@ public class Table {
         w.write("\\hline \n"); // border line below the head of the table.
         w.close();
     }
-    
+
     public void printClassicEndTable(File file, TableInput input) throws IOException {
-        FileWriter ww = new FileWriter(file,true); // so it appends
+        FileWriter ww = new FileWriter(file, true); // so it appends
         PrintWriter w = new PrintWriter(ww);
-	w.write("\\end{tabular}\n");
+        w.write("\\end{tabular}\n");
         ArrayList<EstimatorBuilder> eBs = input.getEstimators();
-        
+
         String sContaminated = String.format("%c(%.0f,%.0f)", input.getContaminated().toString().charAt(0), input.getContaminated().getP1(), input.getContaminated().getP2());
         String sContaminating = String.format("%c(%.0f,%.0f)", input.getContaminating().toString().charAt(0), input.getContaminating().getP1(), input.getContaminating().getP2());
         w.write("\\caption{" + eBs.get(1).getType() + ": $p = " + sContaminated + "$, data: $(1-\\varepsilon)" + sContaminated + " + \\varepsilon " + sContaminating + "$, $\\varepsilon =  " + input.getContamination() + "$, $K = " + input.getSizeOfEstimator() + "$} \n");
@@ -402,22 +454,22 @@ public class Table {
         w.close();
     }
 
-    private void printClassicLine(File file, TableInput input,TableOutput output, EstimatorBuilder estimator) throws IOException {
-        FileWriter ww = new FileWriter(file,true); // so it appends
+    private void printClassicLine(File file, TableInput input, TableOutput output, EstimatorBuilder estimator) throws IOException {
+        FileWriter ww = new FileWriter(file, true); // so it appends
         PrintWriter w = new PrintWriter(ww);
-	if(input.getParamsCounted().equals("first") || input.getParamsCounted().equals("both") ){
+        if (input.getParamsCounted().equals("first") || input.getParamsCounted().equals("both")) {
             w.write("$" + estimator.getPar() + "$");
-            for(int sizeOfSample : input.getSizeOfSample()){
-                w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $",output.getMeanValue(estimator, sizeOfSample, 1), output.getDeviation(estimator, sizeOfSample, 1), output.getEfficiency(estimator, sizeOfSample, 1));
+            for (int sizeOfSample : input.getSizeOfSample()) {
+                w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $", output.getMeanValue(estimator, sizeOfSample, 1), output.getDeviation(estimator, sizeOfSample, 1), output.getEfficiency(estimator, sizeOfSample, 1));
             }
             w.write("\\\\ \n");
         }
-        if(input.getParamsCounted().equals("second") || input.getParamsCounted().equals("both") ){
+        if (input.getParamsCounted().equals("second") || input.getParamsCounted().equals("both")) {
             if (input.getParamsCounted().equals("second")) {
                 w.write("$" + estimator.getPar() + "$");
-            } 
-            for(int sizeOfSample : input.getSizeOfSample()){
-                w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $",output.getMeanValue(estimator, sizeOfSample, 2), output.getDeviation(estimator, sizeOfSample, 2), output.getEfficiency(estimator, sizeOfSample, 2));
+            }
+            for (int sizeOfSample : input.getSizeOfSample()) {
+                w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $", output.getMeanValue(estimator, sizeOfSample, 2), output.getDeviation(estimator, sizeOfSample, 2), output.getEfficiency(estimator, sizeOfSample, 2));
             }
             w.write("\\\\ \n");
         }

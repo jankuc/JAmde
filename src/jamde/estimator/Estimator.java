@@ -72,7 +72,7 @@ public abstract class Estimator {
         double T = 0.000001; // Temperature // 0.00000000001
 	double lambda = 1; // cooling rate 1
 	int i = 1;
-	int numOfIterations = 5;
+	int numOfIterations = 8;
         double eps = 0.1; // radius of the vicinity of (x1,x2)
 
         while (i < numOfIterations) {
