@@ -8,6 +8,7 @@ import jamde.table.Table;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,7 +21,9 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws FileNotFoundException, IOException {
+    public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
+        long timeStart = System.currentTimeMillis();
+        
         String nameOfFile = "initializedValue";
         Table table = new Table();
         
@@ -56,14 +59,27 @@ public class Main {
             }
         } // Now we have loaded the tableInput in Table from the file
         
-        table.count();
+        int numOfThreads = 2;
+        try {
+            numOfThreads = Integer.parseInt(args[2]);
+        } catch (java.lang.ArrayIndexOutOfBoundsException e1) {
+            System.out.println("You did not specify number of Threads you want to use. Default value is 2. For vkstat it is HUGE waste of resources.");
+        }
+        
+        table.count(numOfThreads);
         String tab = "./pokusnaTabulka1.tex";
         table.printClassic(tab);
         Runtime.getRuntime().exec("pdflatex --file-line-error-style " + tab);
         
-        
-        
-        
+        Long timeEnd = System.currentTimeMillis();
+        Long runTime = timeEnd - timeStart;
+        runTime /= 1000;
+        Long hours = runTime/3600;
+        runTime -= hours*3600;
+        Long mins = runTime/60;
+        runTime -= mins*60;
+        Long secs = runTime;
+        System.out.println("Runtime = " + hours + ":" + mins + ":" + secs + "." );
         
     }
 }

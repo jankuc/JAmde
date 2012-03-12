@@ -36,8 +36,7 @@ public abstract class Estimator {
 
         if (par == 0) {
             double EV = MathUtil.getExpVal(dataArray);
-            
-            distr1.setParameters(EV,MathUtil.getStandVar(EV, dataArray), 0);
+            distr1.setParameters(EV,MathUtil.getStandDev(EV, dataArray), 0);
         } else {
             distr1 = simulatedAnnealing(distr1, dataArray);
         }
@@ -72,10 +71,11 @@ public abstract class Estimator {
         double T = 0.000001; // Temperature // 0.00000000001
 	double lambda = 1; // cooling rate 1
 	int i = 1;
-	int numOfIterations = 8;
+	int numOfIterations = 1000;
         double eps = 0.1; // radius of the vicinity of (x1,x2)
 
         while (i < numOfIterations) {
+            i ++;
             eps *= 0.9999999999; // zmensuje se prohledavane okoli pro (konec=500; eps*=0.99;)
             do {
                 y1 = x1 + (rand.getRealization()) * 2 * eps - eps;
@@ -86,13 +86,11 @@ public abstract class Estimator {
             distr.setParameters(y1, y2, 0);
             distNew = countDistance(distr, dataArray);
             if (distOld > distNew) {
-                i = i + 1;
                 distOld = distNew;
                 x1 = y1;
                 x2 = y2;
             } else {
                 if ((rand.getRealization()) < Math.exp(-(distNew - distOld) / T)) {
-                    i = i + 1;
                     distOld = distNew;
                     x1 = y1;
                     x2 = y2;
