@@ -44,7 +44,7 @@ class CountThread extends Thread {
         Estimator estimator = estimatorBuilder.getEstimator();
         Distribution contaminated = input.getContaminated();
         for (int i = 0; i < estimatorArray.length; i++) { // cycle counting all the best distributions in estimator Array [1:K]
-            double[] dataArray = Table.prepareData(input, sizeOfSample);
+            double[] dataArray = Table.createData(input, sizeOfSample);
             // this is where the minimalization begins     
             if (input.getParamsCounted().equals("both")) {
                 DistributionBuilder dB = new DistributionBuilder(input.getContaminated().toString(), input.getContaminated().getP1(), input.getContaminated().getP2(), input.getContaminated().getP3());

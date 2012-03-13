@@ -5,10 +5,11 @@
 package jamde;
 
 import jamde.table.Table;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Date;
+import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,7 +51,6 @@ public class Main {
             return;
         } else {
             try {
-                
                 table.loadInputsFromFile(confFile);
                 System.out.println("Table input was succesfully loaded from the file.");
             } catch (Exception ex) {
@@ -59,23 +59,40 @@ public class Main {
             }
         } // Now we have loaded the tableInput in Table from the file
         
-        int numOfThreads = 12;
+        int numOfThreads = 12; // Default value
         try {
             numOfThreads = Integer.parseInt(args[2]);
         } catch (java.lang.ArrayIndexOutOfBoundsException e1) {
             System.out.println("You did not specify number of Threads you want to use. Default value is 12. For vkstat it is OK.");
         }
+        numOfThreads = Math.min(numOfThreads, 30);
         
         table.count(numOfThreads);
-        String tab = "./pokusnaTabulka4.tex";
-        table.printClassic(tab);
-        Runtime.getRuntime().exec("pdflatex --file-line-error-style " + tab);
+        String tableFileName = System.getProperty("user.home") + "/tables/default/defaultTable.tex"; 
+        try {
+            tableFileName = args[3];
+        } catch (java.lang.ArrayIndexOutOfBoundsException e1) {
+            System.out.println("You did not specify name and path of output file. Result is saved in ~/tables/default");
+        }
+        
+        File tableFile = new File(tableFileName);
+        while (tableFile.exists()) {
+            tableFileName = tableFileName.replaceFirst(".tex", "i.tex");
+            tableFile = new File(tableFileName);
+        }
+        
+        table.printClassic(tableFileName);
+        
+        String dir = tableFile.getParent();
+        
+        System.setProperty("user.dir", dir);
+        System.out.println(System.getProperty("user.dir"));
+        
+        Process p = Runtime.getRuntime().exec("pdflatex " + tableFileName);
         
         Long timeEnd = System.currentTimeMillis();
-        
-        
         Long runTime = timeEnd - timeStart;
-        System.out.println("Runtime = " + MathUtil.Long2time(runTime) + "." );
-        
+        System.out.println("Runtime = " + MathUtil.Long2time(runTime) + ".");
+
     }
 }

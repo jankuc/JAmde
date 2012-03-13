@@ -122,7 +122,7 @@ public class Table {
                             errProbs.add(errProb);
                         }
                         input.setOrderErrors(errProbs);
-                    } else {
+                    } else { // DataSet will be mixture of distributions
                         input.setOrderErrors(null);
                         sContaminating = nextString;
                         contaminatingPar1 = scl.nextDouble();
@@ -307,10 +307,33 @@ public class Table {
         PrintWriter w = new PrintWriter(ww);
         w.write("\\end{tabular}\n");
         ArrayList<EstimatorBuilder> eBs = input.getEstimators();
-
-        String sContaminated = String.format("%c(%.0f,%.0f)", input.getContaminated().toString().charAt(0), input.getContaminated().getP1(), input.getContaminated().getP2());
-        String sContaminating = String.format("%c(%.0f,%.0f)", input.getContaminating().toString().charAt(0), input.getContaminating().getP1(), input.getContaminating().getP2());
-        w.write("\\caption{" + eBs.get(1).getType() + ": $p = " + sContaminated + "$, data: $(1-\\varepsilon)" + sContaminated + " + \\varepsilon " + sContaminating + "$, $\\varepsilon =  " + input.getContamination() + "$, $K = " + input.getSizeOfEstimator() + "$} \n");
+        String sContaminated = String.format("\\mathrm{%c}(%.0f,%.0f)", input.getContaminated().toString().charAt(0), input.getContaminated().getP1(), input.getContaminated().getP2());
+        w.write("\\caption{" + eBs.get(1).getType() + ": $p = " + sContaminated + "$, data: ");        
+        if (input.getContaminating() == null) {
+            if (input.getData() == null) {
+                ArrayList orderErrors = input.getOrderErrors();
+                double prob = 1;
+                double[] probs = new double[orderErrors.size()];
+                double[] orders = new double[orderErrors.size()];
+                String[] distrs = new String[orderErrors.size()];
+                for (int i = 0; i < orderErrors.size(); i++) {
+                    orders[i] = ((double[])orderErrors.get(i))[0];
+                    probs[i] = ((double[])orderErrors.get(i))[1];
+                    prob -= probs[i]; 
+                    distrs[i] = String.format("%.1f\\mathrm{%c}_{%.1fx}(%.0f,%.0f)",probs[i],input.getContaminated().toString().charAt(0),orders[i], input.getContaminated().getP1(), input.getContaminated().getP2());
+                }
+                w.write("$" + prob + sContaminated);
+                for (int i = 0; i < distrs.length; i++) {
+                    w.write(" + " + distrs[i]);
+                }
+                w.write("$, $K = " + input.getSizeOfEstimator() + "$} \n");    
+            } else {
+                w.write(" Data na4ten8 ze souboru. \n");
+            }
+        } else {
+            String sContaminating = String.format("mathrm{%c}(%.0f,%.0f)", input.getContaminating().toString().charAt(0), input.getContaminating().getP1(), input.getContaminating().getP2());
+            w.write("$(1-\\varepsilon)" + sContaminated + " + \\varepsilon " + sContaminating + "$, $\\varepsilon =  " + input.getContamination() + "$, $K = " + input.getSizeOfEstimator() + "$} \n");
+        }
         w.write("\\end{center}\n");
         w.write("\\end{table}\n");
         w.close();
@@ -379,7 +402,7 @@ public class Table {
     }
 
     public void printDistanceMatrix(TableInput input, Estimator estimator, int sizeOfSample) {
-        double[] dataArray = prepareData(input, sizeOfSample);
+        double[] dataArray = createData(input, sizeOfSample);
         PrintWriter w;
         try {
             w = new PrintWriter("./distances");
@@ -417,7 +440,7 @@ public class Table {
         printDistanceMatrix(input, eB, sizeOfSample);
     }
     
-    public static double[] prepareData(TableInput input, int sizeOfSample) { // making dataSet or loading it from file
+    public static double[] createData(TableInput input, int sizeOfSample) { // making dataSet or loading it from file
         double[] dataArray = new double[sizeOfSample];
         Distribution contaminated = input.getContaminated();
         Distribution contaminating = input.getContaminating();
