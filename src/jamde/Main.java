@@ -59,11 +59,11 @@ public class Main {
             }
         } // Now we have loaded the tableInput in Table from the file
         
-        int numOfThreads = 2;
+        int numOfThreads = 12;
         try {
             numOfThreads = Integer.parseInt(args[2]);
         } catch (java.lang.ArrayIndexOutOfBoundsException e1) {
-            System.out.println("You did not specify number of Threads you want to use. Default value is 2. For vkstat it is HUGE waste of resources.");
+            System.out.println("You did not specify number of Threads you want to use. Default value is 12. For vkstat it is OK.");
         }
         
         table.count(numOfThreads);

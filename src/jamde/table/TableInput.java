@@ -7,7 +7,7 @@ package jamde.table;
 import jamde.estimator.EstimatorBuilder;
 import jamde.distribution.Distribution;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  *
@@ -19,11 +19,11 @@ public class TableInput implements Cloneable{
     private Distribution contaminating;
     private double[] data;
     private double contamination;
-    private Collection<Integer> sizeOfSample = new ArrayList<Integer>();
+    private ArrayList<Integer> sizeOfSample = new ArrayList<Integer>();
     private int sizeOfEstimator;
     private ArrayList<EstimatorBuilder> estimators = new ArrayList<EstimatorBuilder>();
     private String paramsCounted; // {"first", "second", "both"}
-    private Collection<Double[]> orderErrors = new ArrayList<Double[]>();
+    private ArrayList<double[]> orderErrors = new ArrayList<double[]>(); // double[]  = double[2], first number is the magnitude of the error, second is its probability
     
     public Distribution getContaminated() {
         return contaminated;
@@ -53,15 +53,15 @@ public class TableInput implements Cloneable{
         return sizeOfEstimator;
     }
 
-    public Collection<Integer> getSizeOfSample() {
+    public ArrayList<Integer> getSizeOfSample() {
         return sizeOfSample;
     }
 
-    public Collection<Double[]> getOrderErrors() {
+    public ArrayList<double[]> getOrderErrors() {
         return orderErrors;
     }
 
-    public void setOrderErrors(Collection<Double[]> orderErrors) {
+    public void setOrderErrors(ArrayList<double[]> orderErrors) {
         this.orderErrors = orderErrors;
     }
 
@@ -93,7 +93,7 @@ public class TableInput implements Cloneable{
         this.sizeOfEstimator = sizeOfEstimator;
     }
 
-    public void setSizeOfSample(Collection<Integer> sizeOfSample) {
+    public void setSizeOfSample(ArrayList<Integer> sizeOfSample) {
         this.sizeOfSample = sizeOfSample;
     }
     
