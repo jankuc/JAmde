@@ -226,9 +226,6 @@ public class Table {
     public void printClassic(String fileName) throws IOException {
         File file = new File(fileName);
         if (file.exists()) {
-            /*
-             * TODO dodelat dotaz na prepsani stareho souboru/vytvoreni noveho jmena souboru
-             */
         } // at the end of this condition we have desired fileName (it was changed, if there were collisions)
         file.createNewFile();
         printClassicHeadTex(file);
@@ -251,7 +248,7 @@ public class Table {
         w.write("\\usepackage[czech]{babel}\n");
         w.write("\\usepackage[landscape]{geometry}\n");
         w.write("\\usepackage{pdflscape}\n");
-        w.write("\\textwidth 210mm \\textheight 275mm \\oddsidemargin -5mm\n");
+        w.write("\\textwidth 200mm \\textheight 205mm \\oddsidemargin -5mm\n");
         w.write("\\evensidemargin 3mm \\topmargin -25mm\n");
         w.write("\\newlength{\\defbaselineskip}\n");
         w.write("\\setlength{\\defbaselineskip}{\\baselineskip}\n");
@@ -331,7 +328,7 @@ public class Table {
                 w.write(" Data na4ten8 ze souboru. \n");
             }
         } else {
-            String sContaminating = String.format("mathrm{%c}(%.0f,%.0f)", input.getContaminating().toString().charAt(0), input.getContaminating().getP1(), input.getContaminating().getP2());
+            String sContaminating = String.format("\\mathrm{%c}(%.0f,%.0f)", input.getContaminating().toString().charAt(0), input.getContaminating().getP1(), input.getContaminating().getP2());
             w.write("$(1-\\varepsilon)" + sContaminated + " + \\varepsilon " + sContaminating + "$, $\\varepsilon =  " + input.getContamination() + "$, $K = " + input.getSizeOfEstimator() + "$} \n");
         }
         w.write("\\end{center}\n");

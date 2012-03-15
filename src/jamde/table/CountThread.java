@@ -6,10 +6,6 @@ package jamde.table;
 
 import jamde.distribution.*;
 import jamde.estimator.*;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -32,9 +28,6 @@ class CountThread extends Thread {
     }
 
     public Distribution[] startCount() {
-        /*
-         * TODO prekopirovat sem veci a zaridit aby to fungovalo
-         */
         start();
         return estimatorArray;
     }
