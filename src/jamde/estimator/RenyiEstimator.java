@@ -16,6 +16,9 @@ public class RenyiEstimator extends Estimator {
         setPar(par);
     }
 
+    /*
+     * TODO Renyi estimator jako interface?
+     */
     @Override
     public double countDistance(Distribution distribution, double[] data) {
         double dist = 0.0;
@@ -25,18 +28,18 @@ public class RenyiEstimator extends Estimator {
             }
             dist = 1 - dist / data.length;
             return dist;
-        }
-        if (distribution.toString().equals("Normal")){  // viz. Radim Demut (dipl. práce) str 38, (6.78)
-            double mu = distribution.getP1();
-            double sigma = distribution.getP2();
-            for (int i = 0; i < data.length; i++) {
-                dist += Math.exp(- par * Math.pow(data[i] - mu,2) / (2 * Math.pow(sigma, 2)));
+        } else {
+            if (distribution.toString().equals("Normal")) {  // viz. Radim Demut (dipl. práce) str 38, (6.78)
+                double mu = distribution.getP1();
+                double sigma = distribution.getP2();
+                for (int i = 0; i < data.length; i++) {
+                    dist += Math.exp(-par * Math.pow(data[i] - mu, 2) / (2 * Math.pow(sigma, 2)));
+                }
+                dist = 1 - dist / (data.length * Math.pow(sigma, par / (1 + par)));
+                return dist;
+            } else { // viz. Radim Demut (dipl. práce) str 37, (6.57)
+                throw new UnsupportedOperationException("Not supported yet.");
             }
-            dist = 1 - dist / (data.length * Math.pow(sigma, par / (1 + par)));
-            return dist;
-        } else { // viz. Radim Demut (dipl. práce) str 37, (6.57)
-            throw new UnsupportedOperationException("Not supported yet.");   
         }
     }
-    
 }

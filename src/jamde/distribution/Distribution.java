@@ -21,9 +21,9 @@ public abstract class Distribution {
      * se poèítají z plánovaèe), nebo naopak chceme mít poèáteèní volbu vdy náhodnou a pak pouijeme random() místo 1000.0
      */
 
-    public static double xX = 1000.0 / 32767;//Math.random();
-    public static double yY = 1000.0 / 32767;//Math.random();
-    public static double zZ = 1000.0 / 32767;//Math.random();
+    public static long x1 =  127;
+    public static long x2 =  233;
+    public static long x3 = (long) (Math.random() * 3559);
 
 /*    public static int X = (int) (xX * 30269.0);
     public static int Y = (int) (yY * 30307.0);
@@ -80,24 +80,22 @@ public abstract class Distribution {
      * Metoda Uniform_0_1 generuje jednu realizaci rovnomìrného rozdìlení
      */
 
-//    public double Uniform_0_1() {
-//        double U;
-//        double X = Math.random() * Integer.MAX_VALUE;
-//        double Y = Math.random() * Integer.MAX_VALUE;
-//        double Z = Math.random() * Integer.MAX_VALUE;
-//        do {
-//            X = (171 * X) % 30269;
-//            Y = (172 * Y) % 30307;
-//            Z = (170 * Z) % 30323;
-//            U = (X * 1.0 / 30269 + Y * 1.0 / 30307 + Z * 1.0 / 30323);
-//            U = U - Math.floor(U);
-//        } while ((U == 0) || (U == 1));
-//
-//        return U;
-//    }
-    
     public double Uniform_0_1(){
-        return Math.random();
+        long m1 = 30269, m2 = 30307, m3 = 30323;
+        long a1 = 171, a2 = 172, a3 = 170;
+        long c1 = 0, c2 = 0, c3 = 0;
+        
+        x1 = ((a1*x1) + c1) % m1;
+        x2 = ((a2*x2) + c2) % m2;
+        x3 = ((a3*x3) + c3) % m3;
+        
+        double x = ((double)x1)/((double)m1) + ((double)x2)/((double)m2) + ((double)x3)/((double)m3);
+        
+        x = Math.abs(x);
+        x = x - Math.floor(x);
+        
+        return x;
+        
     }
 }
   

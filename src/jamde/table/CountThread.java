@@ -43,10 +43,6 @@ class CountThread extends Thread {
                 DistributionBuilder dB = new DistributionBuilder(input.getContaminated().toString(), input.getContaminated().getP1(), input.getContaminated().getP2(), input.getContaminated().getP3());
                 estimatorArray[i] = estimator.minimalize(dB.getDistribution(), dataArray);
             } else if (input.getParamsCounted().equals("first")) {
-                /*
-                 * TODO dodelat minimalizaci pro jeden parametr
-                 * v tuto chvili vraci jen contaminated distribution
-                 */
                 estimatorArray[i] = estimator.minimalizeFirstPar(estimatorArray[i], dataArray);
             } else {
                 estimatorArray[i] = estimator.minimalizeSeconPar(estimatorArray[i], dataArray);

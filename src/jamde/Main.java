@@ -65,6 +65,7 @@ public class Main {
         } catch (java.lang.ArrayIndexOutOfBoundsException e1) {
             System.out.println("You did not specify number of Threads you want to use. Default value is 12. For vkstat it is OK.");
         }
+        
         numOfThreads = Math.min(numOfThreads, 30);
         
         table.count(numOfThreads);

@@ -14,7 +14,9 @@ import jamde.distribution.UniformDistribution;
  * @author honza
  */
 public abstract class Estimator {
- 
+    /*
+     * TODO do estimatoru pridat minimalizovanou ditribuci.
+     */
     protected double par;
 
     public double getPar() {
@@ -43,19 +45,19 @@ public abstract class Estimator {
         return distr1;
     }
 
-    public Distribution minimalizeFirstPar(Distribution closestDistribution, double[] dataArray) {
+    public Distribution minimalizeFirstPar(Distribution distr, double[] dataArray) {
         /*
          * TODO minimalizace par1
          */
-        return closestDistribution;
+        return distr;
         //throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public Distribution minimalizeSeconPar(Distribution closestDistribution, double[] dataArray) {
+    public Distribution minimalizeSeconPar(Distribution distr, double[] dataArray) {
         /*
          * TODO minimalizace par2
          */
-        throw new UnsupportedOperationException("Not yet implemented");
+        return distr;
     }
 
     private Distribution searchAndDescent(Distribution distr, double[] dataArray) {
