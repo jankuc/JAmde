@@ -6,8 +6,18 @@ package jamde.estimator;
  * @author honza
  */
 public class EstimatorBuilder {
+    /**
+     * Type of estimator 
+     * types: "Renyi", "LeCam",...
+     */
     private String type;
+    /**
+     * Parameter of estimator
+     */
     private double par;
+    /**
+     * estimator built from type and parameter
+     */
     private Estimator estimator;
 
     

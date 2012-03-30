@@ -10,25 +10,56 @@ import jamde.distribution.DistributionBuilder;
 import jamde.distribution.UniformDistribution;
 
 /**
- *
+ * Estimator is used as a parent for the specific estimators (RenyiEstimator, LeCamEstimator, ...). It is built by EstimatorBuilder. 
+ * It has abstract function countDistance.
+ * Minimization procedures are implemented here.
+ * 
  * @author honza
  */
 public abstract class Estimator {
     /*
      * TODO do estimatoru pridat minimalizovanou ditribuci.
      */
+    
+    /**
+     * Parameter of the estimator
+     */
     protected double par;
 
+    /**
+     * Returns the parameter of the estimator.
+     * 
+     * @return  par
+     */
     public double getPar() {
         return par;
     }
 
+    /**
+     * Shouldn't be used, becuase all estimators should be built from EstimatorBuilder
+     * 
+     * @param par
+     */
     public void setPar(double par) {
         this.par = par;
     }
     
+    /**
+     * Abstarct method, which is implemented by the distributions, because the value is strongly dependent on them.
+     * 
+     * @param distr
+     * @param data
+     * @return
+     */
     public abstract double countDistance(Distribution distr, double[] data);
 
+    /**
+     * Uses one of the optimization procedures to find parameters for the distr1's family which minimize the distance from this family's members to the data.
+     * 
+     * @param distr1
+     * @param dataArray
+     * @return
+     */
     public Distribution minimalize(Distribution distr1, double[] dataArray) {
         if (par == 0) {
             double EV = MathUtil.getExpVal(dataArray);
@@ -39,6 +70,13 @@ public abstract class Estimator {
         return distr1;
     }
 
+    /**
+     * Uses one of the optimization procedures to find first parameter for the distr1's family which minimize the distance from this family's members to the data.
+     * 
+     * @param distr
+     * @param dataArray
+     * @return
+     */
     public Distribution minimalizeFirstPar(Distribution distr, double[] dataArray) {
         /*
          * TODO minimalizace par1
@@ -47,6 +85,13 @@ public abstract class Estimator {
         //throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    /**
+     * Uses one of the optimization procedures to find second parameter for the distr1's family which minimize the distance from this family's members to the data.
+     * 
+     * @param distr
+     * @param dataArray
+     * @return
+     */
     public Distribution minimalizeSeconPar(Distribution distr, double[] dataArray) {
         /*
          * TODO minimalizace par2
@@ -54,6 +99,19 @@ public abstract class Estimator {
         return distr;
     }
 
+    /**
+     * Primitive minimization procedure for 2D minimization. In every iteration 
+     * moves to one of eight points around actual position so it minimizes 
+     * the distance the most. If the minimum is in it's current position the 
+     * epsilon-neighborhood is halved. It ends when the epsilon-neighborhood is
+     * smaller or equal to eps = 0.0009.
+     * It can't handle local optima. 
+     * 
+     * 
+     * @param distr
+     * @param dataArray
+     * @return 
+     */
     private Distribution searchAndDescent(Distribution distr, double[] dataArray) {
         double[] x = new double[9];
         double[] y = new double[9];
@@ -103,7 +161,17 @@ public abstract class Estimator {
     }
     
     
-    
+    /**
+     * Minimization procedure for 2D minimization. Moves to the random point in 
+     * the epsilon-neighborhood of actual position and according to distance and
+     * temperature jumps there or not. It ends after numOfIterations iterations.
+     * After setting the right parameters it should handle jumping out of local 
+     * optima.
+     * 
+     * @param distr
+     * @param dataArray
+     * @return 
+     */
     private Distribution simulatedAnnealing(Distribution distr, double[] dataArray) {
         double distOld, distNew;
         Distribution rand = new UniformDistribution(0, 1);
