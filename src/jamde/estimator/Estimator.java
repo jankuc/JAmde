@@ -30,12 +30,6 @@ public abstract class Estimator {
     public abstract double countDistance(Distribution distr, double[] data);
 
     public Distribution minimalize(Distribution distr1, double[] dataArray) {
-        /*
-         * TODO minimalizace
-         */
-        //DistributionBuilder dB = new DistributionBuilder(distr.toString(),distr.getP1(),  distr.getP2(),distr.getP3());
-        //Distribution distr1 = dB.getDistribution();
-
         if (par == 0) {
             double EV = MathUtil.getExpVal(dataArray);
             distr1.setParameters(EV,MathUtil.getStandDev(EV, dataArray), 0);

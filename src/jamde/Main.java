@@ -20,6 +20,12 @@ import java.util.logging.Logger;
 public class Main {
 
     /**
+     * Depending on the command line arguments starts the JAmde with appropriate input and parameters. 
+     * 
+     * Example: JAmde file ./pathToFile/file 12 ./pathToTable/table.tex
+     *          JAmde file ./pathToFile/file
+     *          JAmde app --TODO
+     * 
      * @param args the command line arguments
      */
     public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
