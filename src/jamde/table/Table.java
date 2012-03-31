@@ -13,37 +13,67 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 /**
  *
- * @author honza
+ * @author kucerj28
  */
 public class Table {
     private ArrayList<TableInput> tableInputs = new ArrayList<TableInput>();
     private ArrayList<TableOutput> tableOutputs = new ArrayList<TableOutput>(); // elements in the list are in the same order as the elements in the input
 
     
+    /**
+     * 
+     * @return tableInputs
+     */
     public ArrayList<TableInput> getTableInputs() {
         return tableInputs;
     }
 
+    /**
+     * 
+     * @param tableInput
+     */
     public void addTableInput(TableInput tableInput) {
         this.tableInputs.add(tableInput);
     }
 
+    /**
+     * 
+     * @return tableOutputs
+     */
     public ArrayList<TableOutput> getTableOutputs() {
         return tableOutputs;
     }
 
+    /**
+     * 
+     * @param tableOutputs
+     */
     public void setTableOutputs(ArrayList<TableOutput> tableOutputs) {
         this.tableOutputs = tableOutputs;
     }
 
+    /**
+     * 
+     * @param tableOutput
+     */
     public void addTableOutput(TableOutput tableOutput) {
         this.tableOutputs.add(tableOutput);
     }
 
+    /**
+     * Loads <b>inputs</b> from configuration file. It finds beginning of the 
+     * input which is marked with # and calls <b>loadInputFromFile</b> on that 
+     * input.
+     * 
+     * @param confFile
+     * @throws Exception
+     */
     public void loadInputsFromFile(File confFile) throws Exception {
         System.out.println("You have opened configuration file " + confFile.toString() + "\n");
 
@@ -64,6 +94,14 @@ public class Table {
         tableInputs = inputs;
     }
 
+    /**
+     * Loads one input from the configuration file and writes it into 
+     * <b>input</b>.
+     * 
+     * @param sc
+     * @return
+     * @throws Exception 
+     */
     private TableInput loadInputFromFile(Scanner sc) throws Exception {
         TableInput input = new TableInput();
         String sContaminated, sContaminating, estType = "";
@@ -155,6 +193,15 @@ public class Table {
         return null;
     }
 
+    /**
+     * In a few nested cycles counts all the needed statistics specified in 
+     * <b>input</b> and writes them into <b>output</b>. For the enumeration 
+     * it uses array of threads, each of them takes part of the enumeration.
+     * 
+     * @param numOfThreads
+     * @throws FileNotFoundException
+     * @throws InterruptedException
+     */
     public void count(int numOfThreads) throws FileNotFoundException, InterruptedException {
         System.out.println("Enumeration has begun");
         /*
@@ -211,7 +258,7 @@ public class Table {
                             }
                         }
                     } // End of enumeration
-                    printToTableOutput(estimatorArray, input, tableOutput, estimatorBuilder, sizeOfSample);
+                    writeIntoTableOutput(estimatorArray, input, tableOutput, estimatorBuilder, sizeOfSample);
                 } // END for (int sizeOfSample : input.getSizeOfSample())
                 System.out.println("Estimator " + estimatorBuilder.getType() + "(" + estimatorBuilder.getPar() + ") has ended.");
             }// END for (EstimatorBuilder estimatorBuilder : input.getEstimators())
@@ -223,6 +270,12 @@ public class Table {
         System.out.println("Enumeration has ended.");
     } // END count()
 
+    /**
+     * Encapsulates all the printing procedures for the "Classic" table. 
+     * 
+     * @param fileName
+     * @throws IOException
+     */
     public void printClassic(String fileName) throws IOException {
         File file = new File(fileName);
         if (file.exists()) {
@@ -241,6 +294,26 @@ public class Table {
         printClassicEndTex(file);
     } // END printClassic(String fileName)
 
+    /**
+     * Prints header of the .tex file for the Classic tables. Not the head of any table. <br>
+     * Output: <br>
+     * \documentclass[11pt]{article} <br>
+     * &#92;usepackage[utf8]{inputenc} <br>
+     * &#92;usepackage[czech]{babel} <br>
+     * &#92;usepackage[landscape]{geometry} <br>
+     * &#92;usepackage{pdflscape} <br>
+     * \textwidth 200mm \textheight 205mm \oddsidemargin -5mm <br>
+     * \evensidemargin 3mm \topmargin -25mm <br>
+     * \newlength{\defbaselineskip} <br>
+     * \setlength{\defbaselineskip}{\baselineskip} <br>
+     * \newcommand{\setlinespacing}[1] <br>
+     *  &#32;&#32;&#32;&#32;&#32;{\setlength{\baselineskip}{#1 \defbaselineskip}} <br>
+     * \pagestyle{empty} <br>
+     * \begin{document} <br>
+     * 
+     * @param file
+     * @throws IOException
+     */
     public void printClassicHeadTex(File file) throws IOException {
         FileWriter w = new FileWriter(file);
         w.write("\\documentclass[11pt]{article}\n");
@@ -259,14 +332,46 @@ public class Table {
         w.close();
     }
 
+    /**
+     * Prints the end of the .tex file. <br>
+     * Output:<br>
+     * \end{document}<br>
+     * 
+     * @param file
+     * @throws IOException
+     */
     public void printClassicEndTex(File file) throws IOException {
         FileWriter w = new FileWriter(file, true); // so it appends
         w.write("\\end{document}\n");
         w.close();
     }
 
+    /**
+     * Depending on the number of <b>sizeOfSamples</b> in <b>input</b> produces 
+     * "Classic" table Header. <br>
+     * Output:<br>
+     * \hline <br>
+     * $\alpha\backslash n$ &&  $20$ & \\ <br>
+     * \hline <br>
+     * & $m(\mu)$ & $s(\mu)$ & $eref(\mu)$ \\<br>
+     * & $m(\sigma)$ & $s(\sigma)$ & $eref(\sigma)$ \\ <br>
+     * \hline <br>
+     * 
+     * -------------------------------------~ <br>
+     * | a\n | &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;
+     * 20   
+     * &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32; |<br>
+     * -------------------------------------~<br>
+     * | &#32;&#32;&#32;&#32;&#32;    | &#32;m(u)&#32;  s(u) &#32; eref(u) &#32; | <br>
+     * | &#32;&#32;&#32;&#32;&#32;    |&#32; m(s) &#32; s(s) &#32; eref(s) &#32; |<br>
+     * -------------------------------------~<br>
+     * 
+     * @param file
+     * @param input
+     * @throws IOException
+     */
     public void printClassicHeadTable(File file, TableInput input) throws IOException {
-
+        printClassicHeadTable(file, input);
         Integer[] sizeOfSample = input.getSizeOfSample().toArray(new Integer[0]);
         FileWriter w = new FileWriter(file, true); // so it appends
         w.write("\\begin{table}[ht] \\footnotesize \n");
@@ -299,15 +404,22 @@ public class Table {
         w.close();
     }
 
+    /**
+     * Prints the caption and other for the Classic table ending. 
+     * 
+     * @param file
+     * @param input
+     * @throws IOException
+     */
     public void printClassicEndTable(File file, TableInput input) throws IOException {
         FileWriter ww = new FileWriter(file, true); // so it appends
         PrintWriter w = new PrintWriter(ww);
         w.write("\\end{tabular}\n");
         ArrayList<EstimatorBuilder> eBs = input.getEstimators();
         String sContaminated = String.format("\\mathrm{%c}(%.0f,%.0f)", input.getContaminated().toString().charAt(0), input.getContaminated().getP1(), input.getContaminated().getP2());
-        w.write("\\caption{" + eBs.get(1).getType() + ": $p = " + sContaminated + "$, data: ");        
+        w.write("\\caption{" + eBs.get(1).getType() + ": $p = " + sContaminated + "$, data: "); // caption creation       
         if (input.getContaminating() == null) {
-            if (input.getData() == null) {
+            if (input.getData() == null) { // we need to make orderErrors caption
                 ArrayList orderErrors = input.getOrderErrors();
                 double prob = 1;
                 double[] probs = new double[orderErrors.size()];
@@ -324,10 +436,10 @@ public class Table {
                     w.write(" + " + distrs[i]);
                 }
                 w.write("$, $K = " + input.getSizeOfEstimator() + "$} \n");    
-            } else {
-                w.write(" Data na4ten8 ze souboru. \n");
+            } else { // data were loaded from a file
+                w.write(" Data načtena ze souboru. \n");
             }
-        } else {
+        } else { // data were created as a mixture of distributions
             String sContaminating = String.format("\\mathrm{%c}(%.0f,%.0f)", input.getContaminating().toString().charAt(0), input.getContaminating().getP1(), input.getContaminating().getP2());
             w.write("$(1-\\varepsilon)" + sContaminated + " + \\varepsilon " + sContaminating + "$, $\\varepsilon =  " + input.getContamination() + "$, $K = " + input.getSizeOfEstimator() + "$} \n");
         }
@@ -336,6 +448,15 @@ public class Table {
         w.close();
     }
 
+    /**
+     * Prints line with data into the "Classic" table. If the counted parameters are "both" then it prints two lines, one for every parameter.  
+     * 
+     * @param file
+     * @param input
+     * @param output
+     * @param estimator
+     * @throws IOException 
+     */
     private void printClassicLine(File file, TableInput input, TableOutput output, EstimatorBuilder estimator) throws IOException {
         FileWriter ww = new FileWriter(file, true); // so it appends
         PrintWriter w = new PrintWriter(ww);
@@ -359,7 +480,19 @@ public class Table {
         w.close();
     }
 
-    private TableOutput printToTableOutput(Distribution[] estimatorArray, TableInput input, TableOutput tableOutput, EstimatorBuilder estimatorBuilder, int sizeOfSample) {
+    /**
+     * Counts and writes values of all the needed statistics into <b>output</b>. 
+     * <b>input</b> and <b>output</b> are passed as parameters, because in 
+     * <b>Table</b> there are lists of them, so now they now what are they.
+     * 
+     * @param estimatorArray
+     * @param input
+     * @param output
+     * @param estimatorBuilder
+     * @param sizeOfSample
+     * @return 
+     */
+    private TableOutput writeIntoTableOutput(Distribution[] estimatorArray, TableInput input, TableOutput output, EstimatorBuilder estimatorBuilder, int sizeOfSample) {
         int numOfPars = 1;
         if (input.getParamsCounted().equals("both")) {
             numOfPars = 2;
@@ -375,11 +508,11 @@ public class Table {
             double standVar1 = MathUtil.getStandVar(expVal1, firstPar);
             double standDev1 = Math.sqrt(standVar1);
 
-            tableOutput.setMeanValue(estimatorBuilder, sizeOfSample, 1, expVal1);
-            tableOutput.setDeviation(estimatorBuilder, sizeOfSample, 1, standDev1);
-            double eref1 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, 1), 2) / standVar1; // radim pocital  eef =  varX/varL1 (bez odmocniny)
+            output.setMeanValue(estimatorBuilder, sizeOfSample, 1, expVal1);
+            output.setDeviation(estimatorBuilder, sizeOfSample, 1, standDev1);
+            double eref1 = Math.pow(output.getDeviation(estimatorBuilderL1, sizeOfSample, 1), 2) / standVar1; // radim pocital  eef =  varX/varL1 (bez odmocniny)
             //eref1 = Math.sqrt(eref1);
-            tableOutput.setEfficiency(estimatorBuilder, sizeOfSample, 1, eref1);
+            output.setEfficiency(estimatorBuilder, sizeOfSample, 1, eref1);
         }
         if (input.getParamsCounted().equals("both") || input.getParamsCounted().equals("second")) {
             double[] secondPar = new double[input.getSizeOfEstimator()];
@@ -389,15 +522,24 @@ public class Table {
             double expVal2 = MathUtil.getExpVal(secondPar);
             double standVar2 = MathUtil.getStandVar(expVal2, secondPar);
             double standDev2 = Math.sqrt(standVar2);
-            tableOutput.setMeanValue(estimatorBuilder, sizeOfSample, numOfPars, expVal2);
-            tableOutput.setDeviation(estimatorBuilder, sizeOfSample, numOfPars, standDev2);
-            double eref2 = Math.pow(tableOutput.getDeviation(estimatorBuilderL1, sizeOfSample, numOfPars), 2) / standVar2;
+            output.setMeanValue(estimatorBuilder, sizeOfSample, numOfPars, expVal2);
+            output.setDeviation(estimatorBuilder, sizeOfSample, numOfPars, standDev2);
+            double eref2 = Math.pow(output.getDeviation(estimatorBuilderL1, sizeOfSample, numOfPars), 2) / standVar2;
             //eref2 = Math.sqrt(eref2);
-            tableOutput.setEfficiency(estimatorBuilder, sizeOfSample, numOfPars, eref2);
+            output.setEfficiency(estimatorBuilder, sizeOfSample, numOfPars, eref2);
         }
-        return tableOutput;
+        return output;
     }
-
+    
+    /**
+     * Creates file ./distances and writes all the measured distances into it. 
+     * It is good to load it into matlab and plot it with: <br>
+     * C = importdata('./distances'); imagesc(C); colorbar; <br>
+     * 
+     * @param input
+     * @param estimator
+     * @param sizeOfSample
+     */
     public void printDistanceMatrix(TableInput input, Estimator estimator, int sizeOfSample) {
         double[] dataArray = createData(input, sizeOfSample);
         PrintWriter w;
@@ -427,16 +569,45 @@ public class Table {
         }
     }
     
+    /**
+     * Creates file ./distances and writes all the measured distances into it. 
+     * It is good to load it into matlab and plot it with: <br>
+     * C = importdata('./distances'); imagesc(C); colorbar; <br>
+     *  
+     * @param input
+     * @param eB
+     * @param sizeOfSample
+     */
     public void printDistanceMatrix(TableInput input, EstimatorBuilder eB, int sizeOfSample) {
         Estimator e = eB.getEstimator();
         printDistanceMatrix(input, e, sizeOfSample);
     }
     
+    /**
+     * Creates file ./distances and writes all the measured distances into it. 
+     * It is good to load it into matlab and plot it with: <br>
+     * C = importdata('./distances'); imagesc(C); colorbar; <br>
+     *  
+     * @param input
+     * @param estType
+     * @param estPar
+     * @param sizeOfSample
+     */
     public void printDistanceMatrix(TableInput input, String estType, double estPar, int sizeOfSample) {
         EstimatorBuilder eB = new EstimatorBuilder(estType, estPar);
         printDistanceMatrix(input, eB, sizeOfSample);
     }
     
+    /**
+     * According to <b>input</b> creates dataset by: <br>
+     * loading from file; <br>
+     * making a mixture of distributions; <br>
+     * making distribution with errors in orders of magnitude. <br>
+     * 
+     * @param input
+     * @param sizeOfSample
+     * @return
+     */
     public static double[] createData(TableInput input, int sizeOfSample) { // making dataSet or loading it from file
         double[] dataArray = new double[sizeOfSample];
         Distribution contaminated = input.getContaminated();

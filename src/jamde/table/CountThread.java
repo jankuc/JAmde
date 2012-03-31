@@ -8,8 +8,8 @@ import jamde.distribution.*;
 import jamde.estimator.*;
 
 /**
- *
- * @author honza
+ * 
+ * @author kucerj28
  */
 class CountThread extends Thread {
 
@@ -19,6 +19,7 @@ class CountThread extends Thread {
     private EstimatorBuilder estimatorBuilder;
     private int sizeOfSample;
 
+    
     public CountThread(TableInput input, int load, EstimatorBuilder estimatorBuilder, int sizeOfSample) {
         this.input = input;
         this.load = load;
@@ -27,11 +28,21 @@ class CountThread extends Thread {
         this.sizeOfSample = sizeOfSample;
     }
 
+    /**
+     * Public method which only encapsulates the start(); command, which starts the thread and therefore the enumeration.
+     * 
+     * @return 
+     */
     public Distribution[] startCount() {
         start();
         return estimatorArray;
     }
-
+    
+    /**
+     * Thread is launched sizeOfSample times. For better understanding see 
+     * Table.count()
+     * 
+     */
     @Override
     public void run() {
         Estimator estimator = estimatorBuilder.getEstimator();
@@ -47,7 +58,7 @@ class CountThread extends Thread {
             } else {
                 estimatorArray[i] = estimator.minimalizeSeconPar(estimatorArray[i], dataArray);
             }
-        } // END for (i = 0; estimatorArray[i] : estimatorArray)
+        } // END for (i = 0; estimatorArray[i])
     }
 
     
