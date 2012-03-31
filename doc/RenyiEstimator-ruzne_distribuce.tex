@@ -7,9 +7,10 @@
 
 \newcommand{\intpa}{\int p_\theta^{1+\alpha}(x) \, \mathrm{d}x }
 \newcommand{\fn}{\frac{1}{n} \sum_{i=1}^n p_{\theta}^{\alpha}\left( X_i \right)}
-\newcommand{\fln}{\frac{1}{n} \sum_{i=1}^n \ln p_{\theta}^{\alpha}\left( X_i \right)}
+\newcommand{\fln}{\frac{1}{n} \sum_{i=1}^n \ln p_{\theta}\left( X_i \right)}
 \newcommand{\Cat}{C_\alpha\left( \theta \right)}
 \newcommand{\amtiT}{\arg \max_{\theta \in \Theta}}
+\newcommand{\fa}{\frac{\alpha}{1+\alpha}}
 
 \begin{document}
 Označíme
@@ -21,7 +22,7 @@ pak Rényiho odhady po dosazení empirického rozdělení pravděpodobnosti $ P_
 	\theta_{\alpha,n} = 
 	\begin{cases}
 		\displaystyle{ \amtiT \Cat^{-1} \fn } & \text{pro } 0 < \alpha \leq \beta, \\
-		\displaystyle{ \amtiT  \fn } & \text{pro } \alpha = 0
+		\displaystyle{ \amtiT  \fln } & \text{pro } \alpha = 0
 	\end{cases}	
 \end{equation}
 
@@ -42,8 +43,8 @@ substituujeme $ y = \frac{(1+\alpha)(x-\mu)}{\theta} $, tedy $\mathrm{d}y = \fra
 \end{eqnarray}
 tedy 
 \begin{eqnarray}
-	\theta_{\alpha,n} &= &\amtiT \left( \frac{\theta ^{-\alpha }}{1+\alpha } \right)^{-\frac{\alpha}{1+\alpha}} \frac{1}{n} \sum_{i=1}^n \frac{1}{\theta} \exp \left[-\frac{x-\mu}{\theta} \right] \nonumber\\
-	&=&\amtiT \theta^{\frac{\alpha^2 - \alpha - 1}{1+\alpha}} \frac{1}{n}\sum_{i=1}^n \exp \left[\frac{x-\mu}{\theta} \right]
+	\theta_{\alpha,n} &= &\amtiT \left( \frac{\theta ^{-\alpha }}{1+\alpha } \right)^{-\frac{\alpha}{1+\alpha}} \frac{1}{n} \sum_{i=1}^n \frac{1}{\theta^\alpha} \exp \left[-\alpha\frac{X_i-\mu}{\theta} \right] \nonumber\\
+	&=&\amtiT \theta^{-\frac{\alpha}{1+\alpha}} \frac{1}{n}\sum_{i=1}^n \exp \left[-\alpha\frac{X_i-\mu}{\theta} \right]
 \end{eqnarray}
 
 
@@ -67,8 +68,8 @@ substituujeme $ y = \frac{(1+\alpha)(x-\mu)}{\theta} $, tedy $\mathrm{d}y = \fra
 \end{eqnarray}
 tedy 
 \begin{eqnarray}
-	\theta_{\alpha,n} &= &\amtiT \left( \frac{(2\theta)^{-\alpha}}{(1+\alpha)}  \right)^{-\frac{\alpha}{1+\alpha}} \frac{1}{n} \sum_{i=1}^n \frac{1}{2\theta} \exp \left[-\frac{|x-\mu|}{\theta} \right] \nonumber\\
-	&=& \amtiT (2\theta)^\frac{\alpha^2 - \alpha - 1}{1+\alpha} \frac{1}{n} \sum_{i=1}^n \exp \left[-\frac{|x-\mu|}{\theta} \right]
+	\theta_{\alpha,n} &= &\amtiT \left( \frac{(2\theta)^{-\alpha}}{(1+\alpha)}  \right)^{-\frac{\alpha}{1+\alpha}} \frac{1}{n} \sum_{i=1}^n \frac{1}{(2\theta)^{\alpha}} \exp \left[-\alpha\frac{|X_i-\mu|}{\theta} \right] \nonumber\\
+	&=& \amtiT (2\theta)^{-\frac{\alpha}{1+\alpha}} \frac{1}{n} \sum_{i=1}^n \exp \left[-\alpha\frac{|X_i-\mu|}{\theta} \right]
 \end{eqnarray}
 
 
@@ -85,16 +86,16 @@ tedy
 \end{equation}
 tedy 
 \begin{eqnarray}
-	\theta_{\alpha,n} & = & \amtiT \left( (b-a)^{-\alpha} \right)^{-\frac{\alpha}{1+\alpha}} \frac{1}{n} \sum_{i=1}^n \frac{1}{b-a} \nonumber\\
-	& = & \amtiT (b-a)^{\frac{\alpha^2 - \alpha - 1}{1+\alpha}}	\nonumber\\
-	& = & \amtiT  (b-a)
+	\theta_{\alpha,n} & = & \amtiT \left( (b-a)^{-\alpha} \right)^{-\frac{\alpha}{1+\alpha}} \frac{1}{n} \sum_{i=1}^n \frac{1}{(b-a)^\alpha} \nonumber\\
+	& = & \amtiT (b-a)^{\frac{\alpha^2 - \alpha - \alpha^2}{1+\alpha}}	\nonumber\\
+	& = & \amtiT  (b-a)^{-\frac{\alpha}{1+\alpha}}
 \end{eqnarray}
 
 
 \section{Cauchyovo rozdělení}
 
 \begin{eqnarray}
-\intpa & = & \int_{-\infty }^{\infty } \left( \frac{1}{\pi \sigma} \left[ 1 + \left( \frac{x - \mu}{\sigma} \right) ^2 \right]^{-1} \right)^{1+\alpha} \, \mathrm{d}x \nonumber\\
+\intpa & = & \int_{-\infty }^{\infty } \left( \frac{1}{\pi \sigma} \left( 1 + \left( \frac{x - \mu}{\sigma} \right) ^2 \right)^{-1} \right)^{1+\alpha} \, \mathrm{d}x \nonumber\\
 % & = & \int_{a }^{b } \frac{1}{(b-a)^{(1+\alpha)}} \, \mathrm{d}x\\ 
 & = & \ldots \nonumber
 \end{eqnarray} 
@@ -102,6 +103,14 @@ pak
 \begin{equation}
 \intpa = \frac{1}{\pi^{\frac{1}{2}+\alpha}\sigma^\alpha} \frac{\Gamma(\frac{1}{2} + \alpha)}{\alpha\Gamma(\alpha)}
 \end{equation}
+tedy
+\begin{eqnarray}
+	\theta_{\alpha,n} & = & \amtiT \left( \frac{1}{\pi^{\frac{1}{2}+\alpha}\sigma^\alpha} \frac{\Gamma(\frac{1}{2} + \alpha)}{\Gamma(1+\alpha)} \right)^{-\frac{\alpha}{1+\alpha}} 
+	\frac{1}{n} \sum_{i=1}^n \frac{1}{\pi^\alpha\sigma^\alpha}\left( 1 + \left( \frac{X_i-\mu}{\sigma} \right)^2 \right)^{-\alpha} \nonumber \\
+	& = & \amtiT \sigma^{-\frac{\alpha}{1+\alpha}} \frac{1}{n} \sum_{i=1}^n \left( 1 + \left( \frac{X_i-\mu}{\sigma} \right)^2 \right)^{-\alpha} \nonumber \\
+	& = & \amtiT \sigma^{-\frac{\alpha}{1+\alpha}} \frac{1}{n} \sum_{i=1}^n \left( \frac{X_i-\mu}{\sigma} \right)^{-2\alpha}
+\end{eqnarray}
+
 
 \section{Weibullovo rozdělení}
 
@@ -114,7 +123,13 @@ pak
 \begin{equation}
 \intpa = \frac{k^\alpha}{\lambda^\alpha}(1+\alpha)^{-\frac{1+\alpha +k}{k}} \Gamma \left( \frac{1+\alpha +k}{k}\right)
 \end{equation}
-
+pak
+\begin{eqnarray}
+\theta_{\alpha,n} & = & \amtiT \left(\frac{k^\alpha}{\lambda^\alpha}(1+\alpha)^{-\frac{1+\alpha+k}{k}} \Gamma \left(\frac{1+\alpha+k}{k}\right) \right)^{-\fa} \nonumber \\
+&&  \frac{1}{n} \sum_{i=1}^n \frac{k^\alpha}{\lambda^\alpha} \left( \frac{X_i-\mu}{\lambda}\right)^{\alpha(k-1)} \exp \left[-\alpha \left(\frac{X_i-\mu}{\lambda}\right)^k \right] \nonumber \\
+& = & \amtiT \left( \frac{k}{\lambda} \right)^\fa (1+\alpha)^{\fa\frac{1+\alpha+k}{k}} \Gamma\left(\frac{1+\alpha+k}{k}\right)^{-\fa} \nonumber\\
+&& \frac{1}{n}\sum_{i=1}^n \left( \frac{X_i-\mu}{\lambda}\right)^{\alpha(k-1)} \exp\left[-\alpha \left(\frac{X_i-\mu}{\lambda}\right)^k\right]
+\end{eqnarray}
 
 \end{document}
 
