@@ -7,8 +7,9 @@ package jamde.estimator;
 import jamde.distribution.Distribution;
 
 /**
- *
- * @author honza
+ * RenyiEstimator extends Estimator. Implements countDistance().
+ * 
+ * @author kucerj28
  */
 public class RenyiEstimator extends Estimator {
 
@@ -18,6 +19,15 @@ public class RenyiEstimator extends Estimator {
 
     /*
      * TODO Renyi estimator jako interface?
+     */
+    
+    /**
+     * Counts distance from distribution to the data. The distance counted 
+     * depends on the family of the distribution.
+     * 
+     * @param distribution
+     * @param data
+     * @return distance
      */
     @Override
     public double countDistance(Distribution distribution, double[] data) {
@@ -39,6 +49,9 @@ public class RenyiEstimator extends Estimator {
                 return dist;
             } else { // viz. Radim Demut (dipl. práce) str 37, (6.57)
                 throw new UnsupportedOperationException("Not supported yet.");
+                /*
+                 * TODO Napsat dalsi rozdeleni. Umime exponncialni, Laplace, rovnomerne, cstaci dopocitat Weibull, Cauchy
+                 */
             }
         }
     }

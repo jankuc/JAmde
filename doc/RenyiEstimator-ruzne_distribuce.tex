@@ -1,0 +1,120 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[czech]{babel}
+
+\usepackage{pdflscape}
+\usepackage{amsmath}
+
+\newcommand{\intpa}{\int p_\theta^{1+\alpha}(x) \, \mathrm{d}x }
+\newcommand{\fn}{\frac{1}{n} \sum_{i=1}^n p_{\theta}^{\alpha}\left( X_i \right)}
+\newcommand{\fln}{\frac{1}{n} \sum_{i=1}^n \ln p_{\theta}^{\alpha}\left( X_i \right)}
+\newcommand{\Cat}{C_\alpha\left( \theta \right)}
+\newcommand{\amtiT}{\arg \max_{\theta \in \Theta}}
+
+\begin{document}
+Označíme
+\begin{equation}
+	\Cat = \left( \intpa \right)^{\frac{\alpha}{1+\alpha}}
+\end{equation}
+pak Rényiho odhady po dosazení empirického rozdělení pravděpodobnosti $ P_n $ vypadají
+\begin{equation}
+	\theta_{\alpha,n} = 
+	\begin{cases}
+		\displaystyle{ \amtiT \Cat^{-1} \fn } & \text{pro } 0 < \alpha \leq \beta, \\
+		\displaystyle{ \amtiT  \fn } & \text{pro } \alpha = 0
+	\end{cases}	
+\end{equation}
+
+
+
+\section{Exponenciální rozdělení}
+
+\begin{eqnarray}
+\intpa & = & \int_{\mu }^{\infty } \left( {\frac{1}{\theta} \exp{ \left[ -\frac{(x -\mu )}{\theta } \right] }} \right) ^{1 + \alpha} \, \mathrm{d}x \nonumber\\
+ & = & \int_{\mu }^{\infty } {\frac{1}{\theta^{ 1 + \alpha}} \exp{ \left[ -\frac{(1 + \alpha )(x -\mu )}{\theta } \right] }} \, \mathrm{d}x \nonumber
+\end{eqnarray} 
+
+substituujeme $ y = \frac{(1+\alpha)(x-\mu)}{\theta} $, tedy $\mathrm{d}y = \frac{1+\alpha}{\theta}\mathrm{d}x $, pak
+
+\begin{eqnarray}
+\intpa & = & \frac{1}{\theta^{ 1 + \alpha}} \int_{0}^{\infty } {\frac{\theta}{1+\alpha} \exp{ \left[ -y \right] }} \, \mathrm{d}x \nonumber\\
+& = & \frac{\theta ^{-\alpha }}{1+\alpha }
+\end{eqnarray}
+tedy 
+\begin{eqnarray}
+	\theta_{\alpha,n} &= &\amtiT \left( \frac{\theta ^{-\alpha }}{1+\alpha } \right)^{-\frac{\alpha}{1+\alpha}} \frac{1}{n} \sum_{i=1}^n \frac{1}{\theta} \exp \left[-\frac{x-\mu}{\theta} \right] \nonumber\\
+	&=&\amtiT \theta^{\frac{\alpha^2 - \alpha - 1}{1+\alpha}} \frac{1}{n}\sum_{i=1}^n \exp \left[\frac{x-\mu}{\theta} \right]
+\end{eqnarray}
+
+
+
+\section{Laplaceovo rozdělení}
+
+\begin{eqnarray}
+\intpa & = & \int_{-\infty }^{\infty } \left( {\frac{1}{2\theta} \exp{ \left[ -\frac{|x -\mu |}{\theta } \right] }} \right) ^{1 + \alpha} \, \mathrm{d}x \nonumber\\
+ & = & \int_{-\infty }^{\mu } {\frac{1}{ (2\theta)^{ 1 + \alpha}} \exp{ \left[ \frac{(1 + \alpha )(x -\mu )}{\theta } \right] }} \, \mathrm{d}x \nonumber\\
+ & + & \int_{\mu }^{\infty } {\frac{1}{ (2\theta)^{ 1 + \alpha}} \exp{ \left[ -\frac{(1 + \alpha )(x -\mu )}{\theta } \right] }} \, \mathrm{d}x \nonumber
+\end{eqnarray} 
+
+substituujeme $ y = \frac{(1+\alpha)(x-\mu)}{\theta} $, tedy $\mathrm{d}y = \frac{1+\alpha}{\theta}\mathrm{d}x $, pak
+
+\begin{eqnarray}
+\intpa & = & \frac{1}{ (2\theta)^{ 1 + \alpha}} \frac{\theta}{1+\alpha} \left( 
+\int_{-\infty }^{0 } {\exp{ \left[ y \right] }} \, \mathrm{d}x + 
+\int_{0 }^{\infty } {\exp{ \left[ -y \right] }} \, \mathrm{d}x \right) \nonumber\\
+& = & \frac{1}{ (2\theta)^{ 1 + \alpha}} \frac{\theta}{1+\alpha} \cdot 2  \nonumber\\
+& = & \frac{(2\theta)^{-\alpha}}{(1+\alpha)} 
+\end{eqnarray}
+tedy 
+\begin{eqnarray}
+	\theta_{\alpha,n} &= &\amtiT \left( \frac{(2\theta)^{-\alpha}}{(1+\alpha)}  \right)^{-\frac{\alpha}{1+\alpha}} \frac{1}{n} \sum_{i=1}^n \frac{1}{2\theta} \exp \left[-\frac{|x-\mu|}{\theta} \right] \nonumber\\
+	&=& \amtiT (2\theta)^\frac{\alpha^2 - \alpha - 1}{1+\alpha} \frac{1}{n} \sum_{i=1}^n \exp \left[-\frac{|x-\mu|}{\theta} \right]
+\end{eqnarray}
+
+
+\section{Rovnoměrné rozdělení}
+
+\begin{eqnarray}
+\intpa & = & \int_{a }^{b } \left( \frac{1}{b-a} \right) ^{1 + \alpha} \, \mathrm{d}x \nonumber\\
+% & = & \int_{a }^{b } \frac{1}{(b-a)^{(1+\alpha)}} \, \mathrm{d}x\\ 
+& = & \frac{b-a}{(b-a)^{\alpha+1}} \nonumber
+\end{eqnarray} 
+tedy
+\begin{equation}
+\intpa = (b-a)^{-\alpha}
+\end{equation}
+tedy 
+\begin{eqnarray}
+	\theta_{\alpha,n} & = & \amtiT \left( (b-a)^{-\alpha} \right)^{-\frac{\alpha}{1+\alpha}} \frac{1}{n} \sum_{i=1}^n \frac{1}{b-a} \nonumber\\
+	& = & \amtiT (b-a)^{\frac{\alpha^2 - \alpha - 1}{1+\alpha}}	\nonumber\\
+	& = & \amtiT  (b-a)
+\end{eqnarray}
+
+
+\section{Cauchyovo rozdělení}
+
+\begin{eqnarray}
+\intpa & = & \int_{-\infty }^{\infty } \left( \frac{1}{\pi \sigma} \left[ 1 + \left( \frac{x - \mu}{\sigma} \right) ^2 \right]^{-1} \right)^{1+\alpha} \, \mathrm{d}x \nonumber\\
+% & = & \int_{a }^{b } \frac{1}{(b-a)^{(1+\alpha)}} \, \mathrm{d}x\\ 
+& = & \ldots \nonumber
+\end{eqnarray} 
+pak
+\begin{equation}
+\intpa = \frac{1}{\pi^{\frac{1}{2}+\alpha}\sigma^\alpha} \frac{\Gamma(\frac{1}{2} + \alpha)}{\alpha\Gamma(\alpha)}
+\end{equation}
+
+\section{Weibullovo rozdělení}
+
+\begin{eqnarray}
+\intpa & = & \int_{-\mu }^{\infty } \left( \frac{k}{\lambda} \left( \frac{x-\mu}{\lambda} \right)^{k-1} \exp \left[ -\left( \frac{x-\mu}{\lambda} \right)^k \right] \right)^{1+\alpha} \mathrm{d}x \nonumber\\
+% & = & \int_{a }^{b } \frac{1}{(b-a)^{(1+\alpha)}} \, \mathrm{d}x\\ 
+& = & \ldots \nonumber
+\end{eqnarray} 
+pak
+\begin{equation}
+\intpa = \frac{k^\alpha}{\lambda^\alpha}(1+\alpha)^{-\frac{1+\alpha +k}{k}} \Gamma \left( \frac{1+\alpha +k}{k}\right)
+\end{equation}
+
+
+\end{document}
+
