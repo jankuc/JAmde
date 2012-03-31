@@ -29,11 +29,11 @@ package jamde.distribution;
 
 public class LaplaceDistribution extends Distribution {
     public static String IDENTIFICATION="Laplace";
-    double alfa, beta;
+    double mu, theta;
 
     public LaplaceDistribution(double alfa, double beta) {
-        this.alfa = alfa;
-        this.beta = beta;
+        this.mu = alfa;
+        this.theta = beta;
         this.UpB1 = 5;
         this.LowB1 = -5;
         this.UpB2 = 5;
@@ -42,12 +42,12 @@ public class LaplaceDistribution extends Distribution {
 
     @Override
     public double getP1() {
-        return alfa;
+        return mu;
     }
 
     @Override
     public double getP2() {
-        return beta;
+        return theta;
     }
 
     @Override
@@ -59,15 +59,15 @@ public class LaplaceDistribution extends Distribution {
     public double getRealization() {
         double x = Uniform_0_1();
         double y;
-        if (x > 0.5) y = alfa - beta * Math.log(2 - 2 * x);
-        else y = alfa + beta * Math.log(2 * x);
+        if (x > 0.5) y = mu - theta * Math.log(2 - 2 * x);
+        else y = mu + theta * Math.log(2 * x);
         return y;
     }
 
     @Override
     public void setParameters(double p1, double p2, double p3) {
-        this.alfa = p1;
-        this.beta = p2;
+        this.mu = p1;
+        this.theta = p2;
     }
 
     @Override
@@ -106,16 +106,16 @@ public class LaplaceDistribution extends Distribution {
 
     @Override
     public double getfunctionValue(double x) {
-        double y = Math.abs(x - alfa) / beta;
-        y = Math.exp(-y) / (2 * beta);
+        double y = Math.abs(x - mu) / theta;
+        y = Math.exp(-y) / (2 * theta);
         return y;
     }
 
     @Override
     public double getFunctionValue(double x) {
         double y;
-        if (x > alfa) y = 1 - (Math.exp(-(x - alfa) / beta)) / 2;
-        else y = (Math.exp((x - alfa) / beta)) / 2;
+        if (x > mu) y = 1 - (Math.exp(-(x - mu) / theta)) / 2;
+        else y = (Math.exp((x - mu) / theta)) / 2;
         return y;
     }
     
