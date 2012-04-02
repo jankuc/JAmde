@@ -66,7 +66,7 @@ public class RenyiEstimator extends Estimator {
                 double mu = distribution.getP1();
                 double sigma = distribution.getP2();
                 for (int i = 0; i < data.length; i++) {
-                    dist += Math.pow((data[i]-mu)/sigma,-2*par);
+                    dist +=  Math.pow(1 + Math.pow((data[i]-mu)/sigma,2), -par);
                 }
                 dist = 1-dist/data.length * Math.pow(sigma, -par/(1+par));
                 return dist;
