@@ -371,7 +371,6 @@ public class Table {
      * @throws IOException
      */
     public void printClassicHeadTable(File file, TableInput input) throws IOException {
-        printClassicHeadTable(file, input);
         Integer[] sizeOfSample = input.getSizeOfSample().toArray(new Integer[0]);
         FileWriter w = new FileWriter(file, true); // so it appends
         w.write("\\begin{table}[ht] \\footnotesize \n");
