@@ -31,7 +31,7 @@ public class UniformDistribution extends Distribution {
         this.a = a;
         this.b = b;
         this.UpB1 = 5;
-        this.LowB1 = -5;
+        this.LowB1 = -15;
         this.UpB2 = 5;
         this.LowB2 = -5;
     }

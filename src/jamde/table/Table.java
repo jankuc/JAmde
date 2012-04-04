@@ -231,6 +231,7 @@ public class Table {
                     int threadLoad = (int) (estimatorArray.length / numOfThreads); // Load which will be covered by each Thread
                     int leftover = estimatorArray.length - threadLoad * numOfThreads; // It will be distributed between Threads
                     int[] threadLoads = new int[numOfThreads];
+    //                printDistanceMatrix(input, estimatorBuilder.getEstimator(), sizeOfSample);
                     for (int i = 0; i < threadLoads.length; i++) {
                         if (leftover > 0) {
                             threadLoads[i] = threadLoad + 1;
@@ -415,7 +416,7 @@ public class Table {
         PrintWriter w = new PrintWriter(ww);
         w.write("\\end{tabular}\n");
         ArrayList<EstimatorBuilder> eBs = input.getEstimators();
-        String sContaminated = String.format("\\mathrm{%c}(%.0f,%.0f)", input.getContaminated().toString().charAt(0), input.getContaminated().getP1(), input.getContaminated().getP2());
+        String sContaminated = String.format("\\mathrm{%c}(%.1f,%.1f)", input.getContaminated().toString().charAt(0), input.getContaminated().getP1(), input.getContaminated().getP2());
         w.write("\\caption{" + eBs.get(1).getType() + ": $p = " + sContaminated + "$, data: "); // caption creation       
         if (input.getContaminating() == null) {
             if (input.getData() == null) { // we need to make orderErrors caption
@@ -428,7 +429,7 @@ public class Table {
                     orders[i] = ((double[])orderErrors.get(i))[0];
                     probs[i] = ((double[])orderErrors.get(i))[1];
                     prob -= probs[i]; 
-                    distrs[i] = String.format("%.1f\\mathrm{%c}_{%.1fx}(%.0f,%.0f)",probs[i],input.getContaminated().toString().charAt(0),orders[i], input.getContaminated().getP1(), input.getContaminated().getP2());
+                    distrs[i] = String.format("%.1f\\mathrm{%c}_{%.1fx}(%.1f,%.1f)",probs[i],input.getContaminated().toString().charAt(0),orders[i], input.getContaminated().getP1(), input.getContaminated().getP2());
                 }
                 w.write("$" + prob + sContaminated);
                 for (int i = 0; i < distrs.length; i++) {
@@ -439,7 +440,7 @@ public class Table {
                 w.write(" Data načtena ze souboru. \n");
             }
         } else { // data were created as a mixture of distributions
-            String sContaminating = String.format("\\mathrm{%c}(%.0f,%.0f)", input.getContaminating().toString().charAt(0), input.getContaminating().getP1(), input.getContaminating().getP2());
+            String sContaminating = String.format("\\mathrm{%c}(%.1f,%.1f)", input.getContaminating().toString().charAt(0), input.getContaminating().getP1(), input.getContaminating().getP2());
             w.write("$(1-\\varepsilon)" + sContaminated + " + \\varepsilon " + sContaminating + "$, $\\varepsilon =  " + input.getContamination() + "$, $K = " + input.getSizeOfEstimator() + "$} \n");
         }
         w.write("\\end{center}\n");
@@ -497,7 +498,6 @@ public class Table {
             numOfPars = 2;
         }
         EstimatorBuilder estimatorBuilderL1 = input.getEstimators().get(0);
-
         if (input.getParamsCounted().equals("both") || input.getParamsCounted().equals("first")) {
             double[] firstPar = new double[input.getSizeOfEstimator()];
             for (int i = 0; i < firstPar.length; i++) {

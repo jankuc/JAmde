@@ -13,25 +13,25 @@ package jamde.distribution;
  *      getP3 ... pøedává 3. parametr rozdìlaní
  *      setBoundaries ... nastavuje hranice parametrického prostoru
  *      setParameters ... nastavuje parametry rozdìlaní
- *      getRandomParameters ... vybere náhodnì jeden bod v parametrickém prostoru
+ *      getRandomParameters ... vybere náhodnì jeden bod sigma parametrickém prostoru
  *      ParametersOK ... testuje, zda zadané parametry patøí do aktuálnì nastaveného parametrického prostoru
  *      getStandParameters ... provádí standardní odhad parametrù rozdìlení
- *      getFunctionValue ... poèítá funkèní hodnotu distribuèní funkce pøísluného rozdìlení v zadaném bodì metodou
+ *      getFunctionValue ... poèítá funkèní hodnotu distribuèní funkce pøísluného rozdìlení sigma zadaném bodì metodou
  *                           inverzní transformace (kromì pøípadu normálního rozdìlení)
- *      getfunctionValue ... poèítá funkèní hodnotu hustoty pravdìpodobnosti pøísluného rozdìlení v zadaném bodì
+ *      getfunctionValue ... poèítá funkèní hodnotu hustoty pravdìpodobnosti pøísluného rozdìlení sigma zadaném bodì
  */
 
 
 public class CauchyDistribution extends Distribution {
     public static String IDENTIFICATION="Cauchy";
 
-    double u, v;
+    double mu, sigma;
     double PI;
 
 
-    public CauchyDistribution(double u, double v) {
-        this.u = u;
-        this.v = v;
+    public CauchyDistribution(double mu, double sigma) {
+        this.mu = mu;
+        this.sigma = sigma;
         this.UpB1 = 5;
         this.LowB1 = -5;
         this.UpB2 = 5;
@@ -41,12 +41,12 @@ public class CauchyDistribution extends Distribution {
 
     @Override
     public double getP1() {
-        return u;
+        return mu;
     }
 
     @Override
     public double getP2() {
-        return v;
+        return sigma;
     }
 
     @Override
@@ -57,14 +57,14 @@ public class CauchyDistribution extends Distribution {
     @Override
     public double getRealization() {
         double x = Uniform_0_1();
-        double y = v * Math.tan(PI * (x - 0.5)) + u;
+        double y = sigma * Math.tan(PI * (x - 0.5)) + mu;
         return y;
     }
 
     @Override
     public void setParameters(double p1, double p2, double p3) {
-        this.u = p1;
-        this.v = p2;
+        this.mu = p1;
+        this.sigma = p2;
     }
 
     @Override
@@ -105,15 +105,14 @@ public class CauchyDistribution extends Distribution {
 
     @Override
     public double getfunctionValue(double x) {
-        double y = (x - u) / v;
-        y = (1 / (PI * v)) * (1 / (1 + Math.pow(y, 2)));
-        return y;
+        double y = (x - mu) / sigma;
+        return (1 / (Math.PI * sigma)) * (1 / (1 + Math.pow(y, 2)));
     }
 
     @Override
     public double getFunctionValue(double x) {
         double y;
-        y = 0.5 + (1 / PI) * Math.atan((x - u) / v);
+        y = 0.5 + (1 / PI) * Math.atan((x - mu) / sigma);
         return y;
     }
 

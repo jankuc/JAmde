@@ -65,7 +65,7 @@ public abstract class Estimator {
             double EV = MathUtil.getExpVal(dataArray);
             distr1.setParameters(EV,MathUtil.getStandDev(EV, dataArray), 0);
         } else {
-            distr1 = searchAndDescent(distr1, dataArray);
+            distr1 = simulatedAnnealing(distr1, dataArray);
         }
         return distr1;
     }
@@ -182,7 +182,7 @@ public abstract class Estimator {
         distr.setParameters(x1, x2, 0);
         distOld = countDistance(distr, dataArray);
         
-        double T = 0.000001; // Temperature // 0.00000000001
+        double T = 0.1; // Temperature // 0.00000000001
 	double lambda = 1; // cooling rate 1
 	int i = 1;
 	int numOfIterations = 1000;

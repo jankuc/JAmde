@@ -168,9 +168,7 @@ public class NormalDistribution extends Distribution {
     public double getfunctionValue(double x) {
         double odm = 1 / Math.sqrt(2 * PI * Math.pow(sigma, 2));
         double y = (Math.pow(x - mu, 2)) / (2 * Math.pow(sigma, 2));
-        y = Math.exp(-y);
-        y = odm * y;
-        return y;
+        return odm * Math.exp(-y);
     }
 
     @Override
