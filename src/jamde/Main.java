@@ -80,7 +80,7 @@ public class Main {
         try {
             tableFileName = args[3];
         } catch (java.lang.ArrayIndexOutOfBoundsException e1) {
-            System.out.println("You did not specify name and path of output file. ");
+            System.out.println("You did not specify name and path to the output file. ");
         }
         
         File tableFile = new File(tableFileName);
@@ -92,8 +92,6 @@ public class Main {
         System.out.println("Result is saved in " + tableFileName);
         
         table.printClassic(tableFileName);
-        
-        String dir = tableFile.getParent();
         
         //System.setProperty("user.dir", dir);
         //System.out.println(System.getProperty("user.dir"));
