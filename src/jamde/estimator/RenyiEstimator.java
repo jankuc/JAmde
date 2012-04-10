@@ -4,6 +4,7 @@
  */
 package jamde.estimator;
 
+import jamde.MathUtil;
 import jamde.distribution.Distribution;
 
 /**
@@ -58,10 +59,14 @@ public class RenyiEstimator extends Estimator {
                 }
                 dist = 1 - dist / data.length * Math.pow(2*theta,- par / (1 + par));
                 return dist;
+//            } else if (distribution.toString().equals("Uniform")) {
+//                double a = distribution.getP1();
+//                double b = distribution.getP2();
+//                return 1 - Math.pow(b-a,- par / (1 + par));
             } else if (distribution.toString().equals("Uniform")) {
                 double a = distribution.getP1();
                 double b = distribution.getP2();
-                return 1 - Math.pow(b-a,- par / (1 + par));
+                return Math.pow(b-a,par*par/(1+par)) * 1/(2*Math.sqrt(3*MathUtil.getStandVar(MathUtil.getExpVal(data), data)));
             } else if (distribution.toString().equals("Cauchy")) {
                 double mu = distribution.getP1();
                 double sigma = distribution.getP2();

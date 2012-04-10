@@ -76,10 +76,11 @@ public class Main {
         
         table.count(numOfThreads);
         String tableFileName = System.getProperty("user.home") + "/tables/default/defaultTable.tex"; 
+        
         try {
             tableFileName = args[3];
         } catch (java.lang.ArrayIndexOutOfBoundsException e1) {
-            System.out.println("You did not specify name and path of output file. Result is saved in ~/tables/default");
+            System.out.println("You did not specify name and path of output file. ");
         }
         
         File tableFile = new File(tableFileName);
@@ -88,12 +89,14 @@ public class Main {
             tableFile = new File(tableFileName);
         }
         
+        System.out.println("Result is saved in " + tableFileName);
+        
         table.printClassic(tableFileName);
         
         String dir = tableFile.getParent();
         
-        System.setProperty("user.dir", dir);
-        System.out.println(System.getProperty("user.dir"));
+        //System.setProperty("user.dir", dir);
+        //System.out.println(System.getProperty("user.dir"));
         
         Process p = Runtime.getRuntime().exec("pdflatex " + tableFileName);
         
