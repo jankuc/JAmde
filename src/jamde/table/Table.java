@@ -232,7 +232,7 @@ public class Table {
                     int threadLoad = (int) (estimatorArray.length / numOfThreads); // Load which will be covered by each Thread
                     int leftover = estimatorArray.length - threadLoad * numOfThreads; // It will be distributed between Threads
                     int[] threadLoads = new int[numOfThreads];
-                    printDistanceMatrix(input, estimatorBuilder.getEstimator(), sizeOfSample);
+                   // printDistanceMatrix(input, estimatorBuilder.getEstimator(), sizeOfSample);
                     for (int i = 0; i < threadLoads.length; i++) {
                         if (leftover > 0) {
                             threadLoads[i] = threadLoad + 1;
