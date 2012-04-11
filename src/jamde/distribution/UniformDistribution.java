@@ -30,10 +30,10 @@ public class UniformDistribution extends Distribution {
     public UniformDistribution(double a, double b) {
         this.a = a;
         this.b = b;
-        this.UpB1 = 5;
-        this.LowB1 = -15;
-        this.UpB2 = 5;
-        this.LowB2 = -5;
+        this.UpB1 = 10;
+        this.LowB1 = -10;
+        this.UpB2 = 10;
+        this.LowB2 = -10;
     }
 
     @Override
@@ -54,8 +54,7 @@ public class UniformDistribution extends Distribution {
     @Override
     public double getRealization() {
         double x = Uniform_0_1();
-        double y = a + x * (b - a);
-        return y;
+        return  a + x * (b - a);
     }
 
     @Override
@@ -102,10 +101,10 @@ public class UniformDistribution extends Distribution {
     @Override
     public double getfunctionValue(double x) {
         double y;
-        if (x <= a) y = 0.0;
-        else {
-            if (x >= b) y = 0.0;
-            else y = 1.0 / (b - a);
+        if (x < a || x > b) {
+            y = 0.0;
+        } else {
+            y = 1.0 / (b - a);
         }
         return y;
     }

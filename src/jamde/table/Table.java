@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import javax.print.DocFlavor.INPUT_STREAM;
 
 /**
  *
@@ -231,7 +232,7 @@ public class Table {
                     int threadLoad = (int) (estimatorArray.length / numOfThreads); // Load which will be covered by each Thread
                     int leftover = estimatorArray.length - threadLoad * numOfThreads; // It will be distributed between Threads
                     int[] threadLoads = new int[numOfThreads];
-    //                printDistanceMatrix(input, estimatorBuilder.getEstimator(), sizeOfSample);
+                    printDistanceMatrix(input, estimatorBuilder.getEstimator(), sizeOfSample);
                     for (int i = 0; i < threadLoads.length; i++) {
                         if (leftover > 0) {
                             threadLoads[i] = threadLoad + 1;
@@ -544,17 +545,19 @@ public class Table {
         PrintWriter w;
         try {
             w = new PrintWriter("./distances");
-            double mu;
-            double sigma2;
+            double par1;
+            double par2;
             double dist;
-            Distribution d = new NormalDistribution(0, 1);
+            //Distribution d = new NormalDistribution(0, 1);
+            DistributionBuilder dB = new DistributionBuilder(input.getContaminated());
+            Distribution d = dB.getDistribution();
             double N = 200;
-            double delkaIntervalu = 1;
-            for (int j = 0; j < N; j++) {
-                mu = -0.5 * delkaIntervalu + j * delkaIntervalu / N;
-                for (int k = 0; k < N; k++) {
-                    sigma2 = 0.0001 + k * 2 * delkaIntervalu / N;
-                    d.setParameters(mu, sigma2, 0);
+            double delkaIntervalu = 3;
+            for (int k = 0; k < N; k++) {
+                par1 = -1 * delkaIntervalu + k * delkaIntervalu / N;
+                for (int l = 0; l < N; l++) {
+                    par2 = 0 + l * delkaIntervalu / N;
+                    d.setParameters(par1, par2, 0);
                     dist = estimator.countDistance(d, dataArray);
                     w.format(" %.6f ", dist);
                 }

@@ -37,4 +37,8 @@ public class DistributionBuilder {
     public DistributionBuilder(String type, double par1, double par2, double par3){
         this.setDistribution(type, par1, par2, par3);
     }
+    
+    public DistributionBuilder(Distribution d){
+        this.setDistribution(d.toString(), d.getP1(), d.getP2(), d.getP3());
+    }
 }
