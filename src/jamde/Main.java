@@ -96,7 +96,7 @@ public class Main {
         //System.setProperty("user.dir", dir);
         //System.out.println(System.getProperty("user.dir"));
         
-        Process p = Runtime.getRuntime().exec("pdflatex " + tableFileName);
+        //Process p = Runtime.getRuntime().exec("pdflatex " + tableFileName);
         
         Long timeEnd = System.currentTimeMillis();
         Long runTime = timeEnd - timeStart;

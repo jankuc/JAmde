@@ -65,6 +65,7 @@ public abstract class Distribution {
         return e.countDistance(this, data);
     }
     
+    
 
 //    public Distribution(String type, double par1, double par2) {
 //        if (type.equals("Normal")) {

@@ -29,9 +29,9 @@ public class NormalDistribution extends Distribution {
     double a[] = new double[6];
 
     private double N_0_1() {
-        double x1 = Uniform_0_1();
-        double x2 = Uniform_0_1();
-        double y1 = Math.sin(2 * PI * x2) * Math.sqrt((-2.0) * Math.log(x1));
+        double xx1 = Uniform_0_1();
+        double xx2 = Uniform_0_1();
+        double y1 = Math.sin(2 * PI * xx2) * Math.sqrt((-2.0) * Math.log(xx1));
         //  double y2 = cos(2*PI*x2) * sqrt((-2)*log(x1));
         return y1;
     }
@@ -56,7 +56,7 @@ public class NormalDistribution extends Distribution {
     public double getP1() {
         return mu;
     }
-
+    
     @Override
     public double getP2() {
         return Math.pow(sigma, 2);

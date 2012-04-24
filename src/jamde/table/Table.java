@@ -232,7 +232,7 @@ public class Table {
                     int threadLoad = (int) (estimatorArray.length / numOfThreads); // Load which will be covered by each Thread
                     int leftover = estimatorArray.length - threadLoad * numOfThreads; // It will be distributed between Threads
                     int[] threadLoads = new int[numOfThreads];
-                   // printDistanceMatrix(input, estimatorBuilder.getEstimator(), sizeOfSample);
+                    //printDistanceMatrix(input, estimatorBuilder.getEstimator(), sizeOfSample);
                     for (int i = 0; i < threadLoads.length; i++) {
                         if (leftover > 0) {
                             threadLoads[i] = threadLoad + 1;
@@ -241,29 +241,29 @@ public class Table {
                             threadLoads[i] = threadLoad;
                         }
                     }
-                    if (true) {
-                        CountThread[] threadArray = new CountThread[numOfThreads]; // Array of Threads
-                        Distribution[][] threadResult = new Distribution[numOfThreads][];
-                        DistributionBuilder dB = new DistributionBuilder(input.getContaminated().toString(), input.getContaminated().getP1(), input.getContaminated().getP2(), input.getContaminated().getP3());
-                        for (int i = 0; i < threadArray.length; i++) { //0:numOfThreads-1
-                            threadArray[i] = new CountThread(input, threadLoads[i], estimatorBuilder, sizeOfSample);
-                            threadResult[i] = new Distribution[threadLoads[i]];
+                    // Enumeration
+                    CountThread[] threadArray = new CountThread[numOfThreads]; // Array of Threads
+                    Distribution[][] threadResult = new Distribution[numOfThreads][];
+                    DistributionBuilder dB = new DistributionBuilder(input.getContaminated().toString(), input.getContaminated().getP1(), input.getContaminated().getP2(), input.getContaminated().getP3());
+                    for (int i = 0; i < threadArray.length; i++) { //0:numOfThreads-1
+                        threadArray[i] = new CountThread(input, threadLoads[i], estimatorBuilder, sizeOfSample);
+                        threadResult[i] = new Distribution[threadLoads[i]];
+                    }
+                    for (int i = 0; i < threadArray.length; i++) {
+                        threadResult[i] = threadArray[i].startCount();
+                    }
+                    for (int i = 0; i < threadArray.length; i++) {
+                        threadArray[i].join();
+                        for (int j = 0; j < threadResult[i].length; j++) { // copying of result from thread to estimatorArray
+                            int posun1 = i * threadLoads[i];
+                            estimatorArray[posun1 + j] = threadResult[i][j];
                         }
-                        for (int i = 0; i < threadArray.length; i++) {
-                            threadResult[i] = threadArray[i].startCount();
-                        }
-                        for (int i = 0; i < threadArray.length; i++) {
-                            threadArray[i].join();
-                            for (int j = 0; j < threadResult[i].length; j++) { // copying of result from thread to estimatorArray
-                                int posun1 = i * threadLoads[i];
-                                estimatorArray[posun1 + j] = threadResult[i][j];
-                            }
-                        }
-                    } // End of enumeration
+                    }
+                    // End of enumeration
                     writeIntoTableOutput(estimatorArray, input, tableOutput, estimatorBuilder, sizeOfSample);
                 } // END for (int sizeOfSample : input.getSizeOfSample())
                 System.out.println("Estimator " + estimatorBuilder.getType() + "(" + estimatorBuilder.getPar() + ") has ended.");
-            }// END for (EstimatorBuilder estimatorBuilder : input.getEstimators())
+            } // END for (EstimatorBuilder estimatorBuilder : input.getEstimators())
             tableOutputs.add(tableOutput);
             Long tableEndTime = System.currentTimeMillis();
             Long tableTime = tableEndTime - tableStartTime;
@@ -417,6 +417,12 @@ public class Table {
         PrintWriter w = new PrintWriter(ww);
         w.write("\\end{tabular}\n");
         ArrayList<EstimatorBuilder> eBs = input.getEstimators();
+        //double a,b;
+        //a = input.getContaminated().getP1();
+        //b = input.getContaminated().getP1();
+        /*
+         * TODO dodelat ruzne vypisy pro N(0,1), N(0,005)
+         */
         String sContaminated = String.format("\\mathrm{%c}(%.1f,%.1f)", input.getContaminated().toString().charAt(0), input.getContaminated().getP1(), input.getContaminated().getP2());
         w.write("\\caption{" + eBs.get(1).getType() + ": $p = " + sContaminated + "$, data: "); // caption creation       
         if (input.getContaminating() == null) {

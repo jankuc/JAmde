@@ -6,7 +6,6 @@ package jamde.estimator;
 
 import jamde.MathUtil;
 import jamde.distribution.Distribution;
-import jamde.distribution.DistributionBuilder;
 import jamde.distribution.UniformDistribution;
 
 /**
@@ -62,10 +61,23 @@ public abstract class Estimator {
      */
     public Distribution minimalize(Distribution distr1, double[] dataArray) {
         if (par == 0) {
-            double EV = MathUtil.getExpVal(dataArray);
-            distr1.setParameters(EV,MathUtil.getStandDev(EV, dataArray), 0);
+            double EV,DV;
+            if (distr1.toString().equals("Cauchy")){
+                double p = 0.5565;
+                EV = (MathUtil.quantile(dataArray, p) + MathUtil.quantile(dataArray, 1-p))/2;
+                p = 0.75;
+                DV = (MathUtil.quantile(dataArray, p) - MathUtil.quantile(dataArray, 1-p))/2;
+                distr1.setParameters(EV,DV,0);
+            } else if (distr1.toString().equals("Laplace")){
+                EV = MathUtil.quantile(dataArray, 0.5);
+                DV = MathUtil.getLAD(EV, dataArray);
+                distr1.setParameters(EV,DV,0);
+            } else {
+                EV = MathUtil.getExpVal(dataArray);
+                distr1.setParameters(EV,MathUtil.getStandDev(EV, dataArray), 0);
+            }
         } else {
-            distr1 = simulatedAnnealing(distr1, dataArray);
+            distr1 = searchAndDescent(distr1, dataArray);
         }
         return distr1;
     }

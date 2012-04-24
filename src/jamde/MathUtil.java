@@ -32,15 +32,15 @@ public class MathUtil{
      * 
      * EV = 1/N SUM (Xi)
      * 
-     * @param array
+     * @param data
      * @return Arithmetic mean
      */
-    public static double getExpVal(double[] array) {
+    public static double getExpVal(double[] data) {
         double EV = 0;
-        for (int i = 0; i < array.length; i++) {
-            EV += array[i];
+        for (int i = 0; i < data.length; i++) {
+            EV += data[i];
         }
-        EV = EV / array.length;
+        EV = EV / data.length;
         return EV;
     }
 
@@ -50,49 +50,69 @@ public class MathUtil{
      * DV = 1/N * SUM ( Xi - mu )^2
      * 
      * @param EV
-     * @param array
+     * @param data
      * @return Standard variation
      */
-    public static double getStandVar(double EV, double[] array) {
+    public static double getStandVar(double EV, double[] data) {
         double DV = 0;
-        for (int i = 0; i < array.length; i++) {
-            DV += Math.pow(array[i] - EV, 2);
+        for (int i = 0; i < data.length; i++) {
+            DV += Math.pow(data[i] - EV, 2);
         }
-        DV =  DV / (array.length);
+        DV =  DV / (data.length);
         return DV;
     }
     
     /**
      * Returns standard deviation (směrodatná odchylka)
      * 
-     * DV = sqrt ( DV = 1/N * SUM ( Xi - mu )^2 )
+     * DV = 1/N * SUM ( Xi - mu )^2
      * 
      * @param EV
-     * @param array
+     * @param data
      * @return Standard deviation
      */
-    public static double getStandDev(double EV, double[] array) {
+    public static double getStandDev(double EV, double[] data) {
         double DV = 0;
-        for (int i = 0; i < array.length; i++) {
-            DV += Math.pow(array[i] - EV, 2);
+        for (int i = 0; i < data.length; i++) {
+            DV += Math.pow(data[i] - EV, 2);
         }
-        DV = Math.sqrt( DV / (array.length));
+        DV = Math.sqrt( DV / (data.length));
+        return DV;
+    }
+    
+    
+    /**
+     * Returns Least absolute deviation (absolutní chyba)
+     * 
+     * DV = sqrt ( 1/N * SUM | Xi - mu | )
+     * 
+     * @param EV
+     * @param data
+     * @return Standard deviation
+     */
+    public static double getLAD(double EV, double[] data) {
+        double DV = 0;
+        for (int i = 0; i < data.length; i++) {
+            DV += Math.abs(data[i] - EV);
+        }
+        DV = DV / (data.length);
         return DV;
     }
 
     /**
      *
-     * Returns median 
+     * Returns median
      * 
-     * @param array
+     * @param data
      * @return median
      */
-    public static double getMedian(double[] array) {
-        if (array.length % 2 == 0) {
-            return (array[array.length/2] + array[array.length/2 - 1])/2;
+    public static double getMedian(double[] data) {
+        Arrays.sort(data);
+        if (data.length % 2 == 0) {
+            return (data[data.length/2] + data[data.length/2 - 1])/2;
         }
         else {
-            return array[(array.length-1)/2];
+            return data[(data.length-1)/2];
         }
     }
 
@@ -101,15 +121,15 @@ public class MathUtil{
      * Returns MAD - median of the absolute values
      * 
      * @param median
-     * @param array
+     * @param data
      * @return MAD
      */
-    public static double getMAD(double median, double[] array) {
+    public static double getMAD(double median, double[] data) {
         double newarray[];
         double result;
-        newarray = new double[array.length];
-        for (int i = 0; i < array.length; i++) {
-            newarray[i]= Math.abs(array[i]-median);
+        newarray = new double[data.length];
+        for (int i = 0; i < data.length; i++) {
+            newarray[i]= Math.abs(data[i]-median);
         }
         Arrays.sort(newarray);
         result =  MathUtil.getMedian(newarray);
@@ -160,6 +180,18 @@ public class MathUtil{
         /*
          * TODO zaokrouhlovat
          */
+    }
+    
+    /**
+     *  
+     * @param data
+     * @param k in (0,1) is the Quantile we want to use.
+     * @return 
+     */
+    public static double quantile(double[] data, double k){
+        Arrays.sort(data);
+        k = k * data.length;
+        return data[ (int) Math.ceil(k) - 1];
     }
 
 }
