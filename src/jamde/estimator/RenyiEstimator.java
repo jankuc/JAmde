@@ -17,9 +17,9 @@ public class RenyiEstimator extends Estimator {
     public RenyiEstimator(double par) {
         setPar(par);
     }
-
-    /*
-     * TODO Renyi estimator jako interface?
+    
+    /* 
+     * TODO V estimateAllPars a ostatnich estimatePars se vysetruje stejna podminka [if (par == 0)] jako v RenyiEstimator.countDistance
      */
     
     /**
@@ -59,10 +59,6 @@ public class RenyiEstimator extends Estimator {
                 }
                 dist = 1 - dist / data.length * Math.pow(2*theta,- par / (1 + par));
                 return dist;
-//            } else if (distribution.toString().equals("Uniform")) {
-//                double a = distribution.getP1();
-//                double b = distribution.getP2();
-//                return 1 - Math.pow(b-a,- par / (1 + par));
             } else if (distribution.toString().equals("Uniform")) {
                 double a = distribution.getP1();
                 double b = distribution.getP2();

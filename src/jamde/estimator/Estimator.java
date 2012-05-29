@@ -7,6 +7,7 @@ package jamde.estimator;
 import jamde.MathUtil;
 import jamde.distribution.Distribution;
 import jamde.distribution.UniformDistribution;
+import java.util.Random;
 
 /**
  * Estimator is used as a parent for the specific estimators (RenyiEstimator, LeCamEstimator, ...). It is built by EstimatorBuilder. 
@@ -51,89 +52,171 @@ public abstract class Estimator {
      * @return
      */
     public abstract double countDistance(Distribution distr, double[] data);
-
-    /**
-     * Uses one of the optimization procedures to find parameters for the distr1's family which minimize the distance from this family's members to the data.
-     * 
-     * @param distr1
-     * @param dataArray
-     * @return
+    
+    /* 
+     * TODO V estimateAllPars a ostatnich estimatePars se vysetruje stejna podminka [if (par == 0)] jako v RenyiEstimator.countDistance
      */
-    public Distribution minimalize(Distribution distr1, double[] dataArray) {
-        if (par == 0) {
-            double EV,DV;
-            if (distr1.toString().equals("Cauchy")){
-                double p = 0.5565;
-                EV = (MathUtil.quantile(dataArray, p) + MathUtil.quantile(dataArray, 1-p))/2;
-                p = 0.75;
-                DV = (MathUtil.quantile(dataArray, p) - MathUtil.quantile(dataArray, 1-p))/2;
-                distr1.setParameters(EV,DV,0);
-            } else if (distr1.toString().equals("Laplace")){
-                EV = MathUtil.quantile(dataArray, 0.5);
-                DV = MathUtil.getLAD(EV, dataArray);
-                distr1.setParameters(EV,DV,0);
-            } else {
-                EV = MathUtil.getExpVal(dataArray);
-                distr1.setParameters(EV,MathUtil.getStandDev(EV, dataArray), 0);
-            }
-        } else {
-            distr1 = searchAndDescent(distr1, dataArray);
-        }
-        return distr1;
-    }
-
+    
     /**
-     * Uses one of the optimization procedures to find first parameter for the distr1's family which minimize the distance from this family's members to the data.
+     * Uses one of the optimization procedures to find parameters for the distr's family which minimize the distance from this family's members to the data.
      * 
      * @param distr
      * @param dataArray
      * @return
      */
-    public Distribution minimalizeFirstPar(Distribution distr, double[] dataArray) {
-        /*
-         * TODO minimalizace par1
-         */
+    public Distribution estimateAllPars(Distribution distr, double[] dataArray) {
+        if (par == 0) {
+            double EV,DV;
+            if (distr.toString().equals("Cauchy")){
+                double p = 0.5565;
+                EV = (MathUtil.quantile(dataArray, p) + MathUtil.quantile(dataArray, 1-p))/2;
+                p = 0.75;
+                DV = (MathUtil.quantile(dataArray, p) - MathUtil.quantile(dataArray, 1-p))/2;
+                distr.setParameters(EV,DV,0);
+            } else if (distr.toString().equals("Laplace")){
+                EV = MathUtil.quantile(dataArray, 0.5);
+                DV = MathUtil.getLAD(EV, dataArray);
+                distr.setParameters(EV,DV,0);
+            } else if (distr.toString().equals("Weibull")){
+                double k,m,l;
+                l = 0;
+                m = distr.getP3();
+                k = distr.getP1();
+                for (int i = 0; i < dataArray.length; i++) {
+                    l += Math.pow(dataArray[i] - m,k-2);
+                }
+                l = Math.pow(l*k/(k-2)/dataArray.length,1/(k-2));
+                distr.setParameters(k,l,m);
+            } else {
+                EV = MathUtil.getExpVal(dataArray);
+                distr.setParameters(EV,MathUtil.getStandDev(EV, dataArray), distr.getP3());
+            }
+        } else {
+            distr = searchAndDescent2D(distr, dataArray);
+        }
+        return distr;
+    }
+
+    /**
+     * Uses one of the optimization procedures to find first parameter for the distr's family which minimize the distance from this family's members to the data.
+     * 
+     * @param distr
+     * @param dataArray
+     * @return
+     */
+    public Distribution estimateFirstPar(Distribution distr, double[] dataArray) {
+        if (par == 0) {
+            double estimatedPar;
+            if (distr.toString().equals("Cauchy")){
+                double p = 0.5565;
+                estimatedPar = (MathUtil.quantile(dataArray, p) + MathUtil.quantile(dataArray, 1-p))/2;
+                distr.setParameters(estimatedPar,distr.getP2(),0);
+            } else if (distr.toString().equals("Laplace")){
+                estimatedPar = MathUtil.quantile(dataArray, 0.5);
+                distr.setParameters(estimatedPar,distr.getP2(),0);
+            } else if (distr.toString().equals("Weibull")){
+                throw new UnsupportedOperationException("Not yet implemented");
+            } else {
+                estimatedPar = MathUtil.getExpVal(dataArray);
+                distr.setParameters(estimatedPar,distr.getP2(), distr.getP3());
+            }
+        } else {
+            distr = searchAndDescent1DPar1(distr, dataArray);
+        }
         return distr;
         //throw new UnsupportedOperationException("Not yet implemented");
     }
 
     /**
-     * Uses one of the optimization procedures to find second parameter for the distr1's family which minimize the distance from this family's members to the data.
+     * Uses one of the optimization procedures to find second parameter for the distr's family which minimize the distance from this family's members to the data.
      * 
      * @param distr
      * @param dataArray
      * @return
      */
-    public Distribution minimalizeSeconPar(Distribution distr, double[] dataArray) {
-        /*
-         * TODO minimalizace par2
-         */
+    public Distribution estimateSecondPar(Distribution distr, double[] dataArray) {
+       if (par == 0) {
+            double estimatedPar;
+            if (distr.toString().equals("Cauchy")){
+                double p = 0.5565;
+                p = 0.75;
+                estimatedPar = (MathUtil.quantile(dataArray, p) - MathUtil.quantile(dataArray, 1-p))/2;
+                distr.setParameters(distr.getP1(),estimatedPar,0);
+            } else if (distr.toString().equals("Laplace")){
+                estimatedPar = MathUtil.getLAD(distr.getP1(), dataArray);
+                distr.setParameters(distr.getP1(),estimatedPar,0);
+            } else if (distr.toString().equals("Weibull")){
+                double k,m,l;
+                l = 0;
+                m = distr.getP3();
+                k = distr.getP1();
+                for (int i = 0; i < dataArray.length; i++) {
+                    l += Math.pow(dataArray[i] - m,k-2);
+                }
+                l = Math.pow(l*k/(k-2)/dataArray.length,1/(k-2));
+                distr.setParameters(k,l,m);
+            } else {
+                distr.setParameters(distr.getP1(),MathUtil.getStandDev(distr.getP1(), dataArray), distr.getP3());
+            }
+        } else {
+            distr = searchAndDescent1DPar2(distr, dataArray);
+        }
         return distr;
     }
 
     /**
-     * Primitive minimization procedure for 2D minimization. In every iteration 
+     * Uses one of the optimization procedures to find third parameter for the distr's family which minimize the distance from this family's members to the data.
+     * 
+     * @param distr
+     * @param dataArray
+     * @return
+     */
+    public Distribution estimateThirdPar(Distribution distr, double[] dataArray) {
+        /*
+         * TODO minimalizace par3
+         */
+        return distr;
+    }
+    
+    /**
+     * Uses one of the optimization procedures to find first and second parameter for the distr's family which minimize the distance from this family's members to the data.
+     * 
+     * @param distr
+     * @param dataArray
+     * @return
+     */
+    public Distribution estimateFirstAndSecondPar(Distribution distr, double[] dataArray) {
+        return estimateAllPars(distr, dataArray);
+    }
+    
+    
+    
+    
+    /**
+     * Primitive minimization procedure for 2D minimization of first two parameters
+     * of distribution. In every iteration 
      * moves to one of eight points around actual position so it minimizes 
      * the distance the most. If the minimum is in it's current position the 
      * epsilon-neighborhood is halved. It ends when the epsilon-neighborhood is
      * smaller or equal to eps = 0.0009.
-     * It can't handle local optima. 
-     * 
+     * It can't handle local optima.
      * 
      * @param distr
      * @param dataArray
      * @return 
      */
-    private Distribution searchAndDescent(Distribution distr, double[] dataArray) {
+    private Distribution searchAndDescent2D(Distribution distr, double[] dataArray) {
         double[] x = new double[9];
         double[] y = new double[9];
-        x[0] = distr.getP1(); // initiation position is near the minimum
-        y[0] = distr.getP2();
+        do {
+            x[0] = distr.getP1() - 0.5 + Math.random(); // initiation position is near the supposed minimum
+            y[0] = distr.getP2() - 0.5 + Math.random(); // initiation position is near the supposed minimum
+        } while (distr.isParametersOK(x[0], y[0],0));
         double[] distance  = new double[9];
         double eps = 0.5;
         int iMin = 0;
         distance[0] = countDistance(distr, dataArray);
-        while (eps > 0.0009) {
+        while (eps > 0.000000000001) {
             x[1] = x[0] - eps;
             x[7] = x[1];
             x[8] = x[1];
@@ -172,6 +255,105 @@ public abstract class Estimator {
         return distr;
     }
     
+    /*
+     * TODO: minimization procedures are copied everywhere
+     */
+    
+    /**
+     * Primitive minimization procedure for 1D minimization of the first parameter
+     * of distribution. In every iteration 
+     * moves to one of eight points around actual position so it minimizes 
+     * the distance the most. If the minimum is in it's current position the 
+     * epsilon-neighborhood is halved. It ends when the epsilon-neighborhood is
+     * smaller or equal to eps = 0.0009.
+     * It can't handle local optima.
+     * 
+     * @param distr
+     * @param dataArray
+     * @return 
+     */
+    private Distribution searchAndDescent1DPar1(Distribution distr, double[] dataArray) {
+        double[] x = new double[3];
+        double y = distr.getP2();
+        do {
+            x[0] = distr.getP1() - 0.5 + Math.random(); // initiation position is near the supposed minimum
+        } while (distr.isParametersOK(x[0], y,0));
+        double[] distance  = new double[3];
+        double eps = 0.5;
+        int iMin = 0;
+        distr.setParameters(x[0], y, 0);
+        distance[0] = countDistance(distr, dataArray);
+        while (eps > 0.00000001) {
+            x[1] = x[0] - eps;
+            x[2] = x[0] + eps;
+            for (int i = 1; i < distance.length; i++) {
+                if (distr.isParametersOK(x[i], y,0)){
+                    distr.setParameters(x[i], y, 0);
+                    distance[i] = countDistance(distr, dataArray);
+                    if (distance[i] < distance[iMin]) {
+                        iMin = i;
+                    }
+                }
+            }
+            if (iMin == 0) {
+                eps *= 0.5;
+            } else {
+                x[0] =x[iMin];
+                distance[0] = distance[iMin];
+                iMin = 0;
+            }
+        }
+        distr.setParameters(x[iMin], y, 0);
+        return distr;
+    }
+
+        /**
+     * Primitive minimization procedure for 1D minimization of the second parameter
+     * of distribution. In every iteration 
+     * moves to one of eight points around actual position so it minimizes 
+     * the distance the most. If the minimum is in it's current position the 
+     * epsilon-neighborhood is halved. It ends when the epsilon-neighborhood is
+     * smaller or equal to eps = 0.0009.
+     * It can't handle local optima.
+     * 
+     * @param distr
+     * @param dataArray
+     * @return 
+     */
+    private Distribution searchAndDescent1DPar2(Distribution distr, double[] dataArray) {
+        double[] y = new double[3];
+        double x = distr.getP1();
+        do {
+            y[0] = distr.getP2() - 0.5 + Math.random(); // initiation position is near the supposed minimum
+        } while (distr.isParametersOK(x, y[0],0));
+        double[] distance  = new double[3];
+        double eps = 0.5;
+        int iMin = 0;
+        distr.setParameters(x, y[0], 0);
+        distance[0] = countDistance(distr, dataArray);
+        while (eps > 0.00000001) {
+            y[1] = y[0] - eps;
+            y[2] = y[0] + eps;
+            for (int i = 1; i < distance.length; i++) {
+                if (distr.isParametersOK(x, y[i],0)){
+                    distr.setParameters(x, y[i], 0);
+                    distance[i] = countDistance(distr, dataArray);
+                    if (distance[i] < distance[iMin]) {
+                        iMin = i;
+                    }
+                }
+            }
+            if (iMin == 0) {
+                eps *= 0.5;
+            } else {
+                y[0] =y[iMin];
+                distance[0] = distance[iMin];
+                iMin = 0;
+            }
+        }
+        distr.setParameters(x, y[iMin], 0);
+        return distr;
+    }
     
     /**
      * Minimization procedure for 2D minimization. Moves to the random point in 
@@ -226,4 +408,8 @@ public abstract class Estimator {
         }
         return distr;
     }
+
+    
+
+   
 }
