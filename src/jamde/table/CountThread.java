@@ -8,7 +8,7 @@ import jamde.distribution.*;
 import jamde.estimator.*;
 
 /**
- * 
+ * Thread which encapsulates the procedure for counting.
  * @author kucerj28
  */
 class CountThread extends Thread {
@@ -50,16 +50,19 @@ class CountThread extends Thread {
         for (int i = 0; i < estimatorArray.length; i++) { // cycle counting all the best distributions in estimator Array [1:K]
             double[] dataArray = Table.createData(input, sizeOfSample);
             // this is where the minimalization begins     
+
+            DistributionBuilder dB = new DistributionBuilder(input.getContaminated().toString(), input.getContaminated().getP1(), input.getContaminated().getP2(), input.getContaminated().getP3());
             if (input.getParamsCounted().equals("both")) {
-                DistributionBuilder dB = new DistributionBuilder(input.getContaminated().toString(), input.getContaminated().getP1(), input.getContaminated().getP2(), input.getContaminated().getP3());
-                estimatorArray[i] = estimator.minimalize(dB.getDistribution(), dataArray);
+                estimatorArray[i] = estimator.estimateAllPars(dB.getDistribution(), dataArray);
             } else if (input.getParamsCounted().equals("first")) {
-                estimatorArray[i] = estimator.minimalizeFirstPar(estimatorArray[i], dataArray);
-            } else {
-                estimatorArray[i] = estimator.minimalizeSeconPar(estimatorArray[i], dataArray);
+                estimatorArray[i] = estimator.estimateFirstPar(dB.getDistribution(), dataArray);
+            } else if (input.getParamsCounted().equals("second")){
+                estimatorArray[i] = estimator.estimateSecondPar(dB.getDistribution(), dataArray);
+            } else if (input.getParamsCounted().equals("third")) {
+                estimatorArray[i] = estimator.estimateThirdPar(dB.getDistribution(), dataArray);
+            } else if (input.getParamsCounted().equals("first&second")){
+                estimatorArray[i] = estimator.estimateFirstAndSecondPar(dB.getDistribution(), dataArray);
             }
         } // END for (i = 0; estimatorArray[i])
     }
-
-    
 }

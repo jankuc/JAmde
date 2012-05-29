@@ -205,15 +205,16 @@ public class Table {
      */
     public void count(int numOfThreads) throws FileNotFoundException, InterruptedException {
         System.out.println("Enumeration has begun");
+        int offset;
         /*
          * TODO dat mistoa nazev souboru pro ulozeni do config souboru
          * TODO pri nacitani umisteni tabulky toto umisteni vytvori
          * TODO vytvorit funkci pro vykreslovani vzdalenostnich obrazku
          */
         int numOfTables = tableInputs.size();
-        int countedTable = 0;
+        int tableInProgress = 0;
         for (TableInput input : tableInputs) { // cycle over all tables
-            countedTable++;
+            tableInProgress++;
             Long tableStartTime = System.currentTimeMillis();
             int numOfPars = 1;
             if (input.getParamsCounted().equals("both")) {
@@ -249,14 +250,14 @@ public class Table {
                         threadArray[i] = new CountThread(input, threadLoads[i], estimatorBuilder, sizeOfSample);
                         threadResult[i] = new Distribution[threadLoads[i]];
                     }
-                    for (int i = 0; i < threadArray.length; i++) {
+                    for (int i = 0; i < threadArray.length; i++) { // Starts the count in all the threads
                         threadResult[i] = threadArray[i].startCount();
                     }
                     for (int i = 0; i < threadArray.length; i++) {
                         threadArray[i].join();
-                        for (int j = 0; j < threadResult[i].length; j++) { // copying of result from thread to estimatorArray
-                            int posun1 = i * threadLoads[i];
-                            estimatorArray[posun1 + j] = threadResult[i][j];
+                        for (int j = 0; j < threadResult[i].length; j++) { // Copying of result from threads to estimatorArray
+                            offset = i * threadLoads[i]; // Data from 2D array threadResult is copied into 1D estimatorArray, that's the reason for the offset
+                            estimatorArray[offset + j] = threadResult[i][j];
                         }
                     }
                     // End of enumeration
@@ -267,7 +268,7 @@ public class Table {
             tableOutputs.add(tableOutput);
             Long tableEndTime = System.currentTimeMillis();
             Long tableTime = tableEndTime - tableStartTime;
-            System.out.println("Table " + countedTable + "/" + numOfTables + " has ended. It took " + MathUtil.Long2time(tableTime) + ". It could take another " + MathUtil.Long2time((numOfTables - countedTable) * tableTime));
+            System.out.println("Table " + tableInProgress + "/" + numOfTables + " has ended. It took " + MathUtil.Long2time(tableTime) + ". It could take another " + MathUtil.Long2time((numOfTables - tableInProgress) * tableTime));
         }// END for (TableInput input : tableInputs)
         System.out.println("Enumeration has ended.");
     } // END count()
@@ -375,7 +376,7 @@ public class Table {
     public void printClassicHeadTable(File file, TableInput input) throws IOException {
         Integer[] sizeOfSample = input.getSizeOfSample().toArray(new Integer[0]);
         FileWriter w = new FileWriter(file, true); // so it appends
-        w.write("\\begin{table}[ht] \\footnotesize \n");
+        w.write("\\begin{table}[ht] \\tiny \n");
         w.write("\\begin{center} \n");
         w.write("\\begin{tabular}{|c|");
         for (int i : sizeOfSample) {
@@ -477,11 +478,16 @@ public class Table {
         if (input.getParamsCounted().equals("second") || input.getParamsCounted().equals("both")) {
             if (input.getParamsCounted().equals("second")) {
                 w.write("$" + estimator.getPar() + "$");
+                for (int sizeOfSample : input.getSizeOfSample()) {
+                    w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $", output.getMeanValue(estimator, sizeOfSample, 1), output.getDeviation(estimator, sizeOfSample, 1), output.getEfficiency(estimator, sizeOfSample, 1));
+                }
+                w.write("\\\\ \n");
+            } else {
+                for (int sizeOfSample : input.getSizeOfSample()) {
+                    w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $", output.getMeanValue(estimator, sizeOfSample, 2), output.getDeviation(estimator, sizeOfSample, 2), output.getEfficiency(estimator, sizeOfSample, 2));
+                }
+                w.write("\\\\ \n");
             }
-            for (int sizeOfSample : input.getSizeOfSample()) {
-                w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $", output.getMeanValue(estimator, sizeOfSample, 2), output.getDeviation(estimator, sizeOfSample, 2), output.getEfficiency(estimator, sizeOfSample, 2));
-            }
-            w.write("\\\\ \n");
         }
         w.write("\\hline \n");
         w.close();
@@ -558,14 +564,14 @@ public class Table {
             DistributionBuilder dB = new DistributionBuilder(input.getContaminated());
             Distribution d = dB.getDistribution();
             double N = 200;
-            double delkaIntervalu = 3;
-            for (int k = 0; k < N; k++) {
-                par1 = -1 * delkaIntervalu + k * delkaIntervalu / N;
+            double delkaIntervalu = 2;
+            for (int k = 0; k < 1; k++) {
+                par1 = 0;
                 for (int l = 0; l < N; l++) {
                     par2 = 0 + l * delkaIntervalu / N;
                     d.setParameters(par1, par2, 0);
                     dist = estimator.countDistance(d, dataArray);
-                    w.format(" %.6f ", dist);
+                    w.format(" %.12f ", dist);
                 }
                 w.format(" \n ");
             }
@@ -574,6 +580,9 @@ public class Table {
             System.out.println("Vypsani Distance souboru skonceno.");
             return;
         } catch (FileNotFoundException ex) {
+            /*
+             * TODO catch the exception
+             */
         }
     }
     
