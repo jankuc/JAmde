@@ -211,12 +211,12 @@ public abstract class Estimator {
         do {
             x[0] = distr.getP1() - 0.5 + Math.random(); // initiation position is near the supposed minimum
             y[0] = distr.getP2() - 0.5 + Math.random(); // initiation position is near the supposed minimum
-        } while (distr.isParametersOK(x[0], y[0],0));
+        } while (!distr.isParametersOK(x[0], y[0],0));
         double[] distance  = new double[9];
         double eps = 0.5;
         int iMin = 0;
         distance[0] = countDistance(distr, dataArray);
-        while (eps > 0.000000000001) {
+        while (eps > 0.0000001) {
             x[1] = x[0] - eps;
             x[7] = x[1];
             x[8] = x[1];
@@ -277,13 +277,13 @@ public abstract class Estimator {
         double y = distr.getP2();
         do {
             x[0] = distr.getP1() - 0.5 + Math.random(); // initiation position is near the supposed minimum
-        } while (distr.isParametersOK(x[0], y,0));
+        } while (!distr.isParametersOK(x[0], y,0));
         double[] distance  = new double[3];
         double eps = 0.5;
         int iMin = 0;
         distr.setParameters(x[0], y, 0);
         distance[0] = countDistance(distr, dataArray);
-        while (eps > 0.00000001) {
+        while (eps > 0.0000001) {
             x[1] = x[0] - eps;
             x[2] = x[0] + eps;
             for (int i = 1; i < distance.length; i++) {
@@ -325,13 +325,13 @@ public abstract class Estimator {
         double x = distr.getP1();
         do {
             y[0] = distr.getP2() - 0.5 + Math.random(); // initiation position is near the supposed minimum
-        } while (distr.isParametersOK(x, y[0],0));
+        } while (!distr.isParametersOK(x, y[0],0));
         double[] distance  = new double[3];
         double eps = 0.5;
         int iMin = 0;
         distr.setParameters(x, y[0], 0);
         distance[0] = countDistance(distr, dataArray);
-        while (eps > 0.00000001) {
+        while (eps > 0.0000001) {
             y[1] = y[0] - eps;
             y[2] = y[0] + eps;
             for (int i = 1; i < distance.length; i++) {
