@@ -66,7 +66,21 @@ public class NormalDistribution extends Distribution {
     public double getP3() {
         return 0;
     }
+    
+    @Override
+    public void setP1(double p1) {
+        this.mu = p1;
+    }
 
+    @Override
+    public void setP2(double p2) {
+        this.sigma = p2;
+    }
+    
+    @Override
+    public void setP3(double p3) {
+    }
+    
     @Override
     public double getRealization() {
         double x = N_0_1();

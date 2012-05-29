@@ -45,10 +45,42 @@ public abstract class Distribution {
      * getfunctionValue ... poèítá funkèní hodnotu hustoty pravdìpodobnosti pøísluného rozdìlení v zadaném bodì
      */
     
-    
+    /**
+     * 
+     * @return First parameter of the distribution.
+     */
     public abstract double getP1();
+    
+    /**
+     * 
+     * @return Second parameter of the distribution.
+     */
     public abstract double getP2();
+    
+    /**
+     * 
+     * @return Third parameter of the distribution.
+     */
     public abstract double getP3();
+    
+    /**
+     * Sets first parameter of the distribution.
+     * @param p1 
+     */
+    public abstract void setP1(double p1);
+    
+    /**
+     * Sets second parameter of the distribution.
+     * @param p2 
+     */
+    public abstract void setP2(double p2);
+    
+    /**
+     * Sets third parameter of the distribution.
+     * @param p3 
+     */
+    public abstract void setP3(double p3);
+    
     public abstract double getRealization();
     public abstract void setParameters(double p1, double p2, double p3);
     public abstract void setBoundaries(double[] array);

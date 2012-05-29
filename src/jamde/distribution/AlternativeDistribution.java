@@ -48,6 +48,20 @@ public class AlternativeDistribution extends Distribution {
     public double getP3() {
         return 0;
     }
+    
+    @Override
+    public void setP1(double p1) {
+        this.pr = p1;
+    }
+
+    @Override
+    
+    public void setP2(double p2) {
+    }
+    
+    @Override
+    public void setP3(double p3) {
+    }
 
     @Override
     public double getRealization() {

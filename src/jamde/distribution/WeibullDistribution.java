@@ -23,60 +23,88 @@ package jamde.distribution;
  */
 
 
+
+/**
+ *   f = k/l * Exp[ - [(x-m)/l]^k ] * [ (x-m)/l ]^(k-1)
+ * @author honza
+ */
 public class WeibullDistribution extends Distribution {
     public static String IDENTIFICATION="Weibull";
-    double m, c, b;
+    double m, l, k;
 
-
-    public WeibullDistribution(double m, double c, double b) {
-        this.m = m;
-        this.c = c;
-        this.b = b;
+    /**
+     *   f = k/l * Exp[ - [(x-m)/l]^k ] * [ (x-m)/l ]^(k-1)   
+     * @author honza
+    */
+    public WeibullDistribution(double p1, double p2, double p3) {
+        this.m = p3;
+        this.l = p2;
+        this.k = p1;
         this.UpB1 = 5;
-        this.LowB1 = -5;
+        this.LowB1 = 0.0001;
         this.UpB2 = 5;
         this.LowB2 = 0;
         this.UpB3 = 5;
-        this.LowB3 = 0.1;
+        this.LowB3 = -5;
     }
 
     @Override
     public double getP1() {
-        return m;
+        return k;
     }
 
     @Override
     public double getP2() {
-        return c;
+        return l;
     }
 
     @Override
     public double getP3() {
-        return b;
+        return m;
+    }
+    
+    @Override
+    public void setP1(double p1) {
+        this.k = p1;
     }
 
     @Override
+    public void setP2(double p2) {
+        this.l = p2;
+    }
+    
+    @Override
+    public void setP3(double p3) {
+        this.m = p3;
+    }
+    
+    @Override
     public double getRealization() {
         double x = Uniform_0_1();
-        double y = m + c * Math.pow(Math.log(1 / (1 - x)), 1 / b);
+        double y = m + l * Math.pow(Math.log(1 / (1 - x)), 1 / k);
         return y;
     }
 
     @Override
     public void setParameters(double p1, double p2, double p3) {
-        this.m = p1;
-        this.c = p2;
-        this.b = p3;
+        this.m = p3;
+        this.l = p2;
+        this.k = p1;
     }
 
+    /**
+     * NEFUNGUJE TAK JAK BY MELA!
+     * 
+     * @param array 
+     */
     @Override
     public void setBoundaries(double[] array) {
         this.UpB1 = 5;
-        this.LowB1 = -5;
+        this.LowB1 = 0.0001;
         this.UpB2 = 5;
         this.LowB2 = 0;
-        this.UpB3 = 3;
-        this.LowB3 = 1.0;//   0.1;
+        this.UpB3 = 5;
+        this.LowB3 = -5;//   0.1;
     }
 
     @Override
@@ -100,7 +128,7 @@ public class WeibullDistribution extends Distribution {
 //    }
 //
 //    public Parameters getStandParameters(double[] array, int size) {
-//        double m, b0, b, c, t1, t2, W, sumA, sumB, sumC, sumD, z1, z2, dif;
+//        double m, b0, k, l, t1, t2, W, sumA, sumB, sumC, sumD, z1, z2, dif;
 //        Parameters parameters = new Parameters();
 //        int index1, index2;
 //
@@ -114,36 +142,36 @@ public class WeibullDistribution extends Distribution {
 //        m = (array[0] * array[size - 1] - array[1] * array[1]) /
 //                (array[0] + array[size - 1] - 2 * array[1]);
 //        if (m == array[0]) m = m - 0.0000001;
-//        b = b0;
+//        k = b0;
 //        do {
 //            sumA = 0;
 //            sumB = 0;
 //            sumC = 0;
 //            sumD = 0;
-//            dif = b;
+//            dif = k;
 //            for (int i = 0; i < size; i++) {
-//                z1 = Math.pow(array[i] - m, b);
+//                z1 = Math.pow(array[i] - m, k);
 //                z2 = Math.log(array[i] - m);
 //                sumA += z1;
 //                sumB += z1 * z2;
 //                sumC += z2;
 //                sumD += z1 * z2 * z2;
 //            }
-//            b = b + (size * b * sumA * sumA - size * b * b * sumA * sumB + b * b * sumA * sumA * sumC) /
-//                    (size * sumA * sumA + size * b * b * (sumD * sumA - sumB * sumB));
-//            dif = dif - b;
+//            k = k + (size * k * sumA * sumA - size * k * k * sumA * sumB + k * k * sumA * sumA * sumC) /
+//                    (size * sumA * sumA + size * k * k * (sumD * sumA - sumB * sumB));
+//            dif = dif - k;
 //        }
-//        while ((b >= 0) && (dif > 0.001));
+//        while ((k >= 0) && (dif > 0.001));
 //
 //        sumA = 0;
 //        for (int i = 0; i < size; i++) {
-//            sumA += Math.pow(array[i] - m, b);
+//            sumA += Math.pow(array[i] - m, k);
 //        }
-//        c = Math.pow(sumA / size, 1 / b);
+//        l = Math.pow(sumA / size, 1 / k);
 //
 //        parameters.p1 = m;
-//        parameters.p2 = c;
-//        parameters.p3 = b;
+//        parameters.p2 = l;
+//        parameters.p3 = k;
 //        return parameters;
 //    }
 
@@ -151,8 +179,8 @@ public class WeibullDistribution extends Distribution {
     public double getfunctionValue(double x) {
         double y;
         if (x > m) {
-            y = (x - m) / c;
-            y = (b / c) * Math.pow(y, b - 1) * Math.exp(-Math.pow(y, b));
+            y = (x - m) / l;
+            y = (k / l) * Math.pow(y, k - 1) * Math.exp(-Math.pow(y, k));
         } else y = 0.0;
         return y;
     }
@@ -161,8 +189,8 @@ public class WeibullDistribution extends Distribution {
     public double getFunctionValue(double x) {
         double y;
         if (x > m) {
-            y = (x - m) / c;
-            y = Math.pow(y, b);
+            y = (x - m) / l;
+            y = Math.pow(y, k);
             y = 1 - Math.exp(-y);
         } else y = 0.0;
         return y;

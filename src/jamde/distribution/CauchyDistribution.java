@@ -53,6 +53,21 @@ public class CauchyDistribution extends Distribution {
     public double getP3() {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
+    
+    
+    @Override
+    public void setP1(double p1) {
+        this.mu = p1;
+    }
+
+    @Override
+    public void setP2(double p2) {
+        this.sigma = p2;
+    }
+    
+    @Override
+    public void setP3(double p3) {
+    }
 
     @Override
     public double getRealization() {
