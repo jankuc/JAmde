@@ -5,11 +5,9 @@
 package jamde;
 
 import jamde.table.Table;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -72,7 +70,7 @@ public class Main {
             System.out.println("You did not specify number of Threads you want to use. Default value is 12. For vkstat it is OK.");
         }
         
-        numOfThreads = Math.min(numOfThreads, 30);
+        numOfThreads = Math.min(numOfThreads, 30); // Designed for 32-core vkstat. So it doesn't take up all cores.
         
         table.count(numOfThreads);
         String tableFileName = System.getProperty("user.home") + "/tables/default/defaultTable.tex"; 

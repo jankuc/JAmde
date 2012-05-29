@@ -47,7 +47,7 @@ public class MathUtil{
     /**
      * Returns standard variation (rozptyl)
      *
-     * DV = 1/N * SUM ( Xi - mu )^2
+     * DV = sqrt( 1/N * SUM ( Xi - mu )^2 )
      * 
      * @param EV
      * @param data
@@ -164,13 +164,13 @@ public class MathUtil{
     }
     
     /**
-     * Returns natural logarithm of Gamma function
+     * Returns natural logarithm of Gamma function of x
      * Algorithm is from Numerical recipes 6.1
      * 
      * @param x
      * @return log(Gamma(x))
      */
-    public static double logGamma(double x) { 
+    public static double logGamma(double x) {
         double tmp = (x - 0.5) * Math.log(x + 4.5) - (x + 4.5);
         double ser = 1.0 + 76.18009173 / (x + 0) - 86.50532033 / (x + 1)
                 + 24.01409822 / (x + 2) - 1.231739516 / (x + 3)
@@ -183,10 +183,11 @@ public class MathUtil{
     }
     
     /**
-     *  
+     * Returns k-quantile of the data.
+     * 
      * @param data
      * @param k in (0,1) is the Quantile we want to use.
-     * @return 
+     * @return k-quantile of the data
      */
     public static double quantile(double[] data, double k){
         Arrays.sort(data);
