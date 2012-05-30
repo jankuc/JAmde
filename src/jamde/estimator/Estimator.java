@@ -92,7 +92,7 @@ public abstract class Estimator {
                 distr.setParameters(EV,MathUtil.getStandDev(EV, dataArray), distr.getP3());
             }
         } else {
-            distr = searchAndDescent2D(distr, dataArray);
+            distr = hillClimber2D(distr, dataArray);
         }
         return distr;
     }
@@ -121,7 +121,7 @@ public abstract class Estimator {
                 distr.setParameters(estimatedPar,distr.getP2(), distr.getP3());
             }
         } else {
-            distr = searchAndDescent1DPar1(distr, dataArray);
+            distr = hillClimber1DPar1(distr, dataArray);
         }
         return distr;
         //throw new UnsupportedOperationException("Not yet implemented");
@@ -159,7 +159,7 @@ public abstract class Estimator {
                 distr.setParameters(distr.getP1(),MathUtil.getStandDev(distr.getP1(), dataArray), distr.getP3());
             }
         } else {
-            distr = searchAndDescent1DPar2(distr, dataArray);
+            distr = hillClimber1DPar2(distr, dataArray);
         }
         return distr;
     }
@@ -205,16 +205,17 @@ public abstract class Estimator {
      * @param dataArray
      * @return 
      */
-    private Distribution searchAndDescent2D(Distribution distr, double[] dataArray) {
+    private Distribution hillClimber2D(Distribution distr, double[] dataArray) {
         double[] x = new double[9];
         double[] y = new double[9];
         do {
             x[0] = distr.getP1() - 0.5 + Math.random(); // initiation position is near the supposed minimum
-            y[0] = distr.getP2() - 0.5 + Math.random(); // initiation position is near the supposed minimum
-        } while (!distr.isParametersOK(x[0], y[0],0));
+            y[0] = distr.getP1() - 0.5 + Math.random(); // initiation position is near the supposed minimum
+        } while (!distr.isParametersOK(x[0],y[0],0));
         double[] distance  = new double[9];
         double eps = 0.5;
         int iMin = 0;
+        distr.setParameters(x[0], y[0], 0);
         distance[0] = countDistance(distr, dataArray);
         while (eps > 0.0000001) {
             x[1] = x[0] - eps;
@@ -251,7 +252,7 @@ public abstract class Estimator {
                 iMin = 0;
             }
         }
-        distr.setParameters(x[iMin], y[iMin], 0);
+        distr.setParameters(x[0], y[0], 0);
         return distr;
     }
     
@@ -272,7 +273,7 @@ public abstract class Estimator {
      * @param dataArray
      * @return 
      */
-    private Distribution searchAndDescent1DPar1(Distribution distr, double[] dataArray) {
+    private Distribution hillClimber1DPar1(Distribution distr, double[] dataArray) {
         double[] x = new double[3];
         double y = distr.getP2();
         do {
@@ -303,7 +304,7 @@ public abstract class Estimator {
                 iMin = 0;
             }
         }
-        distr.setParameters(x[iMin], y, 0);
+        distr.setParameters(x[0], y, 0);
         return distr;
     }
 
@@ -320,7 +321,7 @@ public abstract class Estimator {
      * @param dataArray
      * @return 
      */
-    private Distribution searchAndDescent1DPar2(Distribution distr, double[] dataArray) {
+    private Distribution hillClimber1DPar2(Distribution distr, double[] dataArray) {
         double[] y = new double[3];
         double x = distr.getP1();
         do {
@@ -351,7 +352,7 @@ public abstract class Estimator {
                 iMin = 0;
             }
         }
-        distr.setParameters(x, y[iMin], 0);
+        distr.setParameters(x, y[0], 0);
         return distr;
     }
     

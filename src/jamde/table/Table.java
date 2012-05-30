@@ -376,7 +376,7 @@ public class Table {
     public void printClassicHeadTable(File file, TableInput input) throws IOException {
         Integer[] sizeOfSample = input.getSizeOfSample().toArray(new Integer[0]);
         FileWriter w = new FileWriter(file, true); // so it appends
-        w.write("\\begin{table}[ht] \\tiny \n");
+        w.write("\\begin{table}[ht] \\footnotesize \n");
         w.write("\\begin{center} \n");
         w.write("\\begin{tabular}{|c|");
         for (int i : sizeOfSample) {
@@ -519,7 +519,6 @@ public class Table {
             double expVal1 = MathUtil.getExpVal(firstPar);
             double standVar1 = MathUtil.getStandVar(expVal1, firstPar);
             double standDev1 = Math.sqrt(standVar1);
-
             output.setMeanValue(estimatorBuilder, sizeOfSample, 1, expVal1);
             output.setDeviation(estimatorBuilder, sizeOfSample, 1, standDev1);
             double eref1 = Math.pow(output.getDeviation(estimatorBuilderL1, sizeOfSample, 1), 2) / standVar1; // radim pocital  eef =  varX/varL1 (bez odmocniny)
