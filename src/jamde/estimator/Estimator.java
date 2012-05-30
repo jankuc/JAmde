@@ -83,9 +83,9 @@ public abstract class Estimator {
                 m = distr.getP3();
                 k = distr.getP1();
                 for (int i = 0; i < dataArray.length; i++) {
-                    l += Math.pow(dataArray[i] - m,k-2);
+                    l += Math.pow(dataArray[i] - m,k);
                 }
-                l = Math.pow(l*k/(k-2)/dataArray.length,1/(k-2));
+                l = Math.pow(l/dataArray.length,1/k);
                 distr.setParameters(k,l,m);
             } else {
                 EV = MathUtil.getExpVal(dataArray);
@@ -151,9 +151,9 @@ public abstract class Estimator {
                 m = distr.getP3();
                 k = distr.getP1();
                 for (int i = 0; i < dataArray.length; i++) {
-                    l += Math.pow(dataArray[i] - m,k-2);
+                    l += Math.pow(dataArray[i] - m,k);
                 }
-                l = Math.pow(l*k/(k-2)/dataArray.length,1/(k-2));
+                l = Math.pow(l/dataArray.length,1/k);
                 distr.setParameters(k,l,m);
             } else {
                 distr.setParameters(distr.getP1(),MathUtil.getStandDev(distr.getP1(), dataArray), distr.getP3());
