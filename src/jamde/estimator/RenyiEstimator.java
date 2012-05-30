@@ -80,9 +80,9 @@ public class RenyiEstimator extends Estimator {
                     z = (data[i]-m)/l;
                     dist +=  Math.pow(z,par*(k-1))*Math.exp(-par*Math.pow(z,k));
                 }
-                double y = (1+par+k)/k;
-                z = par/(par+1);
-                dist *= Math.pow(k/l,z)*Math.pow(1+par,z*y)*Math.pow(MathUtil.gamma(y),-z);
+                z = (k+par*k-par)/k;
+                double y = par/(par+1);
+                dist *= Math.pow(k/l,y)*Math.pow(1+par,z*y)*Math.pow(MathUtil.gamma(z),-y);
                 dist = 1-dist/data.length;
                 return dist;
             } else { // viz. Radim Demut (dipl. práce) str 37, (6.57)
