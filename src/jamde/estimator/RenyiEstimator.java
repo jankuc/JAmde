@@ -71,6 +71,20 @@ public class RenyiEstimator extends Estimator {
                 }
                 dist = 1-dist/data.length * Math.pow(sigma, -par/(1+par));
                 return dist;
+            } else if (distribution.toString().equals("Weibull")) {
+                double m = distribution.getP3();
+                double l = distribution.getP2();
+                double k = distribution.getP1();
+                double z;
+                for (int i = 0; i < data.length; i++) {
+                    z = (data[i]-m)/l;
+                    dist +=  Math.pow(z,par*(k-1))*Math.exp(-par*Math.pow(z,k));
+                }
+                double y = (1+par+k)/k;
+                z = par/(par+1);
+                dist *= Math.pow(k/l,z)*Math.pow(1+par,z*y)*Math.pow(MathUtil.gamma(y),-z);
+                dist = 1-dist/data.length;
+                return dist;
             } else { // viz. Radim Demut (dipl. práce) str 37, (6.57)
                 throw new UnsupportedOperationException("Not supported yet.");
                 /*

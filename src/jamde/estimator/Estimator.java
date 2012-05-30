@@ -240,6 +240,7 @@ public abstract class Estimator {
                     distance[i] = countDistance(distr, dataArray);
                     if (distance[i] < distance[iMin]) {
                         iMin = i;
+                        break;
                     }
                 }
             }
@@ -293,6 +294,7 @@ public abstract class Estimator {
                     distance[i] = countDistance(distr, dataArray);
                     if (distance[i] < distance[iMin]) {
                         iMin = i;
+                        break;
                     }
                 }
             }
@@ -341,6 +343,7 @@ public abstract class Estimator {
                     distance[i] = countDistance(distr, dataArray);
                     if (distance[i] < distance[iMin]) {
                         iMin = i;
+                        break;
                     }
                 }
             }

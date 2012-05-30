@@ -379,6 +379,15 @@ public class Table {
         w.write("\\begin{table}[ht] \\footnotesize \n");
         w.write("\\begin{center} \n");
         w.write("\\begin{tabular}{|c|");
+        String p1,p2,p3;
+        p1 = "\\mu";
+        p2 = "\\sigma";
+        if (input.getContaminated().toString().equals("Weibull")) {
+            p1 = "k";
+            p2 = "\\lambda";
+            p3 = "\\mu";
+        }
+        
         for (int i : sizeOfSample) {
             w.write("ccc|");
         }
@@ -392,13 +401,13 @@ public class Table {
         w.write("\\hline \n"); // borderline
         if (input.getParamsCounted().equals("first") || input.getParamsCounted().equals("both")) { // line in the head of the parameter mu
             for (int i = 0; i < sizeOfSample.length; i++) {
-                w.write("& $m(\\mu)$ & $s(\\mu)$ & $eref(\\mu)$ ");
+                w.write("& $m("+p1+")$ & $s("+p1+")$ & $eref("+p1+")$ ");
             }
             w.write("\\\\ \n");
         }
         if (input.getParamsCounted().equals("second") || input.getParamsCounted().equals("both")) { // line in the head of the parameter sigma
             for (int i = 0; i < sizeOfSample.length; i++) {
-                w.write("& $m(\\sigma)$ & $s(\\sigma)$ & $eref(\\sigma)$ ");
+                w.write("& $m("+p2+")$ & $s("+p2+")$ & $eref("+p2+")$ ");
             }
             w.write("\\\\ \n");
         }

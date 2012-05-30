@@ -37,9 +37,9 @@ public class WeibullDistribution extends Distribution {
      * @author honza
     */
     public WeibullDistribution(double p1, double p2, double p3) {
-        this.m = p3;
-        this.l = p2;
-        this.k = p1;
+        this.m = p3; // parameter of location
+        this.l = p2; // parameter of scale
+        this.k = p1; // parameter of kurtosis
         this.UpB1 = 5;
         this.LowB1 = 0.0001;
         this.UpB2 = 5;
