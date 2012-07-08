@@ -203,8 +203,9 @@ public class Table {
      * @throws FileNotFoundException
      * @throws InterruptedException
      */
-    public void count(int numOfThreads) throws FileNotFoundException, InterruptedException {
+    public int count(int numOfThreads) throws FileNotFoundException, InterruptedException {
         System.out.println("Enumeration has begun");
+        boolean printDist = false;
         int offset;
         /*
          * TODO dat mistoa nazev souboru pro ulozeni do config souboru
@@ -219,6 +220,8 @@ public class Table {
             int numOfPars = 1;
             if (input.getParamsCounted().equals("both")) {
                 numOfPars = 2;
+            } else if (input.getParamsCounted().equals("all")) {
+                numOfPars = 3;
             }
             TableOutput tableOutput = new TableOutput((ArrayList) input.getEstimators(), (ArrayList) input.getSizeOfSample(), numOfPars);
             EstimatorBuilder estimatorBuilderL1 = input.getEstimators().get(0);
@@ -233,7 +236,10 @@ public class Table {
                     int threadLoad = (int) (estimatorArray.length / numOfThreads); // Load which will be covered by each Thread
                     int leftover = estimatorArray.length - threadLoad * numOfThreads; // It will be distributed between Threads
                     int[] threadLoads = new int[numOfThreads];
-                    //printDistanceMatrix(input, estimatorBuilder.getEstimator(), sizeOfSample);
+                    if (printDist){ // DISTANCE MATRIX
+                      printDistanceMatrix(input, estimatorBuilder.getEstimator(), sizeOfSample);
+                      return 1;
+                    }
                     for (int i = 0; i < threadLoads.length; i++) {
                         if (leftover > 0) {
                             threadLoads[i] = threadLoad + 1;
@@ -271,6 +277,7 @@ public class Table {
             System.out.println("Table " + tableInProgress + "/" + numOfTables + " has ended. It took " + MathUtil.Long2time(tableTime) + ". It could take another " + MathUtil.Long2time((numOfTables - tableInProgress) * tableTime));
         }// END for (TableInput input : tableInputs)
         System.out.println("Enumeration has ended.");
+        return 0;
     } // END count()
 
     /**
@@ -379,15 +386,25 @@ public class Table {
         w.write("\\begin{table}[ht] \\footnotesize \n");
         w.write("\\begin{center} \n");
         w.write("\\begin{tabular}{|c|");
-        String p1,p2,p3;
-        p1 = "\\mu";
-        p2 = "\\sigma";
-        if (input.getContaminated().toString().equals("Weibull")) {
-            p1 = "k";
+        String p1 = "\\mu",p2 = "\\sigma",p3 = "";
+        if (input.getContaminated().toString().equals("Normal")){
+            p1 = "\\mu";
+            p2 = "\\sigma";
+        } else if (input.getContaminated().toString().equals("Cauchy")){
+            p1 = "\\mu";
+            p2 = "\\sigma";
+        } else if (input.getContaminated().toString().equals("Laplace")){
+            p1 = "\\mu";
             p2 = "\\lambda";
-            p3 = "\\mu";
-        }
-        
+        } else if (input.getContaminated().toString().equals("Exponential")){
+            p1 = "\\mu";
+            p2 = "\\lambda";
+        } else if (input.getContaminated().toString().equals("Weibull")){
+            p1 = "\\mu";
+            p2 = "\\lambda";
+            p3 = "k";
+        }  
+                
         for (int i : sizeOfSample) {
             w.write("ccc|");
         }
@@ -399,18 +416,25 @@ public class Table {
         }
         w.write(" & \\\\ \n"); // ending of line with sizes of sample
         w.write("\\hline \n"); // borderline
-        if (input.getParamsCounted().equals("first") || input.getParamsCounted().equals("both")) { // line in the head of the parameter mu
+        if (input.getParamsCounted().equals("first") || input.getParamsCounted().equals("both") || input.getParamsCounted().equals("all")){ // line in the head of the parameter mu
             for (int i = 0; i < sizeOfSample.length; i++) {
                 w.write("& $m("+p1+")$ & $s("+p1+")$ & $eref("+p1+")$ ");
             }
             w.write("\\\\ \n");
         }
-        if (input.getParamsCounted().equals("second") || input.getParamsCounted().equals("both")) { // line in the head of the parameter sigma
+        if (input.getParamsCounted().equals("second") || input.getParamsCounted().equals("both") || input.getParamsCounted().equals("all")) { // line in the head of the parameter sigma
             for (int i = 0; i < sizeOfSample.length; i++) {
                 w.write("& $m("+p2+")$ & $s("+p2+")$ & $eref("+p2+")$ ");
             }
             w.write("\\\\ \n");
         }
+        if (input.getParamsCounted().equals("all")) { // line in the head of the parameter k (only for Weibull)
+            for (int i = 0; i < sizeOfSample.length; i++) {
+                w.write("& $m("+p3+")$ & $s("+p3+")$ & $eref("+p3+")$ ");
+            }
+            w.write("\\\\ \n");
+        }
+        
         w.write("\\hline \n"); // border line below the head of the table.
         w.close();
     }
@@ -477,14 +501,14 @@ public class Table {
     private void printClassicLine(File file, TableInput input, TableOutput output, EstimatorBuilder estimator) throws IOException {
         FileWriter ww = new FileWriter(file, true); // so it appends
         PrintWriter w = new PrintWriter(ww);
-        if (input.getParamsCounted().equals("first") || input.getParamsCounted().equals("both")) {
+        if (input.getParamsCounted().equals("first") || input.getParamsCounted().equals("both") || input.getParamsCounted().equals("all")) { // printing of first parameter statistics
             w.write("$" + estimator.getPar() + "$");
             for (int sizeOfSample : input.getSizeOfSample()) {
                 w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $", output.getMeanValue(estimator, sizeOfSample, 1), output.getDeviation(estimator, sizeOfSample, 1), output.getEfficiency(estimator, sizeOfSample, 1));
             }
             w.write("\\\\ \n");
         }
-        if (input.getParamsCounted().equals("second") || input.getParamsCounted().equals("both")) {
+        if (input.getParamsCounted().equals("second") || input.getParamsCounted().equals("both") || input.getParamsCounted().equals("all")) {// printing of second parameter statistics
             if (input.getParamsCounted().equals("second")) {
                 w.write("$" + estimator.getPar() + "$");
                 for (int sizeOfSample : input.getSizeOfSample()) {
@@ -497,6 +521,12 @@ public class Table {
                 }
                 w.write("\\\\ \n");
             }
+        }
+        if (input.getParamsCounted().equals("all")) { // printing of third parameter statistics
+            for (int sizeOfSample : input.getSizeOfSample()) {
+                w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $", output.getMeanValue(estimator, sizeOfSample, 3), output.getDeviation(estimator, sizeOfSample, 3), output.getEfficiency(estimator, sizeOfSample, 3));
+            }
+            w.write("\\\\ \n");
         }
         w.write("\\hline \n");
         w.close();
@@ -519,8 +549,11 @@ public class Table {
         if (input.getParamsCounted().equals("both")) {
             numOfPars = 2;
         }
+        if (input.getParamsCounted().equals("all")) {
+            numOfPars = 3;
+        }
         EstimatorBuilder estimatorBuilderL1 = input.getEstimators().get(0);
-        if (input.getParamsCounted().equals("both") || input.getParamsCounted().equals("first")) {
+        if (input.getParamsCounted().equals("both") || input.getParamsCounted().equals("first") || input.getParamsCounted().equals("all")) {
             double[] firstPar = new double[input.getSizeOfEstimator()];
             for (int i = 0; i < firstPar.length; i++) {
                 firstPar[i] = estimatorArray[i].getP1();
@@ -531,10 +564,9 @@ public class Table {
             output.setMeanValue(estimatorBuilder, sizeOfSample, 1, expVal1);
             output.setDeviation(estimatorBuilder, sizeOfSample, 1, standDev1);
             double eref1 = Math.pow(output.getDeviation(estimatorBuilderL1, sizeOfSample, 1), 2) / standVar1; // radim pocital  eef =  varX/varL1 (bez odmocniny)
-            //eref1 = Math.sqrt(eref1);
             output.setEfficiency(estimatorBuilder, sizeOfSample, 1, eref1);
         }
-        if (input.getParamsCounted().equals("both") || input.getParamsCounted().equals("second")) {
+        if (input.getParamsCounted().equals("both") || input.getParamsCounted().equals("second") || input.getParamsCounted().equals("all")) {
             double[] secondPar = new double[input.getSizeOfEstimator()];
             for (int i = 0; i < secondPar.length; i++) {
                 secondPar[i] = estimatorArray[i].getP2();
@@ -542,11 +574,33 @@ public class Table {
             double expVal2 = MathUtil.getExpVal(secondPar);
             double standVar2 = MathUtil.getStandVar(expVal2, secondPar);
             double standDev2 = Math.sqrt(standVar2);
-            output.setMeanValue(estimatorBuilder, sizeOfSample, numOfPars, expVal2);
-            output.setDeviation(estimatorBuilder, sizeOfSample, numOfPars, standDev2);
-            double eref2 = Math.pow(output.getDeviation(estimatorBuilderL1, sizeOfSample, numOfPars), 2) / standVar2;
+            if (numOfPars != 3){ // 2 or 1 parameters were counted
+                output.setMeanValue(estimatorBuilder, sizeOfSample, numOfPars, expVal2);
+                output.setDeviation(estimatorBuilder, sizeOfSample, numOfPars, standDev2);
+                double eref2 = Math.pow(output.getDeviation(estimatorBuilderL1, sizeOfSample, numOfPars), 2) / standVar2;
+                output.setEfficiency(estimatorBuilder, sizeOfSample, numOfPars, eref2);
+            } else {
+                numOfPars = 2;
+                output.setMeanValue(estimatorBuilder, sizeOfSample, numOfPars, expVal2);
+                output.setDeviation(estimatorBuilder, sizeOfSample, numOfPars, standDev2);
+                double eref2 = Math.pow(output.getDeviation(estimatorBuilderL1, sizeOfSample, numOfPars), 2) / standVar2;
+                output.setEfficiency(estimatorBuilder, sizeOfSample, numOfPars, eref2);
+                numOfPars = 3;
+            }
+        }
+        if (input.getParamsCounted().equals("all")) { // numOfPars == 3;
+            double[] thirdPar = new double[input.getSizeOfEstimator()];
+            for (int i = 0; i < thirdPar.length; i++) {
+                thirdPar[i] = estimatorArray[i].getP3();
+            }
+            double expVal3 = MathUtil.getExpVal(thirdPar);
+            double standVar3 = MathUtil.getStandVar(expVal3, thirdPar);
+            double standDev3 = Math.sqrt(standVar3);
+            output.setMeanValue(estimatorBuilder, sizeOfSample, numOfPars, expVal3);
+            output.setDeviation(estimatorBuilder, sizeOfSample, numOfPars, standDev3);
+            double eref3 = Math.pow(output.getDeviation(estimatorBuilderL1, sizeOfSample, numOfPars), 2) / standVar3;
             //eref2 = Math.sqrt(eref2);
-            output.setEfficiency(estimatorBuilder, sizeOfSample, numOfPars, eref2);
+            output.setEfficiency(estimatorBuilder, sizeOfSample, numOfPars, eref3);
         }
         return output;
     }
@@ -571,13 +625,15 @@ public class Table {
             //Distribution d = new NormalDistribution(0, 1);
             DistributionBuilder dB = new DistributionBuilder(input.getContaminated());
             Distribution d = dB.getDistribution();
-            double N = 200;
-            double delkaIntervalu = 2;
-            for (int k = 0; k < 1; k++) {
-                par1 = 0;
+            double N = 100;
+            double start1 = 0.0001;
+            double start2 = 0.0001;
+            double delkaIntervalu = 4;
+            for (int k = 1; k < N; k++) {
+                par1 = start1 + k * delkaIntervalu / N ;
                 for (int l = 0; l < N; l++) {
-                    par2 = 0 + l * delkaIntervalu / N;
-                    d.setParameters(par1, par2, 0);
+                    par2 = start2 + l * delkaIntervalu / N;
+                    d.setParameters(0, par1, par2);
                     dist = estimator.countDistance(d, dataArray);
                     w.format(" %.12f ", dist);
                 }

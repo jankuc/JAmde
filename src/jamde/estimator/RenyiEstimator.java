@@ -72,18 +72,32 @@ public class RenyiEstimator extends Estimator {
                 dist = 1-dist/data.length * Math.pow(sigma, -par/(1+par));
                 return dist;
             } else if (distribution.toString().equals("Weibull")) {
-                double m = distribution.getP3();
+                double m = distribution.getP1();
                 double l = distribution.getP2();
-                double k = distribution.getP1();
+                double k = distribution.getP3();
                 double z;
                 for (int i = 0; i < data.length; i++) {
                     z = (data[i]-m)/l;
-                    dist +=  Math.pow(z,par*(k-1))*Math.exp(-par*Math.pow(z,k));
+                    if(z>=0){
+                      dist +=  Math.pow(z,par*(k-1))*Math.exp(-par*Math.pow(z,k));
+                    }
                 }
                 z = (k+par*k-par)/k;
                 double y = par/(par+1);
                 dist *= Math.pow(k/l,y)*Math.pow(1+par,z*y)*Math.pow(MathUtil.gamma(z),-y);
                 dist = 1-dist/data.length;
+                return dist;
+             } else if (distribution.toString().equals("Exponential")) {
+                double m = distribution.getP1();
+                double l = distribution.getP2();
+                double z;
+                for (int i = 0; i < data.length; i++) {
+                  z = (data[i]-m)/l;
+                  if (z>=0) {
+                    dist +=  Math.exp(-par*z);
+                  } 
+                }
+                dist = 1 - Math.pow(l,-par/(1+par)) * dist/data.length;
                 return dist;
             } else { // viz. Radim Demut (dipl. práce) str 37, (6.57)
                 throw new UnsupportedOperationException("Not supported yet.");

@@ -6,7 +6,7 @@ package jamde.distribution;
 
 
 /**
- *    tøída WeibullDistribution je potomek tøídy Distribution, má metody :
+ *    tøída ExponentialDistribution je potomek tøídy Distribution, má metody :
  *      konstruktor  ... definuje parametry rozdìlení a rozsah parametrického prostoru
  *      getRealization ... dává jednu realizaci náhodné velièiny pøísluného rozdìlení
  *      getP1 ... pøedává 1. parametr rozdìlaní
@@ -25,33 +25,29 @@ package jamde.distribution;
 
 
 /**
- *   f = k/l * Exp[ - [(x-m)/l]^k ] * [ (x-m)/l ]^(k-1) <br>
- *   k...p1...parameter of shape
- *   l...p2...parameter of scale
- *   m...p3...parameter of position
+ *   f = 1/l * Exp[ - [(x-m)/l] ] <br>
+ * 
  * @author honza
  */
-public class WeibullDistribution extends Distribution {
+public class ExponentialDistribution extends Distribution {
     public static String IDENTIFICATION="Weibull";
-    double m, l, k;
+    double m, l, k = 1;
 
     /**
-     *   f = k/l * Exp[ - [(x-m)/l]^k ] * [ (x-m)/l ]^(k-1)   
-     *   k...p1...parameter of shape
+     *   f = 1/l * Exp[ - [(x-m)/l] ] <br>
+     *   m...p1...parameter of position
      *   l...p2...parameter of scale
-     *   m...p3...parameter of position
      * @author honza
     */
-    public WeibullDistribution(double p1, double p2, double p3) {
+    public ExponentialDistribution(double p1, double p2) {
         this.m = p1; // parameter of location
         this.l = p2; // parameter of scale
-        this.k = p3; // parameter of kurtosisld
         this.UpB1 = 5;
         this.LowB1 = -5;
         this.UpB2 = 5;
         this.LowB2 = 0.0001;
         this.UpB3 = 5;
-        this.LowB3 = 0;
+        this.LowB3 = -5;
     }
 
     @Override
@@ -66,7 +62,7 @@ public class WeibullDistribution extends Distribution {
 
     @Override
     public double getP3() {
-        return k;
+        return 0;
     }
     
     @Override
@@ -81,7 +77,6 @@ public class WeibullDistribution extends Distribution {
     
     @Override
     public void setP3(double p3) {
-        this.k = p3;
     }
     
     @Override
@@ -102,7 +97,7 @@ public class WeibullDistribution extends Distribution {
     public void setParameters(double p1, double p2, double p3) {
         this.m = p1;
         this.l = p2;
-        this.k = p3;
+        this.k = 1;
     }
 
     /**
@@ -117,7 +112,7 @@ public class WeibullDistribution extends Distribution {
         this.UpB2 = 5;
         this.LowB2 = 0.0001;
         this.UpB3 = 5;
-        this.LowB3 = 0;//   0.1;
+        this.LowB3 = -5;//   0.1;
     }
 
     @Override
@@ -212,6 +207,6 @@ public class WeibullDistribution extends Distribution {
     
     @Override
     public String toString() {
-        return "Weibull";
+        return "Exponential";
     }
 }

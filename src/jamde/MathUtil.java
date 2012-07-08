@@ -26,6 +26,38 @@ public class MathUtil{
         return Math.round(value * pom) / pom;
     }
 
+    /**
+     * Returns minimum
+     * 
+     * @param data
+     * @return minimum
+     */
+    public static double min(double[] data) {
+        double min = Double.POSITIVE_INFINITY;
+        for (int i = 0; i < data.length; i++) {
+            if (data[i] < min){
+              min = data[i];
+            }
+        }
+        return min;
+    }
+    
+    
+    /**
+     * Returns maximum
+     * 
+     * @param data
+     * @return maximum
+     */
+    public static double max(double[] data) {
+        double max = Double.NEGATIVE_INFINITY;
+        for (int i = 0; i < data.length; i++) {
+            if (data[i] > max){
+              max = data[i];
+            }
+        }
+        return max;
+    }
     
     /**
      * Returns arithmetic mean = MLE of expected value

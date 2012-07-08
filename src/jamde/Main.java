@@ -5,9 +5,7 @@
 package jamde;
 
 import jamde.table.Table;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -72,24 +70,52 @@ public class Main {
         
         numOfThreads = Math.min(numOfThreads, 30); // Designed for 32-core vkstat. So it doesn't take up all cores.
         
-        table.count(numOfThreads);
-        String tableFileName = System.getProperty("user.home") + "/tables/default/defaultTable.tex"; 
+        int countOutput;
+        countOutput =  table.count(numOfThreads);
+        if (countOutput == 1){ // Only the distanceTable was printed to the file
+          return;
+        }
         
-        try {
+        String tableFileName = System.getProperty("user.home") + "/tables/default/defaultTable.tex"; // creates absolute path to the file
+        try { // did we specify the output file name when we started the program?
             tableFileName = args[3];
         } catch (java.lang.ArrayIndexOutOfBoundsException e1) {
             System.out.println("You did not specify name and path to the output file. ");
         }
         
         File tableFile = new File(tableFileName);
-        while (tableFile.exists()) {
-            tableFileName = tableFileName.replaceFirst(".tex", "i.tex");
-            tableFile = new File(tableFileName);
-        }
+        String newTableFileName = tableFileName;
+        int numOfExistingFiles = 0;
         
-        System.out.println("Result is saved in " + tableFileName);
+        while (tableFile.exists()) { // we change only newTableFileName and 
+            numOfExistingFiles ++;
+            newTableFileName = tableFileName.replaceFirst(".tex",  "" + numOfExistingFiles + ".tex");
+            tableFile = new File(newTableFileName);
+        }
+        tableFileName = newTableFileName;
         
         table.printClassic(tableFileName);
+        System.out.println("Result is saved in " + tableFileName);
+        
+        Runtime rt = Runtime.getRuntime();
+        Process pr = rt.exec("pdflatex -output-directory " + tableFile.getParent() + " " + tableFile.getAbsolutePath());
+        // we delete .log and .aux
+                
+        String username = System.getProperty("user.name");
+        if (username.equals("honza")){ // we don't want to start evince on vkstat (login there is kucerj28)
+            Process pr1 = rt.exec("evince " + tableFile.getAbsolutePath().replace("tex", "pdf"));
+        }
+        
+        BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+        String line;
+        while((line=input.readLine()) != null) {
+          System.out.println(line);
+        }
+       
+        File markedForRemoval = new File(tableFileName.replaceFirst(".tex", ".log"));
+        markedForRemoval.delete();
+        markedForRemoval = new File(tableFileName.replaceFirst(".tex", ".aux"));
+        markedForRemoval.delete();
         
         //System.setProperty("user.dir", dir);
         //System.out.println(System.getProperty("user.dir"));

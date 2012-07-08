@@ -26,6 +26,7 @@ public class DistributionBuilder {
         if (type.equals("Logistic")) distribution = new LogisticDistribution(par1, par2);
         if (type.equals("Uniform")) distribution = new UniformDistribution(par1, par2);
         if (type.equals("Weibull")) distribution = new WeibullDistribution(par1, par2, par3);
+        if (type.equals("Exponential")) distribution = new ExponentialDistribution(par1, par2);
         if (type.equals("Alternative")) distribution = new AlternativeDistribution(par1);
     }
     

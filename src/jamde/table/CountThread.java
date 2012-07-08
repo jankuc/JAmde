@@ -53,15 +53,17 @@ class CountThread extends Thread {
 
             DistributionBuilder dB = new DistributionBuilder(input.getContaminated().toString(), input.getContaminated().getP1(), input.getContaminated().getP2(), input.getContaminated().getP3());
             if (input.getParamsCounted().equals("both")) {
-                estimatorArray[i] = estimator.estimateAllPars(dB.getDistribution(), dataArray);
+                estimatorArray[i] = estimator.estimateFirstAndSecondPar(dB.getDistribution(), dataArray);
+            } else if (input.getParamsCounted().equals("all")) {
+                estimatorArray[i] = estimator.estimateAll3Pars(dB.getDistribution(), dataArray);
             } else if (input.getParamsCounted().equals("first")) {
                 estimatorArray[i] = estimator.estimateFirstPar(dB.getDistribution(), dataArray);
             } else if (input.getParamsCounted().equals("second")){
                 estimatorArray[i] = estimator.estimateSecondPar(dB.getDistribution(), dataArray);
             } else if (input.getParamsCounted().equals("third")) {
                 estimatorArray[i] = estimator.estimateThirdPar(dB.getDistribution(), dataArray);
-            } else if (input.getParamsCounted().equals("first&second")){
-                estimatorArray[i] = estimator.estimateFirstAndSecondPar(dB.getDistribution(), dataArray);
+            } else if (input.getParamsCounted().equals("second&third")){
+                estimatorArray[i] = estimator.estimateSecondAndThirdPar(dB.getDistribution(), dataArray);
             }
         } // END for (i = 0; estimatorArray[i])
     }
