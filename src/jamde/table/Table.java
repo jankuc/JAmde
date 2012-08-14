@@ -232,14 +232,14 @@ public class Table {
                     estimatorArray[i] = dB.getDistribution();
                 }
                 for (int sizeOfSample : input.getSizeOfSample()) { // cycle over all the sizes of dataArray. (columns in the table) [20, 50, 100, 200, 500]
-                    // Preparation for Threads:
-                    int threadLoad = (int) (estimatorArray.length / numOfThreads); // Load which will be covered by each Thread
-                    int leftover = estimatorArray.length - threadLoad * numOfThreads; // It will be distributed between Threads
-                    int[] threadLoads = new int[numOfThreads];
                     if (printDist){ // DISTANCE MATRIX
                       printDistanceMatrix(input, estimatorBuilder.getEstimator(), sizeOfSample);
                       return 1;
                     }
+                    // Preparation for Threads:
+                    int threadLoad = (int) (estimatorArray.length / numOfThreads); // Load which will be covered by each Thread
+                    int leftover = estimatorArray.length - threadLoad * numOfThreads; // It will be distributed between Threads
+                    int[] threadLoads = new int[numOfThreads];
                     for (int i = 0; i < threadLoads.length; i++) {
                         if (leftover > 0) {
                             threadLoads[i] = threadLoad + 1;

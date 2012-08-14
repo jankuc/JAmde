@@ -26,9 +26,9 @@ package jamde.distribution;
 
 /**
  *   f = k/l * Exp[ - [(x-m)/l]^k ] * [ (x-m)/l ]^(k-1) <br>
- *   k...p1...parameter of shape
+ *   m...p1...parameter of position
  *   l...p2...parameter of scale
- *   m...p3...parameter of position
+ *   k...p3...parameter of shape
  * @author honza
  */
 public class WeibullDistribution extends Distribution {
@@ -37,9 +37,9 @@ public class WeibullDistribution extends Distribution {
 
     /**
      *   f = k/l * Exp[ - [(x-m)/l]^k ] * [ (x-m)/l ]^(k-1)   
-     *   k...p1...parameter of shape
+     *   m...p1...parameter of position
      *   l...p2...parameter of scale
-     *   m...p3...parameter of position
+     *   k...p3...parameter of shape
      * @author honza
     */
     public WeibullDistribution(double p1, double p2, double p3) {
@@ -93,9 +93,9 @@ public class WeibullDistribution extends Distribution {
 
     /**
      *   f = k/l * Exp[ - [(x-m)/l]^k ] * [ (x-m)/l ]^(k-1)   
-     *   k...p1...parameter of shape
+     *   m...p1...parameter of position
      *   l...p2...parameter of scale
-     *   m...p3...parameter of position
+     *   k...p3...parameter of shape
      * @author honza
     */
     @Override
