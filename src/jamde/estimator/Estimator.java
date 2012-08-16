@@ -87,14 +87,14 @@ public abstract class Estimator {
                 distr.setParameters(DV, EV, 0);
             } else if (distr.toString().equals("Weibull")) {
                 double k, m, l;
-                l = distr.getP3();
                 m = distr.getP1();
-                k = distr.getP2();
+                l = distr.getP2();
+                k = distr.getP3();
                 for (int i = 0; i < dataArray.length; i++) {
                     l += Math.pow(dataArray[i] - m, k);
                 }
                 l = Math.pow(l / dataArray.length, 1 / k);
-                distr.setParameters(k, l, m);
+                distr.setParameters(m, l, k);
             } else {
                 EV = MathUtil.getExpVal(dataArray);
                 distr.setParameters(EV, MathUtil.getStandDev(EV, dataArray), distr.getP3());
