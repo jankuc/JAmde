@@ -562,18 +562,18 @@ public class Table {
         if (input.getParamsCounted().equals("all")) {
             numOfPars = 3;
         }
-        EstimatorBuilder estimatorBuilderL1 = input.getEstimators().get(0);
+        EstimatorBuilder estimatorBuilderMLE = input.getEstimators().get(0);
         if (input.getParamsCounted().equals("both") || input.getParamsCounted().equals("first") || input.getParamsCounted().equals("all")) {
             double[] firstPar = new double[input.getSizeOfEstimator()];
             for (int i = 0; i < firstPar.length; i++) {
                 firstPar[i] = estimatorArray[i].getP1();
             }
             double expVal1 = MathUtil.getExpVal(firstPar);
-            double standVar1 = MathUtil.getStandVar(expVal1, firstPar);
+            double standVar1 = MathUtil.getStandVar(input.getContaminated().getP1(), firstPar);
             double standDev1 = Math.sqrt(standVar1);
             output.setMeanValue(estimatorBuilder, sizeOfSample, 1, expVal1);
             output.setDeviation(estimatorBuilder, sizeOfSample, 1, standDev1);
-            double eref1 = Math.pow(output.getDeviation(estimatorBuilderL1, sizeOfSample, 1), 2) / standVar1; // radim pocital  eef =  varX/varL1 (bez odmocniny)
+            double eref1 = Math.pow(output.getDeviation(estimatorBuilderMLE, sizeOfSample, 1), 2) / standVar1; // radim pocital  eef =  varX/varL1 (bez odmocniny)
             output.setEfficiency(estimatorBuilder, sizeOfSample, 1, eref1);
         }
         if (input.getParamsCounted().equals("both") || input.getParamsCounted().equals("second") || input.getParamsCounted().equals("all")) {
@@ -582,18 +582,18 @@ public class Table {
                 secondPar[i] = estimatorArray[i].getP2();
             }
             double expVal2 = MathUtil.getExpVal(secondPar);
-            double standVar2 = MathUtil.getStandVar(expVal2, secondPar);
+            double standVar2 = MathUtil.getStandVar(input.getContaminated().getP2(), secondPar);
             double standDev2 = Math.sqrt(standVar2);
             if (numOfPars != 3){ // 2 or 1 parameters were counted
                 output.setMeanValue(estimatorBuilder, sizeOfSample, numOfPars, expVal2);
                 output.setDeviation(estimatorBuilder, sizeOfSample, numOfPars, standDev2);
-                double eref2 = Math.pow(output.getDeviation(estimatorBuilderL1, sizeOfSample, numOfPars), 2) / standVar2;
+                double eref2 = Math.pow(output.getDeviation(estimatorBuilderMLE, sizeOfSample, numOfPars), 2) / standVar2;
                 output.setEfficiency(estimatorBuilder, sizeOfSample, numOfPars, eref2);
             } else {
                 numOfPars = 2;
                 output.setMeanValue(estimatorBuilder, sizeOfSample, numOfPars, expVal2);
                 output.setDeviation(estimatorBuilder, sizeOfSample, numOfPars, standDev2);
-                double eref2 = Math.pow(output.getDeviation(estimatorBuilderL1, sizeOfSample, numOfPars), 2) / standVar2;
+                double eref2 = Math.pow(output.getDeviation(estimatorBuilderMLE, sizeOfSample, numOfPars), 2) / standVar2;
                 output.setEfficiency(estimatorBuilder, sizeOfSample, numOfPars, eref2);
                 numOfPars = 3;
             }
@@ -604,11 +604,11 @@ public class Table {
                 thirdPar[i] = estimatorArray[i].getP3();
             }
             double expVal3 = MathUtil.getExpVal(thirdPar);
-            double standVar3 = MathUtil.getStandVar(expVal3, thirdPar);
+            double standVar3 = MathUtil.getStandVar(input.getContaminated().getP3(), thirdPar);
             double standDev3 = Math.sqrt(standVar3);
             output.setMeanValue(estimatorBuilder, sizeOfSample, numOfPars, expVal3);
             output.setDeviation(estimatorBuilder, sizeOfSample, numOfPars, standDev3);
-            double eref3 = Math.pow(output.getDeviation(estimatorBuilderL1, sizeOfSample, numOfPars), 2) / standVar3;
+            double eref3 = Math.pow(output.getDeviation(estimatorBuilderMLE, sizeOfSample, numOfPars), 2) / standVar3;
             //eref2 = Math.sqrt(eref2);
             output.setEfficiency(estimatorBuilder, sizeOfSample, numOfPars, eref3);
         }
