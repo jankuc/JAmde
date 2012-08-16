@@ -457,7 +457,12 @@ public class Table {
         /*
          * TODO dodelat ruzne vypisy pro N(0,1), N(0,005)
          */
-        String sContaminated = String.format("\\mathrm{%c}(%.1f,%.1f)", input.getContaminated().toString().charAt(0), input.getContaminated().getP1(), input.getContaminated().getP2());
+        String sContaminated;
+        if (input.getContaminated().toString().equals("Weibull")) {
+            sContaminated = String.format("\\mathrm{%c}(%.1f,%.1f,%.1f)", input.getContaminated().toString().charAt(0), input.getContaminated().getP1(), input.getContaminated().getP2(), input.getContaminated().getP3());
+        } else {
+            sContaminated = String.format("\\mathrm{%c}(%.1f,%.1f)", input.getContaminated().toString().charAt(0), input.getContaminated().getP1(), input.getContaminated().getP2());
+        }
         w.write("\\caption{" + eBs.get(1).getType() + ": $p = " + sContaminated + "$, data: "); // caption creation       
         if (input.getContaminating() == null) {
             if (input.getData() == null) { // we need to make orderErrors caption
@@ -481,7 +486,12 @@ public class Table {
                 w.write(" Data načtena ze souboru. \n");
             }
         } else { // data were created as a mixture of distributions
-            String sContaminating = String.format("\\mathrm{%c}(%.1f,%.1f)", input.getContaminating().toString().charAt(0), input.getContaminating().getP1(), input.getContaminating().getP2());
+            String sContaminating;
+            if (input.getContaminating().toString().equals("Weibull")) {
+                sContaminating = String.format("\\mathrm{%c}(%.1f,%.1f,%.1f)", input.getContaminating().toString().charAt(0), input.getContaminating().getP1(), input.getContaminating().getP2(), input.getContaminating().getP3());
+            } else {
+                sContaminating = String.format("\\mathrm{%c}(%.1f,%.1f)", input.getContaminating().toString().charAt(0), input.getContaminating().getP1(), input.getContaminating().getP2());
+            }
             w.write("$(1-\\varepsilon)" + sContaminated + " + \\varepsilon " + sContaminating + "$, $\\varepsilon =  " + input.getContamination() + "$, $K = " + input.getSizeOfEstimator() + "$} \n");
         }
         w.write("\\end{center}\n");
