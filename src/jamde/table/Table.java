@@ -598,7 +598,7 @@ public class Table {
                 numOfPars = 3;
             }
         }
-        if (input.getParamsCounted().equals("all")) { // numOfPars == 3;
+        if (input.getParamsCounted().equals("all") || input.getParamsCounted().equals("third")) { // numOfPars == 3;
             double[] thirdPar = new double[input.getSizeOfEstimator()];
             for (int i = 0; i < thirdPar.length; i++) {
                 thirdPar[i] = estimatorArray[i].getP3();

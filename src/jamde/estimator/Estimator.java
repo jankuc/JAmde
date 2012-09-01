@@ -224,9 +224,7 @@ public abstract class Estimator {
      * @return
      */
     public Distribution estimateThirdPar(Distribution distr, double[] dataArray) {
-        /*
-         * TODO minimalizace par3
-         */
+        distr = hillClimber1DPar3(distr, dataArray);
         return distr;
     }
 
@@ -594,6 +592,56 @@ public abstract class Estimator {
             }
         }
         distr.setParameters(x, y[0], 0);
+        return distr;
+    }
+    
+    
+    /**
+     * Primitive minimization procedure for 1D minimization of the third
+     * parameter of distribution. In every iteration moves to one of eight
+     * points around actual position so it minimizes the distance the most. If
+     * the minimum is in it's current position the epsilon-neighborhood is
+     * halved. It ends when the epsilon-neighborhood is smaller or equal to eps
+     * = 0.0009. It can't handle local optima.
+     *
+     * @param distr
+     * @param dataArray
+     * @return
+     */
+    private Distribution hillClimber1DPar3(Distribution distr, double[] dataArray) {
+        double[] z = new double[3];
+        double x = distr.getP1();
+        double y = distr.getP2();
+        do {
+            z[0] = distr.getP3() - 0.5 + Math.random(); // initiation position is near the supposed minimum
+        } while (!distr.isParametersOK(x,y, z[0]));
+        double[] distance = new double[3];
+        double eps = 0.5;
+        int iMin = 0;
+        distr.setParameters(x,y,z[0]);
+        distance[0] = countDistance(distr, dataArray);
+        while (eps > 0.0000001) {
+            z[1] = z[0] - eps;
+            z[2] = z[0] + eps;
+            for (int i = 1; i < distance.length; i++) {
+                if (distr.isParametersOK(x,y,z[i])) {
+                    distr.setParameters(x,y,z[i]);
+                    distance[i] = countDistance(distr, dataArray);
+                    if (distance[i] < distance[iMin]) {
+                        iMin = i;
+                        break;
+                    }
+                }
+            }
+            if (iMin == 0) {
+                eps *= 0.5;
+            } else {
+                z[0] = z[iMin];
+                distance[0] = distance[iMin];
+                iMin = 0;
+            }
+        }
+        distr.setParameters(x,y,z[0]);
         return distr;
     }
 
