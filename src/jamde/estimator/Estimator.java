@@ -86,7 +86,7 @@ public abstract class Estimator {
                 DV = MathUtil.min(dataArray);
                 distr.setParameters(DV, EV, 0);
             } else if (distr.toString().equals("Weibull")) {
-                
+                distr = hillClimber2D(distr, dataArray);
 //                double k, m, l;
 //                m = distr.getP1();
 //                l = distr.getP2();
