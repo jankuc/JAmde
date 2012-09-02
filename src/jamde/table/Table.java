@@ -635,15 +635,15 @@ public class Table {
             //Distribution d = new NormalDistribution(0, 1);
             DistributionBuilder dB = new DistributionBuilder(input.getContaminated());
             Distribution d = dB.getDistribution();
-            double N = 100;
-            double start1 = 0.0001;
+            double N = 300;
+            double start1 = -2;
             double start2 = 0.0001;
             double delkaIntervalu = 4;
             for (int k = 1; k < N; k++) {
                 par1 = start1 + k * delkaIntervalu / N ;
                 for (int l = 0; l < N; l++) {
                     par2 = start2 + l * delkaIntervalu / N;
-                    d.setParameters(0, par1, par2);
+                    d.setParameters(par1, par2,0);
                     dist = estimator.countDistance(d, dataArray);
                     w.format(" %.12f ", dist);
                 }
