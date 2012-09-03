@@ -205,7 +205,7 @@ public class Table {
      */
     public int count(int numOfThreads) throws FileNotFoundException, InterruptedException {
         System.out.println("Enumeration has begun");
-        boolean printDist = false;
+        boolean printDist = true;
         int offset;
         /*
          * TODO dat mistoa nazev souboru pro ulozeni do config souboru
@@ -635,10 +635,10 @@ public class Table {
             //Distribution d = new NormalDistribution(0, 1);
             DistributionBuilder dB = new DistributionBuilder(input.getContaminated());
             Distribution d = dB.getDistribution();
-            double N = 300;
-            double start1 = -2;
+            double N = 500;
+            double start1 = -4;
             double start2 = 0.0001;
-            double delkaIntervalu = 4;
+            double delkaIntervalu = 16;
             for (int k = 1; k < N; k++) {
                 par1 = start1 + k * delkaIntervalu / N ;
                 for (int l = 0; l < N; l++) {

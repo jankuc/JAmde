@@ -87,15 +87,15 @@ public abstract class Estimator {
                 distr.setParameters(DV, EV, 0);
             } else if (distr.toString().equals("Weibull")) {
                 distr = hillClimber2D(distr, dataArray);
-//                double k, m, l;
-//                m = distr.getP1();
-//                l = distr.getP2();
-//                k = distr.getP3();
-//                for (int i = 0; i < dataArray.length; i++) {
-//                    l += Math.pow(dataArray[i] - m, k);
-//                }
-//                l = Math.pow(l / dataArray.length, 1 / k);
-//                distr.setParameters(m, l, k);
+                double k, m, l;
+                m = MathUtil.min(dataArray);
+                l = distr.getP2();
+                k = distr.getP3();
+                for (int i = 0; i < dataArray.length; i++) {
+                    l += Math.pow(dataArray[i] - m, k);
+                }
+                l = Math.pow(l / dataArray.length, 1 / k);
+                distr.setParameters(m, l, k);
             } else {
                 EV = MathUtil.getExpVal(dataArray);
                 distr.setParameters(EV, MathUtil.getStandDev(EV, dataArray), distr.getP3());
