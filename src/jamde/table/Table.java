@@ -205,7 +205,7 @@ public class Table {
      */
     public int count(int numOfThreads) throws FileNotFoundException, InterruptedException {
         System.out.println("Enumeration has begun");
-        boolean printDist = true;
+        boolean printDist = false;
         int offset;
         /*
          * TODO dat mistoa nazev souboru pro ulozeni do config souboru
