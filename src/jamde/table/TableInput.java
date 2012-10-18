@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * Class which is used for storing input parameters. It is almost only for use 
  * as an inner class for Table.
  * 
- * @author kucerj28
+ * @author kucerj28@fjfi.cvut.cz
  */
 public class TableInput implements Cloneable{
 

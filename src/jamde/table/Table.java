@@ -20,7 +20,7 @@ import javax.print.DocFlavor.INPUT_STREAM;
 
 /**
  *
- * @author kucerj28
+ * @author kucerj28@fjfi.cvut.cz
  */
 public class Table {
     private ArrayList<TableInput> tableInputs = new ArrayList<TableInput>();
@@ -108,7 +108,6 @@ public class Table {
         String sContaminated, sContaminating, estType = "";
         double contaminatedPar1 = 0, contaminatedPar2 = 1, contaminatedPar3 = 0, contaminatingPar1 = 0, contaminatingPar2 = 1, contaminatingPar3 = 1, estPar = 0;
         ArrayList<Integer> sizeOfSample = new ArrayList<Integer>();
-
         ArrayList<EstimatorBuilder> estimators = new ArrayList<EstimatorBuilder>();
         EstimatorBuilder e = new EstimatorBuilder(estType, estPar);
         input.setSizeOfEstimator(0);
@@ -206,9 +205,11 @@ public class Table {
     public int count(int numOfThreads) throws FileNotFoundException, InterruptedException {
         System.out.println("Enumeration has begun");
         boolean printDist = false;
+        /* 
+         * TODO vytisk distancni matice printDist dat do parametru funkce a nasledne i do vstupu programu z cmdline
+         */
         int offset;
         /*
-         * TODO dat mistoa nazev souboru pro ulozeni do config souboru
          * TODO pri nacitani umisteni tabulky toto umisteni vytvori
          * TODO vytvorit funkci pro vykreslovani vzdalenostnich obrazku
          */
@@ -237,8 +238,8 @@ public class Table {
                       return 1;
                     }
                     // Preparation for Threads:
-                    int threadLoad = (int) (estimatorArray.length / numOfThreads); // Load which will be covered by each Thread
-                    int leftover = estimatorArray.length - threadLoad * numOfThreads; // It will be distributed between Threads
+                    int threadLoad = (int) (estimatorArray.length / numOfThreads); // Load which will be covered by each Thread 1000/30
+                    int leftover = estimatorArray.length - threadLoad * numOfThreads; // It will be distributed between Threads 1000 - 1000/30
                     int[] threadLoads = new int[numOfThreads];
                     for (int i = 0; i < threadLoads.length; i++) {
                         if (leftover > 0) {
@@ -250,7 +251,7 @@ public class Table {
                     }
                     // Enumeration
                     CountThread[] threadArray = new CountThread[numOfThreads]; // Array of Threads
-                    Distribution[][] threadResult = new Distribution[numOfThreads][];
+                    Distribution[][] threadResult = new Distribution[numOfThreads][]; // threadResult holds the distribution, which is result of the enumeration of eash thread
                     DistributionBuilder dB = new DistributionBuilder(input.getContaminated().toString(), input.getContaminated().getP1(), input.getContaminated().getP2(), input.getContaminated().getP3());
                     for (int i = 0; i < threadArray.length; i++) { //0:numOfThreads-1
                         threadArray[i] = new CountThread(input, threadLoads[i], estimatorBuilder, sizeOfSample);

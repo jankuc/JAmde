@@ -27,7 +27,7 @@ package jamde.distribution;
 /**
  *   f = 1/l * Exp[ - [(x-m)/l] ] <br>
  * 
- * @author honza
+ * @author kucerj28@fjfi.cvut.cz
  */
 public class ExponentialDistribution extends Distribution {
     public static String IDENTIFICATION="Weibull";

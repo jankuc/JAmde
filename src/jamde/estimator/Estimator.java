@@ -14,7 +14,7 @@ import java.util.Random;
  * LeCamEstimator, ...). It is built by EstimatorBuilder. It has abstract
  * function countDistance. Minimization procedures are implemented here.
  *
- * @author honza
+ * @author kucerj28@fjfi.cvut.cz
  */
 public abstract class Estimator {
     /*

@@ -3,7 +3,7 @@ package jamde.estimator;
 /**
  * Builder for estimators. Creates estimator based on the type and parameter. 
  *
- * @author honza
+ * @author  kucerj28@fjfi.cvut.cz
  */
 public class EstimatorBuilder {
     /**

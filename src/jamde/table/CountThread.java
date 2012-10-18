@@ -9,7 +9,7 @@ import jamde.estimator.*;
 
 /**
  * Thread which encapsulates the procedure for counting.
- * @author kucerj28
+ * @author kucerj28@fjfi.cvut.cz
  */
 class CountThread extends Thread {
 

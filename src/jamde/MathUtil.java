@@ -6,7 +6,7 @@ package jamde;
 
 /**
  *
- * @author honza
+ * @author kucerj28@fjfi.cvut.cz
  */
 import java.util.Arrays;
 

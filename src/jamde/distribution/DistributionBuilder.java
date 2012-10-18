@@ -6,7 +6,7 @@ package jamde.distribution;
 
 /**
  *
- * @author honza
+ * @author kucerj28@fjfi.cvut.cz
  */
 public class DistributionBuilder {
     private Distribution distribution;

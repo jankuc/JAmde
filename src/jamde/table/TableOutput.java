@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * statistics. It is then used as a source of data by printing procedures.
  * Field parameter is ParameterStatistics[estimators][sizeOfSample][numOfPars]
  * 
- * @author kucerj28
+ * @author kucerj28@fjfi.cvut.cz
  */
 public class TableOutput {
     private ArrayList<EstimatorBuilder> estimators;

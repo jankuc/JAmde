@@ -10,7 +10,7 @@ import jamde.distribution.Distribution;
 /**
  * RenyiEstimator extends Estimator. Implements countDistance().
  * 
- * @author kucerj28
+ * @author kucerj28@fjfi.cvut.cz
  */
 public class RenyiEstimator extends Estimator {
 

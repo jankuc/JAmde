@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author honza Kučera
+ * @author kucerj28@fjfi.cvut.cz
  */
 public class Main {
 
@@ -61,15 +61,16 @@ public class Main {
             }
         } // Now we have loaded the tableInput in Table from the file
         
-        int numOfThreads = 12; // Default value
+        int numOfThreads = 25; // Default value
         try {
             numOfThreads = Integer.parseInt(args[2]);
         } catch (java.lang.ArrayIndexOutOfBoundsException e1) {
-            System.out.println("You did not specify number of Threads you want to use. Default value is 12. For vkstat it is OK.");
+            System.out.println("You did not specify number of Threads you want to use. Default value is 25.");
         }
         
-        numOfThreads = Math.min(numOfThreads, 30); // Designed for 32-core vkstat. So it doesn't take up all cores.
+        numOfThreads = Math.min(numOfThreads, 30); // Designed for 32-core vkstat. So it doesn't take up all the cores.
         
+        // the enumeration itself
         int countOutput;
         countOutput =  table.count(numOfThreads);
         if (countOutput == 1){ // Only the distanceTable was printed to the file
@@ -80,14 +81,16 @@ public class Main {
         try { // did we specify the output file name when we started the program?
             tableFileName = args[3];
         } catch (java.lang.ArrayIndexOutOfBoundsException e1) {
-            System.out.println("You did not specify name and path to the output file. ");
+            System.out.println("You did not specify name and path to the output file. It will be created for you.");
         }
+        
         
         File tableFile = new File(tableFileName);
         String newTableFileName = tableFileName;
         int numOfExistingFiles = 0;
         
-        while (tableFile.exists()) { // we change only newTableFileName and 
+        // we append number if the output file already exists
+        while (tableFile.exists()) { // we change only newTableFileName
             numOfExistingFiles ++;
             newTableFileName = tableFileName.replaceFirst(".tex",  "" + numOfExistingFiles + ".tex");
             tableFile = new File(newTableFileName);
@@ -97,31 +100,30 @@ public class Main {
         table.printClassic(tableFileName);
         System.out.println("Result is saved in " + tableFileName);
         
+        // pdflatex creation of .pdf of the table
         Runtime rt = Runtime.getRuntime();
         Process pr = rt.exec("pdflatex -output-directory " + tableFile.getParent() + " " + tableFile.getAbsolutePath());
-        // we delete .log and .aux
                 
+        // if the program runs under user honza, it runs pdfviewer
         String username = System.getProperty("user.name");
         if (username.equals("honza")){ // we don't want to start evince on vkstat (login there is kucerj28)
             Process pr1 = rt.exec("evince " + tableFile.getAbsolutePath().replace("tex", "pdf"));
         }
         
+        // copies output of pdflatex process to output of main.java
         BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
         String line;
         while((line=input.readLine()) != null) {
           System.out.println(line);
         }
-       
+        
+        // deletes .log and .aux files of pdflatex 
         File markedForRemoval = new File(tableFileName.replaceFirst(".tex", ".log"));
         markedForRemoval.delete();
         markedForRemoval = new File(tableFileName.replaceFirst(".tex", ".aux"));
         markedForRemoval.delete();
         
-        //System.setProperty("user.dir", dir);
-        //System.out.println(System.getProperty("user.dir"));
-        
-        //Process p = Runtime.getRuntime().exec("pdflatex " + tableFileName);
-        
+        // stops time 
         Long timeEnd = System.currentTimeMillis();
         Long runTime = timeEnd - timeStart;
         System.out.println("Runtime = " + MathUtil.Long2time(runTime) + ".");

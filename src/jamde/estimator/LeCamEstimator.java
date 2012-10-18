@@ -8,7 +8,7 @@ import jamde.distribution.Distribution;
 
 /**
  *
- * @author honza
+ * @author kucerj28@fjfi.cvut.cz
  */
 public class LeCamEstimator extends Estimator{
 
