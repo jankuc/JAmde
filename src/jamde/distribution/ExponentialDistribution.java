@@ -42,12 +42,12 @@ public class ExponentialDistribution extends Distribution {
     public ExponentialDistribution(double p1, double p2) {
         this.m = p1; // parameter of location
         this.l = p2; // parameter of scale
-        this.UpB1 = 5;
-        this.LowB1 = -5;
-        this.UpB2 = 5;
-        this.LowB2 = 0.0001;
-        this.UpB3 = 5;
-        this.LowB3 = -5;
+        this.upP1 = 5;
+        this.lowP1 = -5;
+        this.upP2 = 5;
+        this.lowP2 = 0.0001;
+        this.upP3 = 5;
+        this.lowP3 = -5;
     }
 
     @Override
@@ -107,28 +107,28 @@ public class ExponentialDistribution extends Distribution {
      */
     @Override
     public void setBoundaries(double[] array) {
-        this.UpB1 = 5;
-        this.LowB1 = -5;
-        this.UpB2 = 5;
-        this.LowB2 = 0.0001;
-        this.UpB3 = 5;
-        this.LowB3 = -5;//   0.1;
+        this.upP1 = 5;
+        this.lowP1 = -5;
+        this.upP2 = 5;
+        this.lowP2 = 0.0001;
+        this.upP3 = 5;
+        this.lowP3 = -5;//   0.1;
     }
 
     @Override
     public boolean isParametersOK(double p1, double p2, double p3) {
-        return ((p1 >= LowB1) && (p1 <= UpB1) && (p2 > LowB2) && (p2 <= UpB2) && (p3 >= LowB3) && (p3 <= UpB3));
+        return ((p1 >= lowP1) && (p1 <= upP1) && (p2 > lowP2) && (p2 <= upP2) && (p3 >= lowP3) && (p3 <= upP3));
     }
 //
 //    public Parameters getRandomParameters(Distribution d) {
 //        Parameters parameters = new Parameters();
-//        d.setParameters(UpB1, LowB1, 0);
+//        d.setParameters(upP1, lowP1, 0);
 //        parameters.p1 = d.getRealization();
-//        d.setParameters(UpB2, LowB2, 0);
+//        d.setParameters(upP2, lowP2, 0);
 //        do
 //            parameters.p2 = d.getRealization();
 //        while (0 >= parameters.p2);
-//        d.setParameters(UpB3, LowB3, 0);
+//        d.setParameters(upP3, lowP3, 0);
 //        do
 //            parameters.p3 = d.getRealization();
 //        while (0 >= parameters.p3);

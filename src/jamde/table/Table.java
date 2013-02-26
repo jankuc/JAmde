@@ -224,7 +224,7 @@ public class Table {
             } else if (input.getParamsCounted().equals("all")) {
                 numOfPars = 3;
             }
-            TableOutput tableOutput = new TableOutput((ArrayList) input.getEstimators(), (ArrayList) input.getSizeOfSample(), numOfPars);
+            TableOutput tableOutput = new TableOutput((ArrayList<EstimatorBuilder>) input.getEstimators(), (ArrayList<Integer>) input.getSizeOfSample(), numOfPars);
             EstimatorBuilder estimatorBuilderL1 = input.getEstimators().get(0);
             for (EstimatorBuilder estimatorBuilder : input.getEstimators()) { //cycle over all estimators in one table (lines of the table)
                 Distribution[] estimatorArray = new Distribution[input.getSizeOfEstimator()]; // for every dsitribution in this array, we will find parameters which minimize the distance from this distribution to the current data.

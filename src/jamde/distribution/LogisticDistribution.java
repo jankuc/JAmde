@@ -32,10 +32,10 @@ public class LogisticDistribution extends Distribution {
     public LogisticDistribution(double alfa, double beta) {
         this.alfa = alfa;
         this.beta = beta;
-        this.UpB1 = 5;
-        this.LowB1 = -5;
-        this.UpB2 = 5;
-        this.LowB2 = 0;
+        this.upP1 = 5;
+        this.lowP1 = -5;
+        this.upP2 = 5;
+        this.lowP2 = 0;
     }
 
     @Override
@@ -82,22 +82,22 @@ public class LogisticDistribution extends Distribution {
 
     @Override
     public void setBoundaries(double[] array) {
-        this.UpB1 = 5;
-        this.LowB1 = -5;
-        this.UpB2 = 20;        //  20
-        this.LowB2 = 0;
+        this.upP1 = 5;
+        this.lowP1 = -5;
+        this.upP2 = 20;        //  20
+        this.lowP2 = 0;
     }
 
     @Override
     public boolean isParametersOK(double p1, double p2, double p3) {
-        return ((p1 >= LowB1) && (p1 <= UpB1) && (p2 > LowB2) && (p2 <= UpB2));
+        return ((p1 >= lowP1) && (p1 <= upP1) && (p2 > lowP2) && (p2 <= upP2));
     }
 //
 //    public Parameters getRandomParameters(Distribution d) {
 //        Parameters parameters = new Parameters();
-//        d.setParameters(UpB1, LowB1, 0);
+//        d.setParameters(upP1, lowP1, 0);
 //        parameters.p1 = d.getRealization();
-//        d.setParameters(UpB2, LowB2, 0);
+//        d.setParameters(upP2, lowP2, 0);
 //        do
 //            parameters.p2 = d.getRealization();
 //        while (0 >= parameters.p2);

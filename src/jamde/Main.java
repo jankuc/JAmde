@@ -32,6 +32,7 @@ public class Main {
         
         if (args.length == 0) {
             System.out.println("Not enough arguments.");
+            return;
         }
         
         if (args[0].equals("file")) { // args[0] should be one of {file,app}
@@ -81,7 +82,7 @@ public class Main {
         try { // did we specify the output file name when we started the program?
             tableFileName = args[3];
         } catch (java.lang.ArrayIndexOutOfBoundsException e1) {
-            System.out.println("You did not specify name and path to the output file. It will be created for you.");
+            System.out.println("You did not specify name and path to the output file. It will be created for you. In ~/tables/default/defaultTable.tex");
         }
         
         
@@ -103,12 +104,6 @@ public class Main {
         // pdflatex creation of .pdf of the table
         Runtime rt = Runtime.getRuntime();
         Process pr = rt.exec("pdflatex -output-directory " + tableFile.getParent() + " " + tableFile.getAbsolutePath());
-                
-        // if the program runs under user honza, it runs pdfviewer
-        String username = System.getProperty("user.name");
-        if (username.equals("honza")){ // we don't want to start evince on vkstat (login there is kucerj28)
-            Process pr1 = rt.exec("evince " + tableFile.getAbsolutePath().replace("tex", "pdf"));
-        }
         
         // copies output of pdflatex process to output of main.java
         BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
@@ -127,6 +122,12 @@ public class Main {
         Long timeEnd = System.currentTimeMillis();
         Long runTime = timeEnd - timeStart;
         System.out.println("Runtime = " + MathUtil.Long2time(runTime) + ".");
+        
+        // if the program runs under user honza (it's on local machine, not on vkstat), it runs pdfviewer
+        String username = System.getProperty("user.name");
+        if (username.equals("honza")){ // we don't want to start evince on vkstat (login there is kucerj28)
+            Process pr1 = rt.exec("evince " + tableFile.getAbsolutePath().replace("tex", "pdf"));
+        }
 
     }
 }

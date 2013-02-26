@@ -39,10 +39,12 @@ public class NormalDistribution extends Distribution {
     public NormalDistribution(double mu, double sigma2) {
         this.mu = mu;
         this.sigma = Math.sqrt(sigma2);
-        this.UpB1 = 10;
-        this.LowB1 = -10;
-        this.UpB2 = 20;
-        this.LowB2 = 0.00001;
+        this.upP1 = 10;
+        this.lowP1 = -10;
+        this.upP2 = 20;
+        this.lowP2 = 0.00001;
+        this.lowP3 = 0;
+        this.upP3 = 0;
         this.PI = 3.141593;
         this.a[0] = 0.2316419;
         this.a[1] = 0.3193815;
@@ -97,54 +99,56 @@ public class NormalDistribution extends Distribution {
     public void setBoundaries(double[] array) {
         double EV;
         double DV;
-        this.LowB1 = -5;
-        this.UpB1 = 5;
-        this.LowB2 = 0.0001;
-        this.UpB2 = 10;
+        this.lowP1 = -5;
+        this.upP1 = 5;
+        this.lowP2 = 0.0001;
+        this.upP2 = 10;
+        this.lowP3 = 0;
+        this.upP3 = 0;
                 
 
         //char LocSca = input.getEstimationModel().charAt(0);
 //        switch (LocSca) {
 //            case'L':
-//                this.LowB1 = -5;
-//                this.UpB1 = 5;
-//                this.LowB2 = input.getContaminatedDistribution().getParameter2();
-//                this.UpB2 = input.getContaminatedDistribution().getParameter2();
+//                this.lowP1 = -5;
+//                this.upP1 = 5;
+//                this.lowP2 = input.getContaminatedDistribution().getParameter2();
+//                this.upP2 = input.getContaminatedDistribution().getParameter2();
 //                break;
 //            case'S':
-//                this.UpB1 = input.getContaminatedDistribution().getParameter1();
-//                this.LowB1 = input.getContaminatedDistribution().getParameter1();
-//                this.LowB2 = 0;
-//                this.UpB2 = 5;                          // pro nekontaminovaná data, ale jen rozdìlení s malým rozptylem, tj. ne Cauchy
+//                this.upP1 = input.getContaminatedDistribution().getParameter1();
+//                this.lowP1 = input.getContaminatedDistribution().getParameter1();
+//                this.lowP2 = 0;
+//                this.upP2 = 5;                          // pro nekontaminovaná data, ale jen rozdìlení s malým rozptylem, tj. ne Cauchy
 //
 //                EV = MathUtil.getExpVal(array);
 //                DV = MathUtil.getStandDev(EV, array);
-//                this.UpB2 = Math.ceil(Math.pow(DV, 2) + 5);
+//                this.upP2 = Math.ceil(Math.pow(DV, 2) + 5);
 ///*                if (Math.pow(DV, 2) - 5 > 0) {
-//                    this.LowB2 = Math.floor(Math.pow(DV, 2) - 5);
+//                    this.lowP2 = Math.floor(Math.pow(DV, 2) - 5);
 //                } else {
-//                    this.LowB2 = 0;
+//                    this.lowP2 = 0;
 //                }
 //*/
 //                break;
 //            case'B':
-///*              this.LowB1 = -5;            // pro nekontaminovaná data, ale jen rozdìlení s malým rozptylem, tj. ne Cauchy
-//                this.UpB1 = 5;
-//                this.UpB2 = 5;
+///*              this.lowP1 = -5;            // pro nekontaminovaná data, ale jen rozdìlení s malým rozptylem, tj. ne Cauchy
+//                this.upP1 = 5;
+//                this.upP2 = 5;
 //*/
-//                this.LowB2 = 0;
+//                this.lowP2 = 0;
 //
 //                //EV = MathUtil.getExpVal(array, size);
 //                EV = MathUtil.getMedian(array);
 //                //DV = MathUtil.getStandDev(EV, array, size, input);
 //                DV = MathUtil.getMAD(EV, array);
-//                this.LowB1 = Math.floor(EV-5);
-//                this.UpB1 = Math.ceil(EV+5);
-//                this.UpB2 = Math.ceil(Math.pow(DV, 2) + 5);
+//                this.lowP1 = Math.floor(EV-5);
+//                this.upP1 = Math.ceil(EV+5);
+//                this.upP2 = Math.ceil(Math.pow(DV, 2) + 5);
 // /*               if (Math.pow(DV, 2) - 5 > 0) {
-//                    this.LowB2 = Math.floor(Math.pow(DV, 2) - 5);
+//                    this.lowP2 = Math.floor(Math.pow(DV, 2) - 5);
 //                } else {
-//                    this.LowB2 = 0;
+//                    this.lowP2 = 0;
 //                }
 //*/
 //                break;
@@ -154,14 +158,14 @@ public class NormalDistribution extends Distribution {
 
     @Override
     public boolean isParametersOK(double p1, double p2, double p3) {
-        return ((p1 >= LowB1) && (p1 <= UpB1) && (p2 > LowB2) && (p2 <= UpB2));
+        return ((p1 >= lowP1) && (p1 <= upP1) && (p2 > lowP2) && (p2 <= upP2));
     }
 
 //    public Parameters getRandomParameters(Distribution d) {
 //        Parameters parameters = new Parameters();
-//        d.setParameters(UpB1, LowB1, 0);
+//        d.setParameters(upP1, lowP1, 0);
 //        parameters.p1 = d.getRealization();
-//        d.setParameters(UpB2, LowB2, 0);
+//        d.setParameters(upP2, lowP2, 0);
 //        do
 //            parameters.p2 = d.getRealization();
 //        while (0 >= parameters.p2);

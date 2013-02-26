@@ -10,7 +10,7 @@ import java.io.*;
  */
 
 public abstract class Distribution {
-    public double UpB1, LowB1, UpB2, LowB2, UpB3, LowB3;
+    public double upP1, lowP1, upP2, lowP2, upP3 = 0, lowP3 = 0;
     public double MinEstDist0, MinEstDist, MinEstL1Dist, MinEstHistDist;
     //AmdeInput input;
 

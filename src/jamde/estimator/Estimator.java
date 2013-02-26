@@ -7,6 +7,11 @@ package jamde.estimator;
 import jamde.MathUtil;
 import jamde.distribution.Distribution;
 import jamde.distribution.UniformDistribution;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -20,6 +25,45 @@ public abstract class Estimator {
     /*
      * TODO do estimatoru pridat minimalizovanou ditribuci.
      */
+    
+    /** 
+     * 
+     */
+    class Point implements Comparable<Point> {
+        double p1;
+        double p2;
+        double p3;
+        public double dist = -1;
+
+        public Point(double p1, double p2, double p3) {
+            this.p1 = p1;
+            this.p2 = p2;
+            this.p3 = p3;
+        }
+
+        public double countDist(Distribution distr, double[] dataArray) {
+            distr.setParameters(p1, p2, p3);
+            return this.dist = countDistance(distr, dataArray);
+        }
+        
+        public void setDist (double dist) {
+            this.dist = dist;
+        }
+        
+        public double getDist() {
+            return dist;
+        }
+        
+        @Override
+        public int compareTo(Point x) {
+            return (int) Math.signum(this.getDist() - x.getDist());
+        }        
+        
+        @Override
+        public String toString() {
+            return ("[" + this.p1 + ", " + this.p2 + ", " + this.p3 + ", " + this.dist + "]");
+        }
+    }
 
     /**
      * Parameter of the estimator
@@ -46,7 +90,7 @@ public abstract class Estimator {
     }
 
     /**
-     * Abstarct method, which is implemented by the distributions, because the
+     * Abstarct method, which is implemented by the estimators with respect to distributions, because the
      * value is strongly dependent on them.
      *
      * @param distr
@@ -315,12 +359,12 @@ public abstract class Estimator {
         double[] y = new double[numOfPoints];
         double[] z = new double[numOfPoints];
         do {
-            x[0] = distr.getP1() - 0.5 + Math.random(); // initiation position is near the supposed minimum
-            y[0] = distr.getP2() - 0.5 + Math.random(); // initiation position is near the supposed minimum
-            z[0] = distr.getP3() - 0.5 + Math.random(); // initiation position is near the supposed minimum
+            x[0] = distr.getP1() - 0.25 + Math.random()/2; // initiation position is near the supposed minimum
+            y[0] = distr.getP2() - 0.25 + Math.random()/2; // initiation position is near the supposed minimum
+            z[0] = distr.getP3() - 0.25 + Math.random()/2; // initiation position is near the supposed minimum
         } while (!distr.isParametersOK(x[0], y[0], z[0]));
         double[] distance = new double[numOfPoints];
-        double eps = 0.5;
+        double eps = 0.25;
         int iMin = 0;
         distr.setParameters(x[0], y[0], z[0]);
         distance[0] = countDistance(distr, dataArray);
@@ -673,15 +717,18 @@ public abstract class Estimator {
         int numOfIterations = 1000;
         double eps = 0.1; // radius of the vicinity of (x1,x2)
 
+        // asi by se to mohlo zmenit tak, aby to nebezelo an pocet iteraci, ale
+        // dokud je to daleko, jako v HillClimberu?
+        
         while (i < numOfIterations) {
             i++;
             eps *= 0.9999999999; // zmensuje se prohledavane okoli pro (konec=500; eps*=0.99;)
             do {
                 y1 = x1 + (rand.getRealization()) * 2 * eps - eps;
-            } while ((y1 < distr.LowB1) || (y1 > distr.UpB1));
+            } while ((y1 < distr.lowP1) || (y1 > distr.upP1));
             do {
                 y2 = x2 + (rand.getRealization()) * 2 * eps - eps;
-            } while ((y2 < distr.LowB2) || (y2 > distr.UpB2));
+            } while ((y2 < distr.lowP2) || (y2 > distr.upP2));
             distr.setParameters(y1, y2, 0);
             distNew = countDistance(distr, dataArray);
             if (distOld > distNew) {
@@ -699,4 +746,111 @@ public abstract class Estimator {
         }
         return distr;
     }
+    
+     
+   
+    
+    /**
+     * Minimization procedure via stepwise exhaustive search
+     * 
+     * upP2
+     *  |
+     *  |
+     *  |  10
+     *  |
+     *  |
+     * lowP2       10 
+     * lowP1----------------upP1
+     * 
+     * @param distr
+     * @param dataArray
+     * @return 
+     */
+    private Distribution exhaustiveSearch(Distribution distr, double[] dataArray){
+        
+        double eps1 = 0.4;
+        int numOfMinimsEps1 = 5;
+        ArrayList<Point> minimsEps1 = new ArrayList<Point>();
+        double[] range = {distr.lowP1, distr.lowP2, distr.upP1, distr.upP2};
+        minimsEps1.addAll(Arrays.asList(findMinimsInRange(numOfMinimsEps1, eps1, distr, dataArray, range)));
+        
+        Collections.sort(minimsEps1);
+        //System.out.println(minimsEps1.toString());
+        
+        double eps2 = 0.02;
+        int numOfMinimsEps2 = 5;
+        ArrayList<Point> minimsEps2 = new ArrayList<Point>();
+        for (Point x : minimsEps1) {
+             range[0] = x.p1 - eps1 + eps2;
+             range[1] = x.p2 - eps1 + eps2;
+             range[2] = x.p1 + eps1 - eps2;
+             range[3] = x.p2 + eps1 - eps2;
+             minimsEps2.addAll(Arrays.asList(findMinimsInRange(numOfMinimsEps2, eps2, distr, dataArray, range)));
+        }
+        
+        Collections.sort(minimsEps2); // we won't take all the minims, just first 5 (numOfMinimsEps2)
+        //System.out.println(minimsEps2.toString());
+        
+        
+        
+        double eps3 = 0.001;
+        int numOfMinimsEps3 = 5;
+        ArrayList<Point> minimsEps3 = new ArrayList<Point>();
+        for (Point x : minimsEps2.subList(0, numOfMinimsEps2)) {
+             range[0] = x.p1 - eps2 + eps3;
+             range[1] = x.p2 - eps2 + eps3;
+             range[2] = x.p1 + eps2 - eps3;
+             range[3] = x.p2 + eps2 - eps3;
+             minimsEps3.addAll(Arrays.asList(findMinimsInRange(numOfMinimsEps3, eps3, distr, dataArray, range)));
+        }
+        
+        Collections.sort(minimsEps3);
+//        
+//        for (int i = 0; i < minimsEps3.size(); i++) {
+//            System.out.println(i + ": " + minimsEps3.get(i).toString());
+//        }
+        
+        distr.setParameters(minimsEps3.get(0).p1, minimsEps3.get(0).p2, minimsEps3.get(0).p3);
+        return distr;
+    }
+    
+    /**
+     * 
+     * @param numOfMinims ... number of minimums, which we want from the
+     * @param eps ... size of step ... density of mesh.
+     * @param distr .. estimated distribution
+     * @param dataArray ... data to which we are counting the distance
+     * @param range ... array of ranges: {lowP1, lowP2, lowP3, upP1, upP2, upP3}
+     * @return 
+     */
+    private Point[] findMinimsInRange(int numOfMinims, double eps, Distribution distr, double[] dataArray, double[] range) {
+        List<Point> mesh = new ArrayList<Point>();
+        
+        Point[] minims = new Point[numOfMinims + 1];
+        Arrays.fill(minims, new Point(1, 1, 1));
+        for (Point x : minims) {
+            x.setDist(10);
+        }
+        
+        //We create a mesh of points (we are not counting distance in this loop)
+        double p1 = range[0];
+        while (p1 <= range[2]) {
+            double p2 = range[1];
+            while (p2 <= range[3]) {
+                mesh.add(new Point(p1, p2, 1));
+                p2 = p2 + eps;
+            }
+            p1 = p1 + eps;
+        }
+        // We count distances for all points in the mesh
+        for (Point x: mesh) {
+            x.countDist(distr, dataArray);
+            minims[numOfMinims] = x;
+            Arrays.sort(minims); // sorts in ascending order
+        }
+        
+        return Arrays.copyOf(minims, numOfMinims);
+    }
 }
+
+// TODO : zkontrolovat rozsahy parametru ve vsech rozdelenich
