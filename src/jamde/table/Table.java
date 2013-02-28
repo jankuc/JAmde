@@ -404,35 +404,6 @@ public class Table {
     }
     
     /**
-     * Creates file ./distances and writes all the measured distances into it. 
-     * It is good to load it into matlab and plot it with: <br>
-     * C = importdata('./distances'); imagesc(C); colorbar; <br>
-     *  
-     * @param input
-     * @param eB
-     * @param sizeOfSample
-     */
-    public void printDistanceMatrix(TableInput input, EstimatorBuilder eB, int sizeOfSample) {
-        Estimator e = eB.getEstimator();
-        printDistanceMatrix(input, e, sizeOfSample);
-    }
-    
-    /**
-     * Creates file ./distances and writes all the measured distances into it. 
-     * It is good to load it into matlab and plot it with: <br>
-     * C = importdata('./distances'); imagesc(C); colorbar; <br>
-     *  
-     * @param input
-     * @param estType
-     * @param estPar
-     * @param sizeOfSample
-     */
-    public void printDistanceMatrix(TableInput input, String estType, double estPar, int sizeOfSample) {
-        EstimatorBuilder eB = new EstimatorBuilder(estType, estPar);
-        printDistanceMatrix(input, eB, sizeOfSample);
-    }
-    
-    /**
      * According to <b>input</b> creates dataset by: <br>
      * loading from file; <br>
      * making a mixture of distributions; <br>
