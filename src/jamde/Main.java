@@ -4,6 +4,7 @@
  */
 package jamde;
 
+import jamde.table.ClassicTable;
 import jamde.table.Table;
 import java.io.*;
 import java.util.logging.Level;
@@ -98,7 +99,11 @@ public class Main {
         }
         tableFileName = newTableFileName;
         
-        table.printClassic(tableFileName);
+        //table.printClassic(tableFileName);
+        ClassicTable classicTable = new ClassicTable(table);
+        classicTable.printClassic(tableFileName);
+        
+        
         System.out.println("Result is saved in " + tableFileName);
         
         // pdflatex creation of .pdf of the table
