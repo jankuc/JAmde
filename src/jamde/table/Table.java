@@ -9,8 +9,6 @@ import jamde.distribution.*;
 import jamde.estimator.*;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -22,7 +20,7 @@ import java.util.Scanner;
 public class Table {
     private ArrayList<TableInput> tableInputs = new ArrayList<TableInput>();
     private ArrayList<TableOutput> tableOutputs = new ArrayList<TableOutput>(); // elements in the list are in the same order as the elements in the input
-
+    private ArrayList<TableRawOutput> tableRawOutputs = new ArrayList<TableRawOutput>();
     
     /**
      * 
@@ -64,6 +62,25 @@ public class Table {
         this.tableOutputs.add(tableOutput);
     }
 
+    /**
+     * 
+     * @return tableRawOutput 
+     */
+    public ArrayList<TableRawOutput> getTableRawOutputs() {
+        return tableRawOutputs;
+    }
+
+    /**
+     * 
+     * @param tableRawOutputs 
+     */
+    public void setTableRawOutputs(ArrayList<TableRawOutput> tableRawOutputs) {
+        this.tableRawOutputs = tableRawOutputs;
+    }
+
+    
+    
+    
     /**
      * Loads <b>inputs</b> from configuration file. It finds beginning of the 
      * input which is marked with # and calls <b>loadInputFromFile</b> on that 
@@ -222,6 +239,7 @@ public class Table {
                 numOfPars = 3;
             }
             TableOutput tableOutput = new TableOutput((ArrayList<EstimatorBuilder>) input.getEstimators(), (ArrayList<Integer>) input.getSizeOfSample(), numOfPars);
+            TableRawOutput tableRawOutput = new TableRawOutput((ArrayList<EstimatorBuilder>) input.getEstimators(), (ArrayList<Integer>) input.getSizeOfSample(), numOfPars);
             EstimatorBuilder estimatorBuilderL1 = input.getEstimators().get(0);
             for (EstimatorBuilder estimatorBuilder : input.getEstimators()) { //cycle over all estimators in one table (lines of the table)
                 Distribution[] estimatorArray = new Distribution[input.getSizeOfEstimator()]; // for every dsitribution in this array, we will find parameters which minimize the distance from this distribution to the current data.
@@ -266,10 +284,12 @@ public class Table {
                     }
                     // End of enumeration
                     writeIntoTableOutput(estimatorArray, input, tableOutput, estimatorBuilder, sizeOfSample);
+                    writeIntoTableRawOutput(estimatorArray, input, tableRawOutput , estimatorBuilder, sizeOfSample);
                 } // END for (int sizeOfSample : input.getSizeOfSample())
                 System.out.println("Estimator " + estimatorBuilder.getType() + "(" + estimatorBuilder.getPar() + ") has ended.");
             } // END for (EstimatorBuilder estimatorBuilder : input.getEstimators())
             tableOutputs.add(tableOutput);
+            tableRawOutputs.add(tableRawOutput);
             Long tableEndTime = System.currentTimeMillis();
             Long tableTime = tableEndTime - tableStartTime;
             System.out.println("Table " + tableInProgress + "/" + numOfTables + " has ended. It took " + MathUtil.Long2time(tableTime) + ". It could take another " + MathUtil.Long2time((numOfTables - tableInProgress) * tableTime));
@@ -356,6 +376,53 @@ public class Table {
             output.setEfficiency(estimatorBuilder, sizeOfSample, numOfPars, eref3);
         }
         return output;
+    }
+    
+    /**
+     * Counts and writes values of all the needed statistics into <b>rawOutput</b>. 
+     * <b>input</b> and <b>rawOutput</b> are passed as parameters, because in 
+     * <b>Table</b> there are lists of them, so now they now what are they.
+     * 
+     * @param estimatorArray
+     * @param input
+     * @param output
+     * @param estimatorBuilder
+     * @param sizeOfSample
+     * @return 
+     */
+    private TableRawOutput writeIntoTableRawOutput(Distribution[] estimatorArray, TableInput input, TableRawOutput rawOutput, EstimatorBuilder estimatorBuilder, int sizeOfSample) {
+        int numOfPars = 1;
+        if (input.getParamsCounted().equals("both")) {
+            numOfPars = 2;
+        }
+        if (input.getParamsCounted().equals("all")) {
+            numOfPars = 3;
+        }
+        EstimatorBuilder estimatorBuilderMLE = input.getEstimators().get(0);
+        if (input.getParamsCounted().equals("both") || input.getParamsCounted().equals("first") || input.getParamsCounted().equals("all")) {
+            for (int i = 0; i < estimatorArray.length; i++) {
+                rawOutput.setEstimatedParameter(estimatorBuilder, sizeOfSample, 1, estimatorArray[i].getP1());
+            }
+        }
+        if (input.getParamsCounted().equals("both") || input.getParamsCounted().equals("second") || input.getParamsCounted().equals("all")) {
+            if (numOfPars != 3){ // 2 or 1 parameters were counted
+                for (int i = 0; i < estimatorArray.length; i++) {
+                    rawOutput.setEstimatedParameter(estimatorBuilder, sizeOfSample, numOfPars, estimatorArray[i].getP2());
+                }
+            } else {
+                numOfPars = 2;
+                for (int i = 0; i < estimatorArray.length; i++) {
+                    rawOutput.setEstimatedParameter(estimatorBuilder, sizeOfSample, numOfPars, estimatorArray[i].getP2());
+                }
+                numOfPars = 3;
+            }
+        }
+        if (input.getParamsCounted().equals("all") || input.getParamsCounted().equals("third")) { // numOfPars == 3;
+            for (int i = 0; i < estimatorArray.length; i++) {
+                rawOutput.setEstimatedParameter(estimatorBuilder, sizeOfSample, numOfPars, estimatorArray[i].getP3());
+            }
+        }
+        return rawOutput;
     }
     
     /**

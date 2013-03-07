@@ -193,4 +193,11 @@ public class TableInput implements Cloneable{
         return input;
     }
     
+    public String getDistributionsString() {
+        String sContaminating = String.format("%c%.0f,%.0f", getContaminating().toString().charAt(0), getContaminating().getP1(), getContaminating().getP2());
+        String sContaminated= String.format("%c%.0f,%.0f", getContaminated().toString().charAt(0), getContaminated().getP1(), getContaminated().getP2());
+        
+        return (sContaminated + "-" + sContaminating);
+        
+    }
 }

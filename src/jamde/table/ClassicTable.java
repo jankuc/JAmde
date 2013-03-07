@@ -10,7 +10,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import jamde.table.TableInput;
 
 /**
  *
@@ -190,7 +189,7 @@ public class ClassicTable {
      * @throws IOException
      */
     public void printClassicEndTable(File file, TableInput input) throws IOException {
-        FileWriter ww = new FileWriter(file, true); // so it appends
+        FileWriter ww = new FileWriter(file, true); // true: so it appends
         PrintWriter w = new PrintWriter(ww);
         w.write("\\end{tabular}\n");
         ArrayList<EstimatorBuilder> eBs = input.getEstimators();

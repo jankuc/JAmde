@@ -5,8 +5,10 @@
 package jamde;
 
 import jamde.table.ClassicTable;
+import jamde.table.RawTable;
 import jamde.table.Table;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,6 +28,10 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
+        
+        boolean classicBoolean = false;
+        boolean rawBoolean = true;
+                
         long timeStart = System.currentTimeMillis();
         
         String nameOfFile = "initializedValue";
@@ -78,44 +84,65 @@ public class Main {
         if (countOutput == 1){ // Only the distanceTable was printed to the file
           return;
         }
+        /**
+         * TODO vytvorit funkci pro vykreslovani vzdalenostnich obrazku
+         */
         
-        String tableFileName = System.getProperty("user.home") + "/tables/default/defaultTable.tex"; // creates absolute path to the file
+        // Name of the files
+        String tableFileName = System.getProperty("user.home") + "/tables/default/defaultTable";
         try { // did we specify the output file name when we started the program?
             tableFileName = args[3];
         } catch (java.lang.ArrayIndexOutOfBoundsException e1) {
-            System.out.println("You did not specify name and path to the output file. It will be created for you. In ~/tables/default/defaultTable.tex");
+            System.out.println("You did not specify name and path to the output file");
         }
         
+        ArrayList<File> texFiles = new ArrayList<File>();
         
-        File tableFile = new File(tableFileName);
-        String newTableFileName = tableFileName;
-        int numOfExistingFiles = 0;
-        
-        // we append number if the output file already exists
-        while (tableFile.exists()) { // we change only newTableFileName
-            numOfExistingFiles ++;
-            newTableFileName = tableFileName.replaceFirst(".tex",  "" + numOfExistingFiles + ".tex");
-            tableFile = new File(newTableFileName);
+        if (classicBoolean) {
+            tableFileName = tableFileName.concat(".tex");
+            
+            File tableFile = new File(tableFileName);
+            String newTableFileName = tableFileName;
+            int numOfExistingFiles = 0;
+
+            // we append number if the output file already exists
+            while (tableFile.exists()) { // we change only newTableFileName
+                numOfExistingFiles++;
+                newTableFileName = tableFileName.replaceFirst(".tex", "" + numOfExistingFiles + ".tex");
+                tableFile = new File(newTableFileName);
+            }
+            tableFileName = newTableFileName;
+
+            //table.printClassic(tableFileName);
+            ClassicTable classicTable = new ClassicTable(table);
+            classicTable.printClassic(tableFileName);
+            System.out.println("Result is saved in " + tableFileName);
+            
+            texFiles.add(tableFile);
+            
         }
-        tableFileName = newTableFileName;
+        // TODO: vytvorit List texovskych souboru a na ty pak bolat pdflatex
         
-        //table.printClassic(tableFileName);
-        ClassicTable classicTable = new ClassicTable(table);
-        classicTable.printClassic(tableFileName);
+        // In this case tableFileName is used as a name of parent folder, in which all other folders are cereated
+        if (rawBoolean) {
+            RawTable rawTable = new RawTable(table);
+            rawTable.printRaw(tableFileName);
+        }
         
-        
-        System.out.println("Result is saved in " + tableFileName);
-        
-        // pdflatex creation of .pdf of the table
+        // pdfLatex on all .tex files
         Runtime rt = Runtime.getRuntime();
-        Process pr = rt.exec("pdflatex -output-directory " + tableFile.getParent() + " " + tableFile.getAbsolutePath());
-        
-        // copies output of pdflatex process to output of main.java
-        BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-        String line;
-        while((line=input.readLine()) != null) {
-          System.out.println(line);
+        Process proc;
+        BufferedReader input;
+        for (File texFile : texFiles) {
+            proc = rt.exec("pdflatex -output-directory " + texFile.getParent() + " " + texFile.getAbsolutePath());
+            // copies output of pdflatex process to output of main.java
+            input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            String line;
+            while((line=input.readLine()) != null) {
+                System.out.println(line);
+            }
         }
+        System.out.println("Result is saved.");
         
         // deletes .log and .aux files of pdflatex 
         File markedForRemoval = new File(tableFileName.replaceFirst(".tex", ".log"));
@@ -129,10 +156,10 @@ public class Main {
         System.out.println("Runtime = " + MathUtil.Long2time(runTime) + ".");
         
         // if the program runs under user honza (it's on local machine, not on vkstat), it runs pdfviewer
-        String username = System.getProperty("user.name");
-        if (username.equals("honza")){ // we don't want to start evince on vkstat (login there is kucerj28)
-            Process pr1 = rt.exec("evince " + tableFile.getAbsolutePath().replace("tex", "pdf"));
-        }
+//        String username = System.getProperty("user.name");
+//        if (username.equals("honza")){ // we don't want to start evince on vkstat (login there is kucerj28)
+//            Process pr1 = rt.exec("evince " + tableFileName.getAbsolutePath().replace("tex", "pdf"));
+//        }
 
     }
 }

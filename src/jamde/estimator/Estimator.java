@@ -26,7 +26,7 @@ public abstract class Estimator {
      * TODO do estimatoru pridat minimalizovanou ditribuci.
      */
     
-    /** 
+    /** Point (p1,p2,p3) characterizing parameters of the distribution.
      * 
      */
     class Point implements Comparable<Point> {
@@ -41,6 +41,12 @@ public abstract class Estimator {
             this.p3 = p3;
         }
 
+        /**
+         * Counts distance of the Distribution characterized by the point (p1, p2, p3) to the data.
+         * @param distr
+         * @param dataArray
+         * @return 
+         */
         public double countDist(Distribution distr, double[] dataArray) {
             distr.setParameters(p1, p2, p3);
             return this.dist = countDistance(distr, dataArray);
