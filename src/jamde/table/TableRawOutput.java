@@ -12,51 +12,54 @@ import java.util.ArrayList;
 public class TableRawOutput {
     private ArrayList<EstimatorBuilder> estimators;
     private ArrayList<Integer> sizeOfSample;
-    private double[][][] estimatedParameter;
+    private int K;
+    private double[][][][] estimatedParameter;
+    
 
     // for outer world there are parameters 1 and 2, here it is 0 and 1. 
     
     /**
      * 
-     * @param estimators
+     * @param k ... sizeOfEstimator
      * @param sizeOfSample
      * @param numOfPars -- number of estimated parameters
      */
-    public TableRawOutput(ArrayList<EstimatorBuilder> estimators, ArrayList<Integer> sizeOfSample, int numOfPars) {
+    public TableRawOutput(ArrayList<EstimatorBuilder> estimators, ArrayList<Integer> sizeOfSample, int numOfPars, int K) {
         this.estimators = estimators;
         this.sizeOfSample = sizeOfSample;
-        this.estimatedParameter = new double[estimators.size()][sizeOfSample.size()][numOfPars];
-        for (int i = 0; i < estimators.size(); i++){
-            for (int j = 0; j < sizeOfSample.size(); j++){
+        this.K = K;
+        estimatedParameter = new double[estimators.size()][sizeOfSample.size()][numOfPars][K];
+        for (int i = 0; i < estimators.size(); i ++) {
+            for (int j = 0; j < sizeOfSample.size(); j++) {
                 for (int k = 0; k < numOfPars; k++) {
-                    estimatedParameter[i][j][k] = Double.NaN;
+                    for (int l = 0; l < K; l++) {
+                        estimatedParameter[i][j][k][l] = Double.NaN;
+                    }
                 }
             }
         }
-        
     }
     
     /**
-     * estimatedParameters[e][sizeOfSample][par] = value
+     * estimatedParameters[estimators][sizeOfSample][par][k] = value
      * 
-     * @param e
-     * @param sizeOfSample
-     * @param par
-     * @param value
+     * @param estimator...type of estimator 
+     * @param sizeOfSample... size of sample which was estimated
+     * @param par... one of {1,2,3}. Is estimated parameter of the pdf
+     * @param k...number of estimation in the series of K estimations
+     * @param value... value of the estimated parameter
      */
-    public void setEstimatedParameter(EstimatorBuilder e, int sizeOfSample, int par, double value) {
-        estimatedParameter[estimators.indexOf(e)][this.sizeOfSample.indexOf(sizeOfSample)][par-1] = value;
+    public void setEstimatedParameter(EstimatorBuilder estimator, int n, int par, int k, double value) {
+        int estI = estimators.indexOf(estimator);
+        int nI = sizeOfSample.indexOf(n);
+        
+        estimatedParameter[estimators.indexOf(estimator)][sizeOfSample.indexOf(n)][par-1][k] = value;
     }
 
-
-    /**
-     * 
-     * @param e
-     * @param sizeOfSample
-     * @param par
-     * @return parameterStatistics[e][sizeOfSample][par].meanValue
-     */
-    public double getEstimatedParameter(EstimatorBuilder e, int sizeOfSample, int par) {
-        return estimatedParameter[estimators.indexOf(e)][this.sizeOfSample.indexOf(sizeOfSample)][par-1];
+    public double getEstimatedParameter(EstimatorBuilder estimator, int n, int par, int k) {
+        return estimatedParameter[estimators.indexOf(estimator)][sizeOfSample.indexOf(n)][par-1][k];
     }
+    
+    
+    
 }

@@ -239,7 +239,7 @@ public class Table {
                 numOfPars = 3;
             }
             TableOutput tableOutput = new TableOutput((ArrayList<EstimatorBuilder>) input.getEstimators(), (ArrayList<Integer>) input.getSizeOfSample(), numOfPars);
-            TableRawOutput tableRawOutput = new TableRawOutput((ArrayList<EstimatorBuilder>) input.getEstimators(), (ArrayList<Integer>) input.getSizeOfSample(), numOfPars);
+            TableRawOutput tableRawOutput = new TableRawOutput(input.getEstimators(), (ArrayList<Integer>) input.getSizeOfSample(), numOfPars, input.getSizeOfEstimator());
             EstimatorBuilder estimatorBuilderL1 = input.getEstimators().get(0);
             for (EstimatorBuilder estimatorBuilder : input.getEstimators()) { //cycle over all estimators in one table (lines of the table)
                 Distribution[] estimatorArray = new Distribution[input.getSizeOfEstimator()]; // for every dsitribution in this array, we will find parameters which minimize the distance from this distribution to the current data.
@@ -398,30 +398,32 @@ public class Table {
         if (input.getParamsCounted().equals("all")) {
             numOfPars = 3;
         }
-        EstimatorBuilder estimatorBuilderMLE = input.getEstimators().get(0);
         if (input.getParamsCounted().equals("both") || input.getParamsCounted().equals("first") || input.getParamsCounted().equals("all")) {
             for (int i = 0; i < estimatorArray.length; i++) {
-                rawOutput.setEstimatedParameter(estimatorBuilder, sizeOfSample, 1, estimatorArray[i].getP1());
+                rawOutput.setEstimatedParameter(estimatorBuilder, sizeOfSample, 1, i, estimatorArray[i].getP1());
             }
         }
         if (input.getParamsCounted().equals("both") || input.getParamsCounted().equals("second") || input.getParamsCounted().equals("all")) {
             if (numOfPars != 3){ // 2 or 1 parameters were counted
-                for (int i = 0; i < estimatorArray.length; i++) {
-                    rawOutput.setEstimatedParameter(estimatorBuilder, sizeOfSample, numOfPars, estimatorArray[i].getP2());
+                for (int i = 0; i < estimatorArray.length; i++) { //
+                    rawOutput.setEstimatedParameter(estimatorBuilder, sizeOfSample, numOfPars, i, estimatorArray[i].getP2());
                 }
             } else {
-                numOfPars = 2;
                 for (int i = 0; i < estimatorArray.length; i++) {
-                    rawOutput.setEstimatedParameter(estimatorBuilder, sizeOfSample, numOfPars, estimatorArray[i].getP2());
+                    rawOutput.setEstimatedParameter(estimatorBuilder, sizeOfSample, 2, i, estimatorArray[i].getP2());
                 }
-                numOfPars = 3;
             }
         }
         if (input.getParamsCounted().equals("all") || input.getParamsCounted().equals("third")) { // numOfPars == 3;
             for (int i = 0; i < estimatorArray.length; i++) {
-                rawOutput.setEstimatedParameter(estimatorBuilder, sizeOfSample, numOfPars, estimatorArray[i].getP3());
+                rawOutput.setEstimatedParameter(estimatorBuilder, sizeOfSample, numOfPars, i, estimatorArray[i].getP3());
             }
         }
+//        for (int i = 0; i < estimatorArray.length; i++) { //
+//            rawOutput.setEstimatedParameter(i, sizeOfSample, 1, estimatorArray[i].getP1());
+//            rawOutput.setEstimatedParameter(i, sizeOfSample, 2, estimatorArray[i].getP2());
+//            rawOutput.setEstimatedParameter(i, sizeOfSample, 3, estimatorArray[i].getP3());
+//        }
         return rawOutput;
     }
     

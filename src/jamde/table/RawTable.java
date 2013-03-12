@@ -55,18 +55,30 @@ public class RawTable {
             for (int n : input.getSizeOfSample()) {
                 File nF = createFileIn(epsF, "n=" + n);
                 
-                for (EstimatorBuilder est : input.getEstimators()) {
+                for (EstimatorBuilder est : input.getEstimators()) { 
                     // Renyi=0.3_K=1000_n=500_eps=0.3_N01-N010
                     tableFileName = "" + est.getType() + "=" + est.getPar() + 
                             "_K=" + input.getSizeOfEstimator() +  "_" +
                             nF.getName() + "_" + epsF.getName() + "_" + mixtureF.getName();
                     File estF = new File (nF +File.separator+ tableFileName); // estimator File
                     
-                    FileWriter w = new FileWriter(estF);
+                    FileWriter ww = new FileWriter(estF);
+                    PrintWriter w = new PrintWriter(ww);
                     
-                    
-                    
+                    for (int i = 0; i < K; i++) {
+                        if (input.getParamsCounted().equals("first") || input.getParamsCounted().equals("both") || input.getParamsCounted().equals("all")) {
+                            w.write(String.format("%.4f  ", rawOutput.getEstimatedParameter(est, n, 1, i)));
+                        }
+                        if (input.getParamsCounted().equals("second") || input.getParamsCounted().equals("both") || input.getParamsCounted().equals("all") || input.getParamsCounted().equals("second&third")) { 
+                            w.write(String.format(" %.4f  ", rawOutput.getEstimatedParameter(est, n, 2, i)));
+                        }
+                        if (input.getParamsCounted().equals("third") || input.getParamsCounted().equals("all") || input.getParamsCounted().equals("second&third")) {
+                            w.write(String.format("%.4f  ", rawOutput.getEstimatedParameter(est, n, 3, i)));
+                        }
+                        w.write("\n");
+                    }         
                     w.close();
+                    ww.close();
                 }
             }
         }

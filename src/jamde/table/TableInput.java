@@ -65,7 +65,7 @@ public class TableInput implements Cloneable{
 
     /**
      * 
-     * @return "both" or "first" or "second"
+     * @return "both" or "first" or "second" or "third" or "all" or "second&third"
      */
     public String getParamsCounted() {
         return paramsCounted;
