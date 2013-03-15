@@ -17,51 +17,166 @@ import java.util.logging.Logger;
  * @author kucerj28@fjfi.cvut.cz
  */
 public class Main {
+    
+    /**
+     * Appends number to <b>fileName</b>, so the name is in it's destination unique. <br>
+     * <br>
+     * Example: if in desired direcory exist files [file.tex, file1.tex, file2.tex], it renames the current file to file3.tex.
+     * 
+     * @param fileName has to end with <b>.tex</b>
+     * @return 
+     */
+    private static File MakeUniqueNamedTexFile(String fileName) {
+        File file = new File(fileName);
+        String newFilename;
+        int numOfExistingFiles = 0;
+
+        // we append number if the output file already exists
+        while (file.exists()) { // we change only newTableFileName
+            numOfExistingFiles++;
+            newFilename = fileName.replaceFirst(".tex", "" + numOfExistingFiles + ".tex");   
+            file = new File(newFilename);
+        }
+        return file;
+    }
+
+    /**
+     * Appends number to <b>fileName</b>, so the name is in it's destination unique. <br>
+     * <br>
+     * Example: if in desired direcory exist files [file, file1, file2], it renames the current file to file3.
+     * 
+     * @param fileName
+     * @return 
+     */
+    private static File MakeUniqueNamedFile(String tableFileName) {
+        File tableFile = new File(tableFileName);
+        String newTableFileName;
+        int numOfExistingFiles = 0;
+
+        // we append number if the output file already exists
+        while (tableFile.exists()) { // we change only newTableFileName
+            newTableFileName = tableFileName.concat(".hurdyHurdy");
+            numOfExistingFiles++;
+            newTableFileName = newTableFileName.replaceFirst(".hurdyHurdy", "" + numOfExistingFiles + ".hurdyHurdy");
+            newTableFileName = newTableFileName.replaceFirst(".hurdyHurdy", "");
+            tableFile = new File(newTableFileName);
+        }
+        return tableFile;
+    }
+    
+    
+    private static final class InputArgs{
+        private boolean tableClassicBool = false;
+        private boolean tableRawBool = false;
+        
+        private String inputFile = "none";
+        private int numOfThreads = 25;
+        private String outputFile = System.getProperty("user.home") + "/tables/default/defaultTable";
+        
+        
+        public InputArgs() {
+        }
+
+        public boolean isTableClassicBool() {
+            return tableClassicBool;
+        }
+
+        public boolean isTableRawBool() {
+            return tableRawBool;
+        }
+
+        public String getInputFile() {
+            return inputFile;
+        }
+
+        public int getNumOfThreads() {
+            return numOfThreads;
+        }
+
+        public String getOutputFile() {
+            return outputFile;
+        }
+       
+        
+        /**
+         * Reads command-Line arguments and translates them into right format.
+         * 
+         * @param args
+         * @return 
+         */
+        public int setInputArgs(String[] args) {
+            if (args.length == 0) {
+                System.out.println("Not enough arguments.");
+                
+            }
+            int i = 0;
+            while (i < args.length) {
+
+                switch (args[i]) { // CAUTION!: switch on Strings is suported only by source 7, not by source 6.
+                    case "infile":
+                        inputFile = args[i + 1];
+                        break;
+                    case "outfile":
+                        outputFile = args[i + 1];
+                        break;
+                    case "threads":
+                        numOfThreads = Integer.parseInt(args[i + 1]);
+                        break;
+                    case "table":
+                        switch (args[i + 1]) {
+                            case "raw":
+                                tableRawBool = true;
+                                break;
+                            case "classic":
+                                tableClassicBool = true;
+                                break;
+                        }
+                }
+                i = i + 2;
+            }
+            if (inputFile.equals("none")) {
+                System.out.println("You did not specify name of the file, you want to load. Program is terminating.");
+                return 1;
+            }
+
+            if (!(tableClassicBool || tableRawBool)) {
+                System.out.println("You have not specified ANY output.\nDo this by \"table raw\" or \"table classic\" \n Terminating. ");
+                return 1;
+            }
+            
+            if ( outputFile.equals(System.getProperty("user.home") + "/tables/default/defaultTable")){
+                System.out.println("You have not specify name and path to the output file");
+            }
+            return 0;
+        }
+    }
 
     /**
      * Depending on the command line arguments starts the JAmde with appropriate input and parameters. 
      * 
-     * Example: JAmde file ./pathToFile/file 12 ./pathToTable/table.tex
-     *          JAmde file ./pathToFile/file
-     *          JAmde app --TODO
+     * Example: java -jar JAmde infile ./pathToFile/file threads 12 outfile ./pathToTable/table table raw table classic
      * 
      * @param args the command line arguments
      */
     public static void main(String[] args) throws FileNotFoundException, IOException, InterruptedException {
         
-        boolean classicBoolean = false;
-        boolean rawBoolean = true;
-                
-        long timeStart = System.currentTimeMillis();
+        InputArgs inputArgs = new InputArgs();
         
-        String nameOfFile = "initializedValue";
+        if (inputArgs.setInputArgs(args)==1) {
+            return;
+        } 
+        
+        long timeStart = System.currentTimeMillis();      
+       
         Table table = new Table();
+        File inputFile = new File(inputArgs.getInputFile());
         
-        if (args.length == 0) {
-            System.out.println("Not enough arguments.");
-            return;
-        }
-        
-        if (args[0].equals("file")) { // args[0] should be one of {file,app}
-            try {
-                nameOfFile = args[1];
-            } catch(java.lang.ArrayIndexOutOfBoundsException e) {
-                System.out.println("You did not specify name of the file, you want to load. Program is terminating.");
-                return;
-            }
-        } else {
-            System.out.println("Other than file-input not supported yet. Program is terminating.");
-            return;
-        }
-             
-        File confFile = new File(nameOfFile);
-        
-        if (! confFile.exists()) {
+        if (! inputFile.exists()) {
             System.out.println("File you chose does not exist. Program is terminating.");
             return;
         } else {
             try {
-                table.loadInputsFromFile(confFile);
+                table.loadInputsFromFile(inputFile);
                 System.out.println("Table input was succesfully loaded from the file.");
             } catch (Exception ex) {
                 System.out.println("File you chose does not contain what it should. Program is terminating.");
@@ -69,13 +184,8 @@ public class Main {
             }
         } // Now we have loaded the tableInput in Table from the file
         
-        int numOfThreads = 25; // Default value
-        try {
-            numOfThreads = Integer.parseInt(args[2]);
-        } catch (java.lang.ArrayIndexOutOfBoundsException e1) {
-            System.out.println("You did not specify number of Threads you want to use. Default value is 25.");
-        }
         
+        int numOfThreads = inputArgs.getNumOfThreads();
         numOfThreads = Math.min(numOfThreads, 30); // Designed for 32-core vkstat. So it doesn't take up all the cores.
         
         // the enumeration itself
@@ -88,43 +198,33 @@ public class Main {
          * TODO vytvorit funkci pro vykreslovani vzdalenostnich obrazku
          */
         
-        // Name of the files
-        String tableFileName = System.getProperty("user.home") + "/tables/default/defaultTable";
-        try { // did we specify the output file name when we started the program?
-            tableFileName = args[3];
-        } catch (java.lang.ArrayIndexOutOfBoundsException e1) {
-            System.out.println("You did not specify name and path to the output file");
-        }
+        // OUTPUT
         
-        ArrayList<File> texFiles = new ArrayList<File>();
+        // List of *.tex files on which pdflatex will be called
+        ArrayList<File> texFiles = new ArrayList<>();
+        String tableFileName;
         
-        if (classicBoolean) {
-            tableFileName = tableFileName.concat(".tex");
+        // CLASSIC TABLE
+        if (inputArgs.isTableClassicBool()) {
+            tableFileName = inputArgs.getOutputFile().concat(".tex");
             
-            File tableFile = new File(tableFileName);
-            String newTableFileName = tableFileName;
-            int numOfExistingFiles = 0;
+            File tableFile = MakeUniqueNamedTexFile(tableFileName);
+            tableFileName =  tableFile.getAbsolutePath();
 
-            // we append number if the output file already exists
-            while (tableFile.exists()) { // we change only newTableFileName
-                numOfExistingFiles++;
-                newTableFileName = tableFileName.replaceFirst(".tex", "" + numOfExistingFiles + ".tex");
-                tableFile = new File(newTableFileName);
-            }
-            tableFileName = newTableFileName;
-
-            //table.printClassic(tableFileName);
             ClassicTable classicTable = new ClassicTable(table);
             classicTable.printClassic(tableFileName);
             System.out.println("Result is saved in " + tableFileName);
             
-            texFiles.add(tableFile);
-            
+            texFiles.add(tableFile);            
         }
-        // TODO: vytvorit List texovskych souboru a na ty pak bolat pdflatex
         
-        // In this case tableFileName is used as a name of parent folder, in which all other folders are cereated
-        if (rawBoolean) {
+        // RAW TABLE
+        if (inputArgs.isTableRawBool()) {
+            tableFileName = inputArgs.getOutputFile();
+            
+            File tableFile = MakeUniqueNamedFile(tableFileName);
+            tableFileName =  tableFile.getAbsolutePath();
+            
             RawTable rawTable = new RawTable(table);
             rawTable.printRaw(tableFileName);
         }
@@ -141,15 +241,15 @@ public class Main {
             while((line=input.readLine()) != null) {
                 System.out.println(line);
             }
+            rt.exec("evince " + texFile.getAbsolutePath().replaceAll("tex", "pdf"));
+            // deletes .log and .aux files of pdflatex 
+            File markedForRemoval = new File(texFile.getAbsolutePath().replaceFirst(".tex", ".log"));
+            markedForRemoval.delete();
+            markedForRemoval = new File(texFile.getAbsolutePath().replaceFirst(".tex", ".aux"));
+            markedForRemoval.delete();
         }
         System.out.println("Result is saved.");
-        
-        // deletes .log and .aux files of pdflatex 
-        File markedForRemoval = new File(tableFileName.replaceFirst(".tex", ".log"));
-        markedForRemoval.delete();
-        markedForRemoval = new File(tableFileName.replaceFirst(".tex", ".aux"));
-        markedForRemoval.delete();
-        
+       
         // stops time 
         Long timeEnd = System.currentTimeMillis();
         Long runTime = timeEnd - timeStart;
