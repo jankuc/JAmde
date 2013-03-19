@@ -34,7 +34,7 @@ public class CauchyDistribution extends Distribution {
         this.sigma = sigma;
         this.upP1 = 5;
         this.lowP1 = -5;
-        this.upP2 = 5;
+        this.upP2 = 10;
         this.lowP2 = 0;
         this.PI = 3.141593;
     }

@@ -39,9 +39,9 @@ public class NormalDistribution extends Distribution {
     public NormalDistribution(double mu, double sigma2) {
         this.mu = mu;
         this.sigma = Math.sqrt(sigma2);
-        this.upP1 = 10;
-        this.lowP1 = -10;
-        this.upP2 = 20;
+        this.upP1 = 5;
+        this.lowP1 = -5;
+        this.upP2 = 10;
         this.lowP2 = 0.00001;
         this.lowP3 = 0;
         this.upP3 = 0;

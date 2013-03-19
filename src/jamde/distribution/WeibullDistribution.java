@@ -48,9 +48,9 @@ public class WeibullDistribution extends Distribution {
         this.k = p3; // parameter of kurtosisld
         this.upP1 = 5;
         this.lowP1 = -5;
-        this.upP2 = 5;
+        this.upP2 = 10;
         this.lowP2 = 0.0001;
-        this.upP3 = 5;
+        this.upP3 = 10;
         this.lowP3 = 0;
     }
 
