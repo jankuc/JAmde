@@ -1,8 +1,7 @@
 package jamde.table;
 
-import jamde.estimator.EstimatorBuilder;
 import jamde.distribution.Distribution;
-import java.util.ArrayList;
+import jamde.estimator.EstimatorBuilder;
 import java.util.ArrayList;
 
 /**
