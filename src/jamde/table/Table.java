@@ -4,7 +4,6 @@
  */
 package jamde.table;
 
-import com.sun.xml.internal.org.jvnet.fastinfoset.stax.LowLevelFastInfosetStreamWriter;
 import jamde.MathUtil;
 import jamde.distribution.*;
 import jamde.estimator.*;
