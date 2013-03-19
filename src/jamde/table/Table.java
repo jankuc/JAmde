@@ -4,6 +4,7 @@
  */
 package jamde.table;
 
+import com.sun.xml.internal.org.jvnet.fastinfoset.stax.LowLevelFastInfosetStreamWriter;
 import jamde.MathUtil;
 import jamde.distribution.*;
 import jamde.estimator.*;
@@ -18,9 +19,9 @@ import java.util.Scanner;
  * @author kucerj28@fjfi.cvut.cz
  */
 public class Table {
-    private ArrayList<TableInput> tableInputs = new ArrayList<TableInput>();
-    private ArrayList<TableOutput> tableOutputs = new ArrayList<TableOutput>(); // elements in the list are in the same order as the elements in the input
-    private ArrayList<TableRawOutput> tableRawOutputs = new ArrayList<TableRawOutput>();
+    private ArrayList<TableInput> tableInputs = new ArrayList<>();
+    private ArrayList<TableOutput> tableOutputs = new ArrayList<>(); // elements in the list are in the same order as the elements in the input
+    private ArrayList<TableRawOutput> tableRawOutputs = new ArrayList<>();
     
     /**
      * 
@@ -92,8 +93,8 @@ public class Table {
     public void loadInputsFromFile(File confFile) throws Exception {
         System.out.println("You have opened configuration file " + confFile.toString() + "\n");
 
-        ArrayList<TableInput> inputs = new ArrayList<TableInput>();
-        TableInput input = new TableInput();
+        ArrayList<TableInput> inputs = new ArrayList<>();
+        TableInput input;
 
         Scanner sc = new Scanner(confFile);
 
@@ -119,15 +120,15 @@ public class Table {
      */
     private TableInput loadInputFromFile(Scanner sc) throws Exception {
         TableInput input = new TableInput();
-        String sContaminated, sContaminating, estType = "";
+        String sContaminated, sContaminating, estType;
         double contaminatedPar1 = 0, contaminatedPar2 = 1, contaminatedPar3 = 0, contaminatingPar1 = 0, contaminatingPar2 = 1, contaminatingPar3 = 1, estPar = 0;
-        ArrayList<Integer> sizeOfSample = new ArrayList<Integer>();
-        ArrayList<EstimatorBuilder> estimators = new ArrayList<EstimatorBuilder>();
-        EstimatorBuilder e = new EstimatorBuilder(estType, estPar);
+        ArrayList<Integer> sizeOfSample = new ArrayList<>();
+        ArrayList<EstimatorBuilder> estimators = new ArrayList<>();
+        EstimatorBuilder e;
         input.setSizeOfEstimator(0);
         DistributionBuilder distBuilder = new DistributionBuilder();
-        double[] errProb = new double[2];
-        ArrayList<double[]> errProbs = new ArrayList<double[]>();
+        double[] errProb;
+        ArrayList<double[]> errProbs = new ArrayList<>();
         String line;
 
         int lineNumber = 1;
@@ -139,7 +140,7 @@ public class Table {
                 }
                 sc.next();
             } else if (lineNumber == 1) {
-                line = sc.nextLine(); // sc is still at the end of #-line, so the first nextLine() loads just ""
+                sc.nextLine(); // sc is still at the end of #-line, so the first nextLine() loads just ""
                 line = sc.nextLine(); // from now on sc is on the second line!
                 Scanner scl = new Scanner(line);
                 String nextString = scl.next(); // for the first line we use scl
@@ -249,7 +250,7 @@ public class Table {
                 }
                 for (int sizeOfSample : input.getSizeOfSample()) { // cycle over all the sizes of dataArray. (columns in the table) [20, 50, 100, 200, 500]
                     if (printDist){ // DISTANCE MATRIX
-                      printDistanceMatrix(input, estimatorBuilder.getEstimator(), sizeOfSample);
+                      printDistanceFunction(input, estimatorBuilder.getEstimator(), sizeOfSample, new File("./distances")); // TODO udelat lepe soubor.
                       return 1;
                     }
                     // Preparation for Threads:
@@ -436,35 +437,35 @@ public class Table {
      * @param estimator
      * @param sizeOfSample
      */
-    public void printDistanceMatrix(TableInput input, Estimator estimator, int sizeOfSample) {
+    public void printDistanceFunction(TableInput input, Estimator estimator, int sizeOfSample, File file) {
         double[] dataArray = createData(input, sizeOfSample);
         PrintWriter w;
         try {
-            w = new PrintWriter("./distances");
-            double par1;
-            double par2;
-            double dist;
+            w = new PrintWriter(file);
+            double distance;
             //Distribution d = new NormalDistribution(0, 1);
-            DistributionBuilder dB = new DistributionBuilder(input.getContaminated());
-            Distribution d = dB.getDistribution();
-            double N = 500;
-            double start1 = -4;
-            double start2 = 0.0001;
-            double delkaIntervalu = 16;
-            for (int k = 1; k < N; k++) {
-                par1 = start1 + k * delkaIntervalu / N ;
-                for (int l = 0; l < N; l++) {
-                    par2 = start2 + l * delkaIntervalu / N;
-                    d.setParameters(par1, par2,0);
-                    dist = estimator.countDistance(d, dataArray);
-                    w.format(" %.12f ", dist);
+            DistributionBuilder distrBuild = new DistributionBuilder(input.getContaminated());
+            Distribution distr = distrBuild.getDistribution();
+            
+            double Nx = 500; // number of points in axis x (P1)
+            double Ny = 500; // number of points in axis y (P2)
+            
+            double x = distr.lowP1, y = distr.lowP2;
+            double dx = (distr.upP1 - distr.lowP1) / Nx;
+            double dy = (distr.upP2 - distr.lowP2) / Ny;
+            while (x < distr.upP1) {
+                while (y < distr.upP2) {
+                    distr.setParameters(x, y, 0);
+                    distance = estimator.countDistance(distr, dataArray);
+                    w.format(" %.4f ", distance);
+                    y = y + dy;
                 }
                 w.format(" \n ");
+                x = x + dx;
             }
             w.format(" \n ");
             w.close();
             System.out.println("Vypsani Distance souboru skonceno.");
-            return;
         } catch (FileNotFoundException ex) {
             /*
              * TODO catch the exception
