@@ -9,10 +9,8 @@ import jamde.distribution.Distribution;
 import jamde.distribution.UniformDistribution;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Estimator is used as a parent for the specific estimators (RenyiEstimator,

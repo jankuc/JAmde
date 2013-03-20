@@ -14,12 +14,10 @@ public class TableRawOutput {
     private ArrayList<Integer> sizeOfSample;
     private int K;
     private double[][][][] estimatedParameter;
-    
 
     // for outer world there are parameters 1 and 2, here it is 0 and 1. 
     
     /**
-     * 
      * @param k ... sizeOfEstimator
      * @param sizeOfSample
      * @param numOfPars -- number of estimated parameters

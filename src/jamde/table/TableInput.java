@@ -16,11 +16,11 @@ public class TableInput implements Cloneable{
     private Distribution contaminating;
     private double[] data;
     private double contamination;
-    private ArrayList<Integer> sizeOfSample = new ArrayList<Integer>();
+    private ArrayList<Integer> sizeOfSample = new ArrayList<>();
     private int sizeOfEstimator;
-    private ArrayList<EstimatorBuilder> estimators = new ArrayList<EstimatorBuilder>();
+    private ArrayList<EstimatorBuilder> estimators = new ArrayList<>();
     private String paramsCounted; // {"first", "second", "both"}
-    private ArrayList<double[]> orderErrors = new ArrayList<double[]>(); // double[]  = double[2], first number is the magnitude of the error, second is its probability
+    private ArrayList<double[]> orderErrors = new ArrayList<>(); // double[]  = double[2], first number is the magnitude of the error, second is its probability
     
     /**
      * 
@@ -193,8 +193,8 @@ public class TableInput implements Cloneable{
     }
     
     public String getDistributionsString() {
-        String sContaminating = String.format("%c%.0f,%.0f", getContaminating().toString().charAt(0), getContaminating().getP1(), getContaminating().getP2());
-        String sContaminated= String.format("%c%.0f,%.0f", getContaminated().toString().charAt(0), getContaminated().getP1(), getContaminated().getP2());
+        String sContaminating = String.format("%c%.0f.%.0f", getContaminating().toString().charAt(0), getContaminating().getP1(), getContaminating().getP2());
+        String sContaminated= String.format("%c%.0f.%.0f", getContaminated().toString().charAt(0), getContaminated().getP1(), getContaminated().getP2());
         
         return (sContaminated + "-" + sContaminating);
         
