@@ -64,10 +64,24 @@ public class Main {
         return tableFile;
     }
     
+    public static void executeWithOutput(String cmd) throws IOException {
+        
+            Process proc = Runtime.getRuntime().exec(cmd);
+            // copies output of pdflatex process to output of main.java
+            BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            String line;
+            while((line=input.readLine()) != null) {
+                System.out.println(line);
+            }
+        
+        
+    }
+    
     
     private static final class InputArgs{
         private boolean tableClassicBool = false;
         private boolean tableRawBool = false;
+        private boolean printDistanceFunctionsBool = false;
         
         private String inputFile = "none";
         private int numOfThreads = 25;
@@ -85,6 +99,10 @@ public class Main {
             return tableRawBool;
         }
 
+        public boolean isPrintDistanceFunctionsBool() {
+            return printDistanceFunctionsBool;
+        }
+        
         public String getInputFile() {
             return inputFile;
         }
@@ -122,7 +140,7 @@ public class Main {
                     case "threads":
                         numOfThreads = Integer.parseInt(args[i + 1]);
                         break;
-                    case "table":
+                    case "print":
                         switch (args[i + 1]) {
                             case "raw":
                                 tableRawBool = true;
@@ -130,6 +148,8 @@ public class Main {
                             case "classic":
                                 tableClassicBool = true;
                                 break;
+                            case "distances":
+                                printDistanceFunctionsBool = true;
                         }
                 }
                 i = i + 2;
@@ -154,7 +174,7 @@ public class Main {
     /**
      * Depending on the command line arguments starts the JAmde with appropriate input and parameters. 
      * 
-     * Example: java -jar JAmde infile ./pathToFile/file threads 12 outfile ./pathToTable/table table raw table classic
+     * Example: java -jar JAmde infile ./pathToFile/file threads 12 outfile ./pathToTable/table print raw print classic print distances
      * 
      * @param args the command line arguments
      */
@@ -218,29 +238,28 @@ public class Main {
             texFiles.add(tableFile);            
         }
         
-        // RAW TABLE
-        if (inputArgs.isTableRawBool()) {
+        // RAW TABLE || DISTANCE FUNCTIONS
+        if (inputArgs.isTableRawBool() || inputArgs.isPrintDistanceFunctionsBool()) {
             tableFileName = inputArgs.getOutputFile();
             
             File tableFile = MakeUniqueNamedFile(tableFileName);
             tableFileName =  tableFile.getAbsolutePath();
             
             RawTable rawTable = new RawTable(table);
-            rawTable.printRaw(tableFileName);
+            
+            if (inputArgs.isTableRawBool()) {
+                rawTable.printRaw(tableFileName);
+            }
+            if (inputArgs.isPrintDistanceFunctionsBool()) {
+                rawTable.printDistanceFunctions(tableFileName);
+            }
         }
         
         // pdfLatex on all .tex files
         Runtime rt = Runtime.getRuntime();
-        Process proc;
-        BufferedReader input;
         for (File texFile : texFiles) {
-            proc = rt.exec("pdflatex -output-directory " + texFile.getParent() + " " + texFile.getAbsolutePath());
-            // copies output of pdflatex process to output of main.java
-            input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            String line;
-            while((line=input.readLine()) != null) {
-                System.out.println(line);
-            }
+            executeWithOutput("pdflatex -output-directory " + texFile.getParent() + " " + texFile.getAbsolutePath());
+            
             rt.exec("evince " + texFile.getAbsolutePath().replaceAll("tex", "pdf"));
             // deletes .log and .aux files of pdflatex 
             File markedForRemoval = new File(texFile.getAbsolutePath().replaceFirst(".tex", ".log"));
