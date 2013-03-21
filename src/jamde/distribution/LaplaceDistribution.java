@@ -34,9 +34,9 @@ public class LaplaceDistribution extends Distribution {
     public LaplaceDistribution(double alfa, double beta) {
         this.mu = alfa;
         this.theta = beta;
-        this.upP1 = 5;
-        this.lowP1 = -5;
-        this.upP2 = 10;
+        this.upP1 = 10;
+        this.lowP1 = -10;
+        this.upP2 = 20;
         this.lowP2 = 0;
     }
 

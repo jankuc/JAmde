@@ -32,9 +32,9 @@ public class CauchyDistribution extends Distribution {
     public CauchyDistribution(double mu, double sigma) {
         this.mu = mu;
         this.sigma = sigma;
-        this.upP1 = 5;
-        this.lowP1 = -5;
-        this.upP2 = 10;
+        this.upP1 = 10;
+        this.lowP1 = -10;
+        this.upP2 = 20;
         this.lowP2 = 0;
         this.PI = 3.141593;
     }

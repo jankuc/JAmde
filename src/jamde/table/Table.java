@@ -449,12 +449,12 @@ public class Table {
             double Nx = 500; // number of points in axis x (P1)
             double Ny = 500; // number of points in axis y (P2)
             
-            double x = distr.lowP1, y;
-            double dx = (distr.upP1 - distr.lowP1) / Nx;
-            double dy = (distr.upP2 - distr.lowP2) / Ny;
-            while (x < distr.upP1) {
+            double x = distr.lowP1+7 , y;
+            double dx = (distr.upP1 - distr.lowP1 -14 ) / Nx ;
+            double dy = (distr.upP2 - distr.lowP2 -14 ) / Ny;
+            while (x < distr.upP1+7) {
                 y = distr.lowP2;
-                while (y < distr.upP2) {
+                while (y < distr.upP2-14) {
                     distr.setParameters(x, y, 0);
                     distance = estimator.countDistance(distr, dataArray);
                     if (distance < Double.POSITIVE_INFINITY)

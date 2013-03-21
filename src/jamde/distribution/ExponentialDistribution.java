@@ -42,10 +42,10 @@ public class ExponentialDistribution extends Distribution {
     public ExponentialDistribution(double p1, double p2) {
         this.m = p1; // parameter of location
         this.l = p2; // parameter of scale
-        this.upP1 = 5;
-        this.lowP1 = -5;
-        this.upP2 = 10;
-        this.lowP2 = 0.00001;
+        this.upP1 = 10;
+        this.lowP1 = -10;
+        this.upP2 = 20;
+        this.lowP2 = 0.001;
         this.upP3 = 0;
         this.lowP3 = 0;
     }
