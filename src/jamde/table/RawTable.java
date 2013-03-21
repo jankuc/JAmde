@@ -5,7 +5,6 @@
 package jamde.table;
 
 import jamde.Main;
-import jamde.MatlabControl;
 import jamde.estimator.EstimatorBuilder;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,8 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class RawTable {
     private Table table;

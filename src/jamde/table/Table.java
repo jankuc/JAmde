@@ -457,10 +457,12 @@ public class Table {
                 while (y < distr.upP2-14) {
                     distr.setParameters(x, y, 0);
                     distance = estimator.countDistance(distr, dataArray);
-                    if (distance < Double.POSITIVE_INFINITY)
+                    if (distance < Double.POSITIVE_INFINITY) {
                         w.format(" %.4f ", distance);
-                    else
+                    }
+                    else {
                         w.format(" inf ");
+                    }
                     y = y + dy;
                 }
                 w.format(" \n ");
