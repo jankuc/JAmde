@@ -14,13 +14,14 @@ public class TableInput implements Cloneable{
 
     private Distribution contaminated;
     private Distribution contaminating;
-    private double[] data;
+    //private double[] data;
     private double contamination;
     private ArrayList<Integer> sizeOfSample = new ArrayList<>();
     private int sizeOfEstimator;
     private ArrayList<EstimatorBuilder> estimators = new ArrayList<>();
     private String paramsCounted; // {"first", "second", "both"}
     private ArrayList<double[]> orderErrors = new ArrayList<>(); // double[]  = double[2], first number is the magnitude of the error, second is its probability
+    private String pathToDataFile;
     
     /**
      * 
@@ -42,9 +43,9 @@ public class TableInput implements Cloneable{
      * 
      * @return data
      */
-    public double[] getData() {
-        return data;
-    }
+//    public double[] getData() {
+//        return data;
+//    }
     
     /**
      * 
@@ -132,10 +133,10 @@ public class TableInput implements Cloneable{
      * 
      * @param data[]
      */
-    public void setData(double[] data) {
-        this.data = data;
-    }
-    
+//    public void setData(double[] data) {
+//        this.data = data;
+//    }
+//    
     /**
      * 
      * @param estimatorBuilders
@@ -169,6 +170,24 @@ public class TableInput implements Cloneable{
     public void setSizeOfSample(ArrayList<Integer> sizeOfSample) {
         this.sizeOfSample = sizeOfSample;
     }
+
+    /**
+     * 
+     * @return 
+     */
+    public String getPathToDataFile() {
+        return pathToDataFile;
+    }
+
+    /**
+     * 
+     * @param pathToDataFile 
+     */
+    public void setPathToDataFile(String pathToDataFile) {
+        this.pathToDataFile = pathToDataFile;
+    }
+    
+    
     
     /**
      * 
@@ -186,15 +205,26 @@ public class TableInput implements Cloneable{
         input.paramsCounted = this.paramsCounted;
      
         input.sizeOfSample = this.sizeOfSample;
-        input.data = this.data;
         input.estimators = this.estimators;
         input.orderErrors = this.orderErrors;
         return input;
     }
     
     public String getDistributionsString() {
-        String sContaminating = String.format("%c%.0f.%.0f", getContaminating().toString().charAt(0), getContaminating().getP1(), getContaminating().getP2());
+        
         String sContaminated= String.format("%c%.0f.%.0f", getContaminated().toString().charAt(0), getContaminated().getP1(), getContaminated().getP2());
+        String sContaminating = "";
+        
+        if (!(getContaminating()==null)){
+            sContaminating = String.format("%c%.0f.%.0f", getContaminating().toString().charAt(0), getContaminating().getP1(), getContaminating().getP2());    
+        }
+        if (!(getPathToDataFile()==null)){
+            sContaminating = "from_file";
+        }
+        if (!(getOrderErrors()==null)){
+            sContaminating = "with_order_error";
+            // TODO sepsat, aby to vypisovalo nejak hezky, co to je za chyby.
+        }
         
         return (sContaminated + "-" + sContaminating);
         

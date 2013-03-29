@@ -207,7 +207,7 @@ public class ClassicTable {
         }
         w.write("\\caption{" + eBs.get(1).getType() + ": $p = " + sContaminated + "$, data: "); // caption creation       
         if (input.getContaminating() == null) {
-            if (input.getData() == null) { // we need to make orderErrors caption
+            if (input.getPathToDataFile()== null) { // we need to make orderErrors caption
                 ArrayList orderErrors = input.getOrderErrors();
                 double prob = 1;
                 double[] probs = new double[orderErrors.size()];
@@ -225,7 +225,7 @@ public class ClassicTable {
                 }
                 w.write("$, $K = " + input.getSizeOfEstimator() + "$} \n");    
             } else { // data were loaded from a file
-                w.write(" Data načtena ze souboru. \n");
+                w.write(" Data načtena ze souboru " + input.getPathToDataFile() +". \n");
             }
         } else { // data were created as a mixture of distributions
             String sContaminating;

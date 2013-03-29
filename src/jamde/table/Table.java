@@ -12,6 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -144,7 +146,7 @@ public class Table {
                 Scanner scl = new Scanner(line);
                 String nextString = scl.next(); // for the first line we use scl
                 if (nextString.equals("file")) { // We either load a file, or we generate dataset
-                    String filePath = scl.next();
+                    input.setPathToDataFile(scl.next());
                     sContaminated = scl.next();
                     contaminatedPar1 = scl.nextDouble();
                     contaminatedPar2 = scl.nextDouble();
@@ -153,12 +155,8 @@ public class Table {
                     input.setContaminated(distBuilder.getDistribution());
                     input.setContaminating(null);
                     input.setOrderErrors(null);
-                    /*
-                     * TODO neco jako input.setData(load(filePath));
-                     */
-                    throw new UnsupportedOperationException("Not supported yet.");
                 } else { // We either generate dataset with mixture of distributions or distribution with errors of Order
-                    input.setData(null);
+                    input.setPathToDataFile(null);
                     sContaminated = nextString;
                     contaminatedPar1 = scl.nextDouble();
                     contaminatedPar2 = scl.nextDouble();
@@ -207,6 +205,29 @@ public class Table {
         return null;
     }
 
+    private static void loadDataFromFile2Array(String pathToDataFile, double[] dataArray) {
+        Scanner sc = null;
+        try {
+            sc = new Scanner(new File(pathToDataFile));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Table.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        int numOfData = 0;
+        while (sc.hasNext()) {
+            sc.next();
+            numOfData++;
+        }
+        sc.reset();
+        dataArray = new double[numOfData];
+        
+        int i = 0;
+        while(sc.hasNextDouble()) {
+            dataArray[i] = sc.nextDouble();
+            i++;
+        }
+    }
+    
     /**
      * In a few nested cycles counts all the needed statistics specified in 
      * <b>input</b> and writes them into <b>output</b>. For the enumeration 
@@ -448,13 +469,20 @@ public class Table {
             
             double Nx = 500; // number of points in axis x (P1)
             double Ny = 500; // number of points in axis y (P2)
+
+            // initial range of parameters is <-10,10>x<0.001,20>. We want to draw only 
+            // the center <-3,3>x<0.001,6>, That's the reason for the +-7, 14.
+            double initRange = distr.upP1 - distr.lowP1;
+            double newXRange = 8;
+            double newYRange = 8;
+            double xOffset = (initRange - newXRange)/2;
             
-            double x = distr.lowP1+7 , y;
-            double dx = (distr.upP1 - distr.lowP1 -14 ) / Nx ;
-            double dy = (distr.upP2 - distr.lowP2 -14 ) / Ny;
-            while (x < distr.upP1+7) {
+            double x = distr.lowP1 + xOffset , y;
+            double dx = newXRange / Nx ;
+            double dy = newYRange / Ny;
+            while (x < distr.upP1-xOffset) {
                 y = distr.lowP2;
-                while (y < distr.upP2-14) {
+                while (y < newYRange) {
                     distr.setParameters(x, y, 0);
                     distance = estimator.countDistance(distr, dataArray);
                     if (distance < Double.POSITIVE_INFINITY) {
@@ -496,7 +524,9 @@ public class Table {
 
         if (contaminating == null) { // if true then it's not mixture of distributions
             if (input.getOrderErrors() == null) { // if true then data was loaded from file
-                System.arraycopy(input.getData(), 0, dataArray, 0, dataArray.length);
+                // FILE input
+                loadDataFromFile2Array(input.getPathToDataFile(),dataArray);
+                //System.arraycopy(input.getData(), 0, dataArray, 0, dataArray.length);
             } else { // data will be created as a distribution with errors in order\
                 ArrayList Errors = input.getOrderErrors();
                 double[] orderError = new double[Errors.size() + 1];

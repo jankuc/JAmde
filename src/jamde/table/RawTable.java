@@ -117,14 +117,7 @@ public class RawTable {
                     
                     table.printDistanceFunction(input, est.getEstimator(), n, distanceF);
                     
-                    String cmdMatlab = "matlab -nodisplay -r ";
-                    String cmdChangeDir = "cd " + nF.getAbsolutePath() + "; ";
-                    String cmdFigure = "C = load(\'" + distanceF.getAbsolutePath()+"\'); f = figure(\'visible\',\'off\'); imagesc(C); colorbar; saveas(f,\'"+ distanceF.getAbsolutePath() +".png\',\'png\'); quit";
-                    
-                    
-                    String cmdRunScript = "cd /home/honza/Documents/FJFI/Renyi/JAmde/; makeFig;";
-                    
-                    Main.executeWithOutput("./matlabiSkript.sh " + distanceF.getAbsolutePath());
+                    Main.executeWithOutput("./script_drawDistances.sh " + distanceF.getAbsolutePath());
                     
                     //MatlabControl mc = new MatlabControl();
                     //mc.eval( "A = [1 1; 1 1]; save(\'/home/honza/A.mat\',\'A\');quit;");
