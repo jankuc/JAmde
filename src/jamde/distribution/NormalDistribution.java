@@ -36,9 +36,14 @@ public class NormalDistribution extends Distribution {
         return y1;
     }
 
-    public NormalDistribution(double mu, double sigma2) {
+    /**
+     * 
+     * @param mu
+     * @param sigma is standart deviation of the distribution. Variance is sigma^2.
+     */
+    public NormalDistribution(double mu, double sigma) {
         this.mu = mu;
-        this.sigma = Math.sqrt(sigma2);
+        this.sigma = sigma;
         this.upP1 = 10;
         this.lowP1 = -10;
         this.upP2 = 20;
@@ -54,14 +59,22 @@ public class NormalDistribution extends Distribution {
         this.a[5] = 1.330274;
     }
 
+    /**
+     * 
+     * @return  location of the ditribution
+     */
     @Override
     public double getP1() {
         return mu;
     }
     
+    /**
+     * 
+     * @return  standart deviation of the distribution. Variance is sigma^2.
+     */
     @Override
     public double getP2() {
-        return Math.pow(sigma, 2);
+        return sigma;
     }
 
     @Override
@@ -69,14 +82,22 @@ public class NormalDistribution extends Distribution {
         return 0;
     }
     
+    /**
+     * 
+     * @param mu... localization of the distribution
+     */
     @Override
-    public void setP1(double p1) {
-        this.mu = p1;
+    public void setP1(double mu) {
+        this.mu = mu;
     }
 
+    /**
+     * 
+     * @param sigma...standart deviation of the distribution. Variance is sigma^2.
+     */
     @Override
-    public void setP2(double p2) {
-        this.sigma = p2;
+    public void setP2(double sigma) {
+        this.sigma = sigma;
     }
     
     @Override
@@ -90,9 +111,9 @@ public class NormalDistribution extends Distribution {
     }
 
     @Override
-    public void setParameters(double p1, double p2, double p3){
-        mu = p1;
-        sigma = Math.sqrt(p2);
+    public void setParameters(double mu, double sigma, double p3){
+        this.mu = mu;
+        this.sigma = sigma;
     }
 
     @Override
@@ -182,6 +203,11 @@ public class NormalDistribution extends Distribution {
 //        return parameters;
 //    }
 
+    /**
+     * Returns probability density function in x. 
+     * @param x
+     * @return pdf(x).
+     */
     @Override
     public double getfunctionValue(double x) {
         double odm = 1 / Math.sqrt(2 * PI * Math.pow(sigma, 2));
