@@ -215,6 +215,11 @@ public class NormalDistribution extends Distribution {
         return odm * Math.exp(-y);
     }
 
+    /**
+     * Returns cumulative distribution function in x. 
+     * @param x
+     * @return cdf(x).
+     */
     @Override
     public double getFunctionValue(double x) {
         return Phi((x - mu) / sigma);
