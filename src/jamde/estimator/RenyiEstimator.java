@@ -14,7 +14,9 @@ import jamde.distribution.Distribution;
  */
 public class RenyiEstimator extends Estimator {
 
+    @SuppressWarnings("empty-statement")
     public RenyiEstimator(double par) {
+        super.par = new double[1];
         setPar(par);
     }
     
@@ -36,7 +38,8 @@ public class RenyiEstimator extends Estimator {
     @Override
     public double countDistance(Distribution distribution, double[] data) {
         double dist = 0.0;
-        if (par == 0) {
+        double alpha = getPar(); // parameter of the Renyi estimator.
+        if (alpha == 0) {
             for (int i = 0; i < data.length; i++) {  // viz. Radim Demut (dipl. práce) str 37, (6.57)
                 dist += Math.log(distribution.getfunctionValue(data[i])); // It's the same for all distributions
             }
@@ -47,29 +50,29 @@ public class RenyiEstimator extends Estimator {
                 double mu = distribution.getP1();
                 double sigma = distribution.getP2();
                 for (int i = 0; i < data.length; i++) {
-                    dist += Math.exp(-par * Math.pow(data[i] - mu, 2) / (2 * Math.pow(sigma, 2)));
+                    dist += Math.exp(-alpha * Math.pow(data[i] - mu, 2) / (2 * Math.pow(sigma, 2)));
                 }
-                dist = 1 - dist / data.length * Math.pow(sigma, - par / (1 + par));
+                dist = 1 - dist / data.length * Math.pow(sigma, - alpha / (1 + alpha));
                 return dist;
             } else if (distribution.toString().equals("Laplace")) {
                 double mu = distribution.getP1();
                 double theta = distribution.getP2();
                 for (int i = 0; i < data.length; i++) {
-                    dist += Math.exp(-par * Math.abs(data[i] - mu) / theta);
+                    dist += Math.exp(-alpha * Math.abs(data[i] - mu) / theta);
                 }
-                dist = 1 - dist / data.length * Math.pow(2*theta,- par / (1 + par));
+                dist = 1 - dist / data.length * Math.pow(2*theta,- alpha / (1 + alpha));
                 return dist;
             } else if (distribution.toString().equals("Uniform")) {
                 double a = distribution.getP1();
                 double b = distribution.getP2();
-                return 1 - Math.pow(b-a,par*par/(1+par)) * 1/(2*Math.sqrt(3*MathUtil.getStandVar(MathUtil.getExpVal(data), data)));
+                return 1 - Math.pow(b-a,alpha*alpha/(1+alpha)) * 1/(2*Math.sqrt(3*MathUtil.getStandVar(MathUtil.getExpVal(data), data)));
             } else if (distribution.toString().equals("Cauchy")) {
                 double mu = distribution.getP1();
                 double sigma = distribution.getP2();
                 for (int i = 0; i < data.length; i++) {
-                    dist +=  Math.pow(1 + Math.pow((data[i]-mu)/sigma,2), -par);
+                    dist +=  Math.pow(1 + Math.pow((data[i]-mu)/sigma,2), -alpha);
                 }
-                dist = 1-dist/data.length * Math.pow(sigma, -par/(1+par));
+                dist = 1-dist/data.length * Math.pow(sigma, -alpha/(1+alpha));
                 return dist;
             } else if (distribution.toString().equals("Weibull")) {
                 double m = distribution.getP1();
@@ -79,12 +82,12 @@ public class RenyiEstimator extends Estimator {
                 for (int i = 0; i < data.length; i++) {
                     z = (data[i]-m)/l;
                     if(z>=0){
-                      dist +=  Math.pow(z,par*(k-1))*Math.exp(-par*Math.pow(z,k));
+                      dist +=  Math.pow(z,alpha*(k-1))*Math.exp(-alpha*Math.pow(z,k));
                     }
                 }
-                z = (k+par*k-par)/k;
-                double y = par/(par+1);
-                dist *= Math.pow(k/l,y)*Math.pow(1+par,z*y)*Math.pow(MathUtil.gamma(z),-y);
+                z = (k+alpha*k-alpha)/k;
+                double y = alpha/(alpha+1);
+                dist *= Math.pow(k/l,y)*Math.pow(1+alpha,z*y)*Math.pow(MathUtil.gamma(z),-y);
                 dist = 1-dist/data.length;
                 return dist;
              } else if (distribution.toString().equals("Exponential")) {
@@ -94,10 +97,10 @@ public class RenyiEstimator extends Estimator {
                 for (int i = 0; i < data.length; i++) {
                   z = (data[i]-m)/l;
                   if (z>=0) {
-                    dist +=  Math.exp(-par*z);
+                    dist +=  Math.exp(-alpha*z);
                   } 
                 }
-                dist = 1 - Math.pow(l,-par/(1+par)) * dist/data.length;
+                dist = 1 - Math.pow(l,-alpha/(1+alpha)) * dist/data.length;
                 return dist;
             } else { // viz. Radim Demut (dipl. práce) str 37, (6.57)
                 throw new UnsupportedOperationException("Not supported yet.");

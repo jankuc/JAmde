@@ -70,29 +70,54 @@ public abstract class Estimator {
     }
 
     /**
-     * Parameter of the estimator
+     * Array of parameters of the estimator
      */
-    protected double par;
+    protected double[] par;
 
     /**
-     * Returns the parameter of the estimator.
-     *
+     * Returns the "whichPar" parameter of the estimator.
+     * 
+     * @param whichPar... which parameter of par[] should be returned.
      * @return par
      */
-    public double getPar() {
-        return par;
+    public double getPar(int whichPar) {
+        return par[whichPar];
+    }
+    
+    /**
+     * Returns First parameter of the estimator... par[0].
+     * 
+     * @return par[0]
+     */
+    public double getPar(){
+        return getPar(0);
     }
 
     /**
      * Shouldn't be used, becuase all estimators should be built from
      * EstimatorBuilder
      *
-     * @param par
+     * Sets Value of First parameter of the estimator...par[0].
+     * 
+     * @param whichPar...which parameter  of the estimator should be changed
+     * @param par...value of the new parameter
      */
-    public void setPar(double par) {
-        this.par = par;
+    public void setPar(int whichPar,double par) {
+        this.par[whichPar] = par;
     }
 
+    /**
+     * Shouldn't be used, becuase all estimators should be built from
+     * EstimatorBuilder
+     *
+     * Sets Value of First parameter of the estimator...par[0].
+     * 
+     * @param par...new value of the first parameter.
+     */
+    public void setPar(double par) {
+        setPar(0,par);
+    }
+    
     /**
      * Abstarct method, which is implemented by the estimators with respect to distributions, because the
      * value is strongly dependent on them.
@@ -117,7 +142,7 @@ public abstract class Estimator {
      * @return
      */
     public Distribution estimateFirstAndSecondPar(Distribution distr, double[] dataArray) {
-        if (par == 0) {  // MLE estimators, or something close to them
+        if (getPar() == 0) {  // MLE estimators, or something close to them
             double EV, DV;
             if (distr.toString().equals("Cauchy")) {
                 double p = 0.5565;
@@ -163,7 +188,7 @@ public abstract class Estimator {
      * @return
      */
     public Distribution estimateAll3Pars(Distribution distr, double[] dataArray) {
-        if (par == 0) {  // MLE estimators, or something close to them
+        if (getPar() == 0) {  // MLE estimators, or something close to them
             double EV;
             if (distr.toString().equals("Weibull")) {
                 double k, m, l;
@@ -197,7 +222,7 @@ public abstract class Estimator {
      * @return
      */
     public Distribution estimateFirstPar(Distribution distr, double[] dataArray) {
-        if (par == 0) {  // MLE estimators, or something close to them
+        if (getPar() == 0) {  // MLE estimators, or something close to them
             double estimatedPar;
             if (distr.toString().equals("Cauchy")) {
                 double p = 0.5565;
@@ -231,7 +256,7 @@ public abstract class Estimator {
      * @return
      */
     public Distribution estimateSecondPar(Distribution distr, double[] dataArray) {
-        if (par == 0) { // MLE estimators, or something close to them
+        if (getPar() == 0) { // MLE estimators, or something close to them
             double estimatedPar;
             if (distr.toString().equals("Cauchy")) {
                 double p = 0.5565;
@@ -709,7 +734,7 @@ public abstract class Estimator {
         double distOld, distNew;
         Distribution rand = new UniformDistribution(0, 1);
         double y1, y2;
-        double x1 = distr.getP1(); // jen nahodna inicializace
+        double x1 = distr.getP1(); // jen nahodna inicializace1
         double x2 = distr.getP2();
 
         distr.setParameters(x1, x2, 0);
@@ -856,5 +881,3 @@ public abstract class Estimator {
         return Arrays.copyOf(minims, numOfMinims);
     }
 }
-
-// TODO : zkontrolovat rozsahy parametru ve vsech rozdelenich
