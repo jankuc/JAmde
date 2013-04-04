@@ -142,7 +142,8 @@ public class TableInput implements Cloneable{
      * @param estimatorBuilders
      */
     public void setEstimators(ArrayList<EstimatorBuilder> estimators) {
-        this.estimators = estimators;
+        this.estimators.clear();
+        this.estimators.addAll(estimators);
     }
 
     /**

@@ -72,7 +72,7 @@ public abstract class Estimator {
     /**
      * Array of parameters of the estimator
      */
-    protected double[] par;
+    protected ArrayList<Double> par;
 
     /**
      * Returns the "whichPar" parameter of the estimator.
@@ -81,7 +81,7 @@ public abstract class Estimator {
      * @return par
      */
     public double getPar(int whichPar) {
-        return par[whichPar];
+        return par.get(0);
     }
     
     /**
@@ -103,7 +103,7 @@ public abstract class Estimator {
      * @param par...value of the new parameter
      */
     public void setPar(int whichPar,double par) {
-        this.par[whichPar] = par;
+        this.par.set(whichPar, par);
     }
 
     /**
@@ -128,6 +128,12 @@ public abstract class Estimator {
      */
     public abstract double countDistance(Distribution distr, double[] data);
 
+    /**
+     * 
+     * @return Renyi, a=0.1 
+     */
+    public abstract String getClassicTableName();
+    
     /*
      * TODO V estimateAllPars a ostatnich estimatePars se vysetruje stejna
      * podminka [if (par == 0)] jako v RenyiEstimator.countDistance
@@ -142,40 +148,40 @@ public abstract class Estimator {
      * @return
      */
     public Distribution estimateFirstAndSecondPar(Distribution distr, double[] dataArray) {
-        if (getPar() == 0) {  // MLE estimators, or something close to them
-            double EV, DV;
-            if (distr.toString().equals("Cauchy")) {
-                double p = 0.5565;
-                EV = (MathUtil.quantile(dataArray, p) + MathUtil.quantile(dataArray, 1 - p)) / 2;
-                p = 0.75;
-                DV = (MathUtil.quantile(dataArray, p) - MathUtil.quantile(dataArray, 1 - p)) / 2;
-                distr.setParameters(EV, DV, 0);
-            } else if (distr.toString().equals("Laplace")) {
-                EV = MathUtil.quantile(dataArray, 0.5);
-                DV = MathUtil.getLAD(EV, dataArray);
-                distr.setParameters(EV, DV, 0);
-            } else if (distr.toString().equals("Exponential")) {
-                EV = MathUtil.getExpVal(dataArray);
-                DV = MathUtil.min(dataArray);
-                distr.setParameters(DV, EV, 0);
-            //} else if (distr.toString().equals("Weibull")) {
-                
-//                double k, m, l;
-//                m = distr.getP1();
-//                l = distr.getP2();
-//                k = distr.getP3();
-//                for (int i = 0; i < dataArray.length; i++) {
-//                    l += Math.pow(dataArray[i] - m, k);
-//                }
-//                l = Math.pow(l / dataArray.length, 1 / k);
-//                distr.setParameters(m, l, k);
-            } else {
-                EV = MathUtil.getExpVal(dataArray);
-                distr.setParameters(EV, MathUtil.getStandDev(EV, dataArray), distr.getP3());
-            }
-        } else {
+//        if (getPar() == ) {  // MLE estimators, or something close to them
+//            double EV, DV;
+//            if (distr.toString().equals("Cauchy")) {
+//                double p = 0.5565;
+//                EV = (MathUtil.quantile(dataArray, p) + MathUtil.quantile(dataArray, 1 - p)) / 2;
+//                p = 0.75;
+//                DV = (MathUtil.quantile(dataArray, p) - MathUtil.quantile(dataArray, 1 - p)) / 2;
+//                distr.setParameters(EV, DV, 0);
+//            } else if (distr.toString().equals("Laplace")) {
+//                EV = MathUtil.quantile(dataArray, 0.5);
+//                DV = MathUtil.getLAD(EV, dataArray);
+//                distr.setParameters(EV, DV, 0);
+//            } else if (distr.toString().equals("Exponential")) {
+//                EV = MathUtil.getExpVal(dataArray);
+//                DV = MathUtil.min(dataArray);
+//                distr.setParameters(DV, EV, 0);
+//            //} else if (distr.toString().equals("Weibull")) {
+//                
+////                double k, m, l;
+////                m = distr.getP1();
+////                l = distr.getP2();
+////                k = distr.getP3();
+////                for (int i = 0; i < dataArray.length; i++) {
+////                    l += Math.pow(dataArray[i] - m, k);
+////                }
+////                l = Math.pow(l / dataArray.length, 1 / k);
+////                distr.setParameters(m, l, k);
+//            } else {
+//                EV = MathUtil.getExpVal(dataArray);
+//                distr.setParameters(EV, MathUtil.getStandDev(EV, dataArray), distr.getP3());
+//            }
+//        } else {
             distr = hillClimber2D(distr, dataArray);
-        }
+//        }
         return distr;
     }
 

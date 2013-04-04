@@ -4,6 +4,7 @@
  */
 package jamde.table;
 
+import jamde.estimator.Estimator;
 import jamde.estimator.EstimatorBuilder;
 import java.io.File;
 import java.io.FileWriter;
@@ -152,7 +153,7 @@ public class ClassicTable {
         }
         w.write("} \n");
         w.write("\\hline \n"); // the upper border line
-        w.write("$\\alpha\\backslash n$ &&  $" + sizeOfSample[0] + "$"); // line with sizes of sample
+        w.write("$\\mathrm{Estimator}\\backslash n$ &&  $" + sizeOfSample[0] + "$"); // line with sizes of sample
         for (int i = 1; i < sizeOfSample.length; i++) { // I really want to go through items {1 : end} not {0:end}
             w.write(" &&&  $" + sizeOfSample[i] + "$");
         }
@@ -251,10 +252,12 @@ public class ClassicTable {
      * @throws IOException 
      */
     private void printClassicLine(File file, TableInput input, TableOutput output, EstimatorBuilder estimator) throws IOException {
+        Estimator est = estimator.getEstimator();
+        
         FileWriter ww = new FileWriter(file, true); // so it appends
         PrintWriter w = new PrintWriter(ww);
         if (input.getParamsCounted().equals("first") || input.getParamsCounted().equals("both") || input.getParamsCounted().equals("all")) { // printing of first parameter statistics
-            w.write("$" + estimator.getPar() + "$");
+            w.write(est.getClassicTableName());
             for (int sizeOfSample : input.getSizeOfSample()) {
                 w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $", output.getMeanValue(estimator, sizeOfSample, 1), output.getDeviation(estimator, sizeOfSample, 1), output.getEfficiency(estimator, sizeOfSample, 1));
             }
@@ -262,7 +265,7 @@ public class ClassicTable {
         }
         if (input.getParamsCounted().equals("second") || input.getParamsCounted().equals("both") || input.getParamsCounted().equals("all")) {// printing of second parameter statistics
             if (input.getParamsCounted().equals("second")) {
-                w.write("$" + estimator.getPar() + "$");
+                w.write(est.getClassicTableName());
                 for (int sizeOfSample : input.getSizeOfSample()) {
                     w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $", output.getMeanValue(estimator, sizeOfSample, 1), output.getDeviation(estimator, sizeOfSample, 1), output.getEfficiency(estimator, sizeOfSample, 1));
                 }

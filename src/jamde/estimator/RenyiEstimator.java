@@ -6,6 +6,7 @@ package jamde.estimator;
 
 import jamde.MathUtil;
 import jamde.distribution.Distribution;
+import java.util.ArrayList;
 
 /**
  * RenyiEstimator extends Estimator. Implements countDistance().
@@ -14,10 +15,9 @@ import jamde.distribution.Distribution;
  */
 public class RenyiEstimator extends Estimator {
 
-    @SuppressWarnings("empty-statement")
     public RenyiEstimator(double par) {
-        super.par = new double[1];
-        setPar(par);
+        super.par = new ArrayList<>();
+        super.par.add(par);
     }
     
     /* 
@@ -40,10 +40,11 @@ public class RenyiEstimator extends Estimator {
         double dist = 0.0;
         double alpha = getPar(); // parameter of the Renyi estimator.
         if (alpha == 0) {
+            // TODO je mozne toto udelat pro kazde rozdeleni zvlast a u nekterych tim snizit vypocetni cas.
             for (int i = 0; i < data.length; i++) {  // viz. Radim Demut (dipl. práce) str 37, (6.57)
-                dist += Math.log(distribution.getfunctionValue(data[i])); // It's the same for all distributions
+                dist +=  Math.log(distribution.getfunctionValue(data[i]))/data.length; // It's the same for all distributions. There should be dist += log(...), but it doesn't matter for the minimization and it's faster
             }
-            dist = 1 - dist / data.length;
+            dist = 1 - (dist);
             return dist;
         } else {
             if (distribution.toString().equals("Normal")) {  // viz. Radim Demut (dipl. práce) str 38, (6.78)
@@ -109,5 +110,15 @@ public class RenyiEstimator extends Estimator {
                  */
             }
         }
+    }
+    
+    @Override
+    public String toString(){
+        return ("Renyi");
+    }
+
+    @Override
+    public String getClassicTableName() {
+        return("$ \\mathrm{Renyi}, \\alpha="+this.getPar() + "$");
     }
 }

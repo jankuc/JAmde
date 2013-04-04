@@ -1,5 +1,7 @@
 package jamde.estimator;
 
+import java.util.ArrayList;
+
 /**
  * Builder for estimators. Creates estimator based on the type and parameter. 
  *
@@ -10,11 +12,11 @@ public class EstimatorBuilder {
      * Type of estimator 
      * types: "Renyi", "LeCam",...
      */
-    private String type;
+    private String type = "";
     /**
      * Parameter of estimator
      */
-    private double par;
+    ArrayList<Double> par = new ArrayList<>();
     /**
      * estimator built from type and parameter
      */
@@ -28,22 +30,24 @@ public class EstimatorBuilder {
      * @param type
      * @param par 
      */
-    public EstimatorBuilder(String type, double par) {
+    public EstimatorBuilder(String type, ArrayList<Double> par) {
         setEstimator(type, par);
     }
     
     /**
      * Sets type and parameter of estimator
-     * types: "Renyi", "LeCam"
+     * types: "Renyi", "LeCam", "Kolmogorov"
      * 
      * @param type
      * @param par 
      */
-    public final void setEstimator(String type, double par) {
-        this.par = par;
+    public final void setEstimator(String type, ArrayList<Double> par) {
+        this.par.clear();
+        this.par.addAll(par);
         this.type = type;
-        if (type.equals("Renyi")) estimator = new RenyiEstimator(par);
-        if (type.equals("LeCam")) estimator = new LeCamEstimator(par);
+        if (type.equals("Renyi")) estimator = new RenyiEstimator(par.get(0));
+        if (type.equals("LeCam")) estimator = new LeCamEstimator(par.get(0));
+        if (type.equals("Kolmogorov")) estimator = new KolmogorovEstimator();
     }
 
     /**
@@ -58,7 +62,7 @@ public class EstimatorBuilder {
      * 
      * @return parameter
      */
-    public double getPar() {
+    public ArrayList<Double> getPar() {
         return par;
     }
 
@@ -75,7 +79,7 @@ public class EstimatorBuilder {
      * 
      * @param par 
      */
-    public void setPar(double par) {
+    public void setPar(ArrayList<Double> par) {
         this.par = par;
     }
 
@@ -88,7 +92,5 @@ public class EstimatorBuilder {
     public void setType(String type) {
         this.type = type;
     }
-    
-    
     
 }

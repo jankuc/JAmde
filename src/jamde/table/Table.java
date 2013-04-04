@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -122,7 +123,8 @@ public class Table {
     private TableInput loadInputFromFile(Scanner sc) throws Exception {
         TableInput input = new TableInput();
         String sContaminated, sContaminating, estType;
-        double contaminatedPar1 = 0, contaminatedPar2 = 1, contaminatedPar3 = 0, contaminatingPar1 = 0, contaminatingPar2 = 1, contaminatingPar3 = 1, estPar = 0;
+        double contaminatedPar1 = 0, contaminatedPar2 = 1, contaminatedPar3 = 0, contaminatingPar1 = 0, contaminatingPar2 = 1, contaminatingPar3 = 1;
+        ArrayList<Double> estPar = new ArrayList<>();
         ArrayList<Integer> sizeOfSample = new ArrayList<>();
         ArrayList<EstimatorBuilder> estimators = new ArrayList<>();
         EstimatorBuilder e;
@@ -195,8 +197,11 @@ public class Table {
                 input.setSizeOfSample(sizeOfSample);
                 lineNumber++;
             } else if (lineNumber == 4) {
+                estPar.clear();
                 estType = sc.next();
-                estPar = sc.nextDouble();
+                while (sc.hasNextDouble()) {
+                    estPar.add(sc.nextDouble());
+                }
                 e = new EstimatorBuilder(estType, estPar);
                 estimators.add(e);
                 input.setEstimators(estimators);
@@ -307,7 +312,7 @@ public class Table {
                     writeIntoTableOutput(estimatorArray, input, tableOutput, estimatorBuilder, sizeOfSample);
                     writeIntoTableRawOutput(estimatorArray, input, tableRawOutput , estimatorBuilder, sizeOfSample);
                 } // END for (int sizeOfSample : input.getSizeOfSample())
-                System.out.println("Estimator " + estimatorBuilder.getType() + "(" + estimatorBuilder.getPar() + ") has ended.");
+                System.out.println("Estimator " + estimatorBuilder.getType() + estimatorBuilder.getPar() + " has ended.");
             } // END for (EstimatorBuilder estimatorBuilder : input.getEstimators())
             tableOutputs.add(tableOutput);
             tableRawOutputs.add(tableRawOutput);

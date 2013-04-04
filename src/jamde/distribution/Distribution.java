@@ -3,7 +3,7 @@ package jamde.distribution;
 
 import jamde.estimator.Estimator;
 import jamde.estimator.EstimatorBuilder;
-import java.io.*;
+import java.util.ArrayList;
 
 /**
  * TODO komentar
@@ -87,11 +87,23 @@ public abstract class Distribution {
     public abstract boolean isParametersOK(double p1, double p2, double p3);
     //public abstract Parameters getRandomParameters(Distribution d);
     //public abstract Parameters getStandParameters(double[] array, int size);
+    
+    /**
+     * Returns probability density function in x. 
+     * @param x
+     * @return pdf(x).
+     */
     public abstract double getfunctionValue(double x);
+    
+    /**
+     * Returns cumulative distribution function in x. 
+     * @param x
+     * @return cdf(x).
+     */
     public abstract double getFunctionValue(double x);
     
     
-    public double getDistance(String type, double par, double[] data){
+    public double getDistance(String type, ArrayList<Double> par, double[] data){
         EstimatorBuilder eB = new EstimatorBuilder(type, par);
         Estimator e = eB.getEstimator();
         return e.countDistance(this, data);
