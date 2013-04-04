@@ -150,6 +150,8 @@ public class Main {
                                 break;
                             case "distances":
                                 printDistanceFunctionsBool = true;
+                            case "distance":
+                                printDistanceFunctionsBool = true;
                         }
                 }
                 i = i + 2;
