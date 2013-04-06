@@ -273,11 +273,5 @@ public class Main {
         Long runTime = timeEnd - timeStart;
         System.out.println("Runtime = " + MathUtil.Long2time(runTime) + ".");
         
-        // if the program runs under user honza (it's on local machine, not on vkstat), it runs pdfviewer
-//        String username = System.getProperty("user.name");
-//        if (username.equals("honza")){ // we don't want to start evince on vkstat (login there is kucerj28)
-//            Process pr1 = rt.exec("evince " + tableFileName.getAbsolutePath().replace("tex", "pdf"));
-//        }
-
     }
 }
