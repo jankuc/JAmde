@@ -64,8 +64,7 @@ public class Main {
         return tableFile;
     }
     
-    public static void executeWithOutput(String cmd) throws IOException {
-        
+    public static void executeWithOutput(String cmd) throws IOException {    
             Process proc = Runtime.getRuntime().exec(cmd);
             // copies output of pdflatex process to output of main.java
             BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
@@ -73,8 +72,6 @@ public class Main {
             while((line=input.readLine()) != null) {
                 System.out.println(line);
             }
-        
-        
     }
     
     
@@ -161,8 +158,8 @@ public class Main {
                 return 1;
             }
 
-            if (!(tableClassicBool || tableRawBool)) {
-                System.out.println("You have not specified ANY output.\nDo this by \"table raw\" or \"table classic\" \n Terminating. ");
+            if (!(tableClassicBool || tableRawBool || printDistanceFunctionsBool)) {
+                System.out.println("You have not specified ANY output.\nDo this by \"print raw\" or \"print classic\" or \"print distance\"\n Terminating. ");
                 return 1;
             }
             
