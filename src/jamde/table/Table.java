@@ -244,15 +244,7 @@ public class Table {
      */
     public int count(int numOfThreads) throws FileNotFoundException, InterruptedException {
         System.out.println("Enumeration has begun");
-        boolean printDist = false;
-        /* 
-         * TODO vytisk distancni matice printDist dat do parametru funkce a nasledne i do vstupu programu z cmdline
-         */
         int offset;
-        /*
-         * TODO pri nacitani umisteni tabulky toto umisteni vytvori
-         * TODO vytvorit funkci pro vykreslovani vzdalenostnich obrazku
-         */
         int numOfTables = tableInputs.size();
         int tableInProgress = 0;
         for (TableInput input : tableInputs) { // cycle over all tables
@@ -274,10 +266,6 @@ public class Table {
                     estimatorArray[i] = dB.getDistribution();
                 }
                 for (int sizeOfSample : input.getSizeOfSample()) { // cycle over all the sizes of dataArray. (columns in the table) [20, 50, 100, 200, 500]
-                    if (printDist){ // DISTANCE MATRIX
-                      printDistanceFunction(input, estimatorBuilder.getEstimator(), sizeOfSample, new File("./distances")); // TODO udelat lepe soubor.
-                      return 1;
-                    }
                     // Preparation for Threads:
                     int threadLoad = (int) (estimatorArray.length / numOfThreads); // Load which will be covered by each Thread 1000/30
                     int leftover = estimatorArray.length - threadLoad * numOfThreads; // It will be distributed between Threads 1000 - 1000/30
@@ -476,7 +464,7 @@ public class Table {
             double Ny = 500; // number of points in axis y (P2)
 
             // initial range of parameters is <-10,10>x<0.001,20>. We want to draw only 
-            // the center <-3,3>x<0.001,6>, That's the reason for the +-7, 14.
+            // the center <-4,4>x<0.001,8>, That's the reason for the +-7, 14.
             double initRange = distr.upP1 - distr.lowP1;
             double newXRange = 8;
             double newYRange = 8;
