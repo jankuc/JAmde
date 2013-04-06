@@ -20,5 +20,10 @@ public class LeCamEstimator extends Estimator{
     public double countDistance(Distribution distr, double[] data) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
+    @Override
+    public String getClassicTableName() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }
