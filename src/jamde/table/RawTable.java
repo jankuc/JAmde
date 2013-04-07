@@ -172,6 +172,7 @@ public class RawTable {
                             "_K-" + input.getSizeOfEstimator() +  "_" +
                             nF.getName() + "_" + epsF.getName() + "_" + mixtureF.getName() + ".dist";
                     // Result lokks like Renyi-[0.1]_K-10_n-2_eps-0.10_N0.1-N0.10.dist
+                    distanceFileName = distanceFileName.replaceAll(" ", "");
                     File distanceFile = new File (nF +File.separator+ distanceFileName); // Distance File
 
                     j = i % numOfThreads; // Ensures, that the cycle rotates all "numOfThreads" threads
