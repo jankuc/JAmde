@@ -4,41 +4,30 @@
  */
 package jamde;
 
-import jamde.table.ClassicTable;
-import jamde.table.RawTable;
-import jamde.table.Table;
+import com.google.common.io.Files;
+import jamde.table.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.codehaus.plexus.util.DirectoryScanner;
+
+/* importy com.google.common.io.Files a org.codehaus.plexus.util.DirectoryScanner 
+ * jsou soucasti apache. To znamena bud si googlem vyhledat *.jar, ktery bude tuto
+ * tridu obsahovat, nebo nainstalovat apache a potom pridat jeho knihovny 
+ * (tedy APACHE_HOME\lib\*.jar) do knihoven, ktere bude prostredi prohledavat pri 
+ * kompilaci tohoto projektu. Tedy neco jako "project properties"->libraries->add .jar files.
+ * 
+ * Druhou moznosti je umazat radky (nepotrebne), ktere tyto knihovny pouzivaji.
+ * Jsou to radky zacinajici "// Copies all the distance pictures"
+ * a koncici "// End of copying"
+ */
 
 /**
  *
  * @author kucerj28@fjfi.cvut.cz
  */
 public class Main {
-    
-    /**
-     * Appends number to <b>fileName</b>, so the name is in it's destination unique. <br>
-     * <br>
-     * Example: if in desired direcory exist files [file.tex, file1.tex, file2.tex], it renames the current file to file3.tex.
-     * 
-     * @param fileName has to end with <b>.tex</b>
-     * @return 
-     */
-    private static File MakeUniqueNamedTexFile(String fileName) {
-        File file = new File(fileName);
-        String newFilename;
-        int numOfExistingFiles = 0;
-
-        // we append number if the output file already exists
-        while (file.exists()) { // we change only newTableFileName
-            numOfExistingFiles++;
-            newFilename = fileName.replaceFirst(".tex", "" + numOfExistingFiles + ".tex");   
-            file = new File(newFilename);
-        }
-        return file;
-    }
 
     /**
      * Appends number to <b>fileName</b>, so the name is in it's destination unique. <br>
@@ -221,28 +210,26 @@ public class Main {
         
         // List of *.tex files on which pdflatex will be called
         ArrayList<File> texFiles = new ArrayList<>();
-        String tableFileName;
+        
+        String tableFileName = inputArgs.getOutputFile();
+        File tableFile = MakeUniqueNamedFile(tableFileName);
+        tableFile.mkdir();
+        tableFileName =  tableFile.getAbsolutePath();
         
         // CLASSIC TABLE
         if (inputArgs.isTableClassicBool()) {
-            tableFileName = inputArgs.getOutputFile().concat(".tex");
-            
-            File tableFile = MakeUniqueNamedTexFile(tableFileName);
-            tableFileName =  tableFile.getAbsolutePath();
+            File classicTableFile = new File(tableFileName.concat(File.separator + "TableClassic.tex"));
+            String classicTableFileName =  classicTableFile.getAbsolutePath();
 
             ClassicTable classicTable = new ClassicTable(table);
-            classicTable.printClassic(tableFileName);
-            System.out.println("Result is saved in " + tableFileName);
+            classicTable.printClassic(classicTableFileName);
+            System.out.println("Result is saved in " + classicTableFileName);
             
-            texFiles.add(tableFile);            
+            texFiles.add(classicTableFile);            
         }
         
         // RAW TABLE || DISTANCE FUNCTIONS
         if (inputArgs.isTableRawBool() || inputArgs.isPrintDistanceFunctionsBool()) {
-            tableFileName = inputArgs.getOutputFile();
-            
-            File tableFile = MakeUniqueNamedFile(tableFileName);
-            tableFileName =  tableFile.getAbsolutePath();
             
             RawTable rawTable = new RawTable(table);
             
@@ -251,6 +238,25 @@ public class Main {
             }
             if (inputArgs.isPrintDistanceFunctionsBool()) {
                 rawTable.printDistanceFunctions(tableFileName);
+                
+                // Copies all the distance pictures into folder "pictures" for easier browsing
+                new File(tableFileName + File.separator + "pictures").mkdir();
+                DirectoryScanner dirtScanner = new DirectoryScanner();
+                dirtScanner.setBasedir(tableFile);
+                dirtScanner.setIncludes(new String[]{"**/*.png"});
+                dirtScanner.scan();
+                String[] picturePaths = dirtScanner.getIncludedFiles();
+                
+                File from;
+                File to;
+                for (String fromS:picturePaths) {
+                    fromS =  dirtScanner.getBasedir() + File.separator + fromS;
+                    from = new File(fromS);
+                    to = new File(new File(tableFileName + File.separator + "pictures").getAbsolutePath() + File.separator+ new File(fromS).getName());
+                    Files.copy(from.getAbsoluteFile(), to);
+                }
+                // End of Copying
+                
             }
         }
         
@@ -272,6 +278,5 @@ public class Main {
         Long timeEnd = System.currentTimeMillis();
         Long runTime = timeEnd - timeStart;
         System.out.println("Runtime = " + MathUtil.Long2time(runTime) + ".");
-        
     }
 }
