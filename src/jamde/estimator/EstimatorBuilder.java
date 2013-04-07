@@ -45,9 +45,24 @@ public class EstimatorBuilder {
         this.par.clear();
         this.par.addAll(par);
         this.type = type;
-        if (type.equals("Renyi")) estimator = new RenyiEstimator(par.get(0));
-        if (type.equals("LeCam")) estimator = new LeCamEstimator(par.get(0));
-        if (type.equals("Kolmogorov")) estimator = new KolmogorovEstimator();
+        if (type.equals("Renyi")) {
+            estimator = new RenyiEstimator(par.get(0));
+        }
+        if (type.equals("LeCam")) {
+            estimator = new LeCamEstimator(par.get(0));
+        }
+        if (type.equals("Kolmogorov")) {
+            estimator = new KolmogorovEstimator();
+        }
+        if (type.equals("CramerRationalPower")) {
+            estimator = new CramerRationalPowerEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)));
+        }
+        if (type.equals("KolmCram")) {
+            estimator = new KolmCramEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), (int) Math.round(par.get(2)));
+        }
+        if (type.equals("KolmCramBeta")) {
+            estimator = new KolmCramBetaEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), Math.round(par.get(2)));
+        }
     }
 
     /**

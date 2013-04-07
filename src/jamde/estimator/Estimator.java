@@ -75,13 +75,13 @@ public abstract class Estimator {
     protected ArrayList<Double> par;
 
     /**
-     * Returns the "whichPar" parameter of the estimator.
+     * Returns the "whichPar" parameter of the estimator...par[whichPar]
      * 
      * @param whichPar... which parameter of par[] should be returned.
-     * @return par
+     * @return par[whichPar]
      */
     public double getPar(int whichPar) {
-        return par.get(0);
+        return par.get(whichPar);
     }
     
     /**

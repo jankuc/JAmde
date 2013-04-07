@@ -51,7 +51,7 @@ public class CramerRationalPowerEstimator extends Estimator{
 
     @Override
     public String getClassicTableName() {
-        return("$ \\mathrm{Cramer}^\\frac{p}{q}, p="+this.getPar(0) + ", \\quad q="+this.getPar(1) + "$");
+        return("$ \\mathrm{KC}^\\frac{p}{q}, p="+this.getPar(0) + ", \\quad q="+this.getPar(1) + "$");
     }
     
 }
