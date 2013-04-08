@@ -36,6 +36,17 @@ public class OtherUtils {
         return tableFile;
     }
     
+    /**
+     * Returns String representation of double d. Function truncates all the zeroes from the String.
+     * 
+     * Example:
+     *      d = 123.456 -> "123.456" 
+     *      d = 123.400 -> "123.4" 
+     *      d = 123.00 -> "123" 
+     * 
+     * @param d... number of which we want string representation 
+     * @return String 
+     */
     public static String num2str(double d) {
         long factor = 1;
         double eps = 0.000001;

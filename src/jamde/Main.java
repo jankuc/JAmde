@@ -4,9 +4,9 @@
  */
 package jamde;
 
-import com.google.common.io.Files;
 import jamde.table.*;
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -223,13 +223,13 @@ public class Main {
                 dirtScanner.scan();
                 String[] picturePaths = dirtScanner.getIncludedFiles();
                 
-                File from;
-                File to;
+                String from;
+                String to;
                 for (String fromS:picturePaths) {
                     fromS =  dirtScanner.getBasedir() + File.separator + fromS;
-                    from = new File(fromS);
-                    to = new File(new File(tableFileName + File.separator + "pictures").getAbsolutePath() + File.separator+ new File(fromS).getName());
-                    Files.copy(from.getAbsoluteFile(), to);
+                    from = new File(fromS).getAbsolutePath();
+                    to = new File(new File(tableFileName + File.separator + "pictures").getAbsolutePath() + File.separator+ new File(fromS).getName()).getAbsolutePath();
+                    java.nio.file.Files.copy(Paths.get(from), Paths.get(to));
                 }
                 // End of Copying
                 
