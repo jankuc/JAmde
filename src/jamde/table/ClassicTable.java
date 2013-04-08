@@ -4,6 +4,7 @@
  */
 package jamde.table;
 
+import jamde.OtherUtils;
 import jamde.estimator.Estimator;
 import jamde.estimator.EstimatorBuilder;
 import java.io.File;
@@ -206,16 +207,16 @@ public class ClassicTable {
          */
         String sContaminated;
         if (input.getContaminated().toString().equals("Weibull")) {
-            sContaminated = String.format("\\mathrm{%c}(%.0f,%.0f,%.0f)",
+            sContaminated = String.format("\\mathrm{%c}(%s,%s,%s)",
                     input.getContaminated().toString().charAt(0),
-                    input.getContaminated().getP1(),
-                    input.getContaminated().getP2(),
-                    input.getContaminated().getP3());
+                    OtherUtils.num2str(input.getContaminated().getP1()),
+                    OtherUtils.num2str(input.getContaminated().getP2()),
+                    OtherUtils.num2str(input.getContaminated().getP3()));
         } else {
-            sContaminated = String.format("\\mathrm{%c}(%.0f,%.0f)",
+            sContaminated = String.format("\\mathrm{%c}(%s,%s)",
                     input.getContaminated().toString().charAt(0),
-                    input.getContaminated().getP1(),
-                    input.getContaminated().getP2());
+                    OtherUtils.num2str(input.getContaminated().getP1()),
+                    OtherUtils.num2str(input.getContaminated().getP2()));
         }
         w.write("\\caption{" + eBs.get(1).getType() + ": $p = " + sContaminated + "$, data: "); // caption creation       
         if (input.getContaminating() == null) {
@@ -229,12 +230,12 @@ public class ClassicTable {
                     orders[i] = ((double[])orderErrors.get(i))[0];
                     probs[i] = ((double[])orderErrors.get(i))[1];
                     prob -= probs[i]; 
-                    distrs[i] = String.format("%.1f\\mathrm{%c}_{%.1fx}(%.0f,%.0f)",
+                    distrs[i] = String.format("%.1f\\mathrm{%c}_{%.1fx}(%s,%s)",
                             probs[i],
                             input.getContaminated().toString().charAt(0),
                             orders[i],
-                            input.getContaminated().getP1(),
-                            input.getContaminated().getP2());
+                            OtherUtils.num2str(input.getContaminated().getP1()),
+                            OtherUtils.num2str(input.getContaminated().getP2()));
                 }
                 w.write("$" + prob + sContaminated);
                 for (int i = 0; i < distrs.length; i++) {
@@ -248,16 +249,16 @@ public class ClassicTable {
         } else { // data were created as a mixture of distributions
             String sContaminating;
             if (input.getContaminating().toString().equals("Weibull")) {
-                sContaminating = String.format("\\mathrm{%c}(%.0f,%.0f,%.0f)",
+                sContaminating = String.format("\\mathrm{%c}(%s,%s,%s)",
                         input.getContaminating().toString().charAt(0),
-                        input.getContaminating().getP1(),
-                        input.getContaminating().getP2(),
-                        input.getContaminating().getP3());
+                        OtherUtils.num2str(input.getContaminating().getP1()),
+                        OtherUtils.num2str(input.getContaminating().getP2()),
+                        OtherUtils.num2str(input.getContaminating().getP3()));
             } else {
-                sContaminating = String.format("\\mathrm{%c}(%.0f,%.0f)",
+                sContaminating = String.format("\\mathrm{%c}(%s,%s)",
                         input.getContaminating().toString().charAt(0),
-                        input.getContaminating().getP1(),
-                        input.getContaminating().getP2());
+                        OtherUtils.num2str(input.getContaminating().getP1()),
+                        OtherUtils.num2str(input.getContaminating().getP2()));
             }
             w.write("$(1-\\varepsilon)" + sContaminated + " + \\varepsilon " +
                     sContaminating + "$, $\\varepsilon =  " + 
