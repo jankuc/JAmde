@@ -4,6 +4,7 @@
  */
 package jamde.estimator;
 
+import jamde.OtherUtils;
 import jamde.distribution.Distribution;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,7 +63,7 @@ public class KolmCramRandEstimator extends Estimator{
 
     @Override
     public String getClassicTableName() {
-        return("$ \\mathrm{KCR}^\\frac{p}{q}_{m, k}, p="+this.getPar(0) + ", \\quad q="+this.getPar(1) + ", \\quad m=" +this.getPar(2) + ", \\quad k=" +this.getPar(3) + "$");
+        return("$ \\mathrm{KCR}^\\frac{p}{q}_{m, k}, p="+OtherUtils.num2str(getPar(0)) + ", \\quad q="+OtherUtils.num2str(getPar(1)) + ", \\quad m=" +OtherUtils.num2str(getPar(2)) + ", \\quad k=" +OtherUtils.num2str(getPar(3)) + "$");
     }
     
 }

@@ -5,6 +5,7 @@
 package jamde.estimator;
 
 import jamde.MathUtil;
+import jamde.OtherUtils;
 import jamde.distribution.Distribution;
 import java.util.ArrayList;
 
@@ -119,6 +120,6 @@ public class RenyiEstimator extends Estimator {
 
     @Override
     public String getClassicTableName() {
-        return("$ \\mathrm{Renyi}, \\alpha="+this.getPar() + "$");
+        return("$ \\mathrm{Renyi}, \\alpha="+OtherUtils.num2str(getPar()) + "$");
     }
 }

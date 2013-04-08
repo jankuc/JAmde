@@ -28,30 +28,6 @@ import org.codehaus.plexus.util.DirectoryScanner;
  * @author kucerj28@fjfi.cvut.cz
  */
 public class Main {
-
-    /**
-     * Appends number to <b>fileName</b>, so the name is in it's destination unique. <br>
-     * <br>
-     * Example: if in desired direcory exist files [file, file1, file2], it renames the current file to file3.
-     * 
-     * @param fileName
-     * @return 
-     */
-    private static File MakeUniqueNamedFile(String tableFileName) {
-        File tableFile = new File(tableFileName);
-        String newTableFileName;
-        int numOfExistingFiles = 0;
-
-        // we append number if the output file already exists
-        while (tableFile.exists()) { // we change only newTableFileName
-            newTableFileName = tableFileName.concat(".hurdyHurdy");
-            numOfExistingFiles++;
-            newTableFileName = newTableFileName.replaceFirst(".hurdyHurdy", "" + numOfExistingFiles + ".hurdyHurdy");
-            newTableFileName = newTableFileName.replaceFirst(".hurdyHurdy", "");
-            tableFile = new File(newTableFileName);
-        }
-        return tableFile;
-    }
     
     public static void executeWithOutput(String cmd) throws IOException {    
             Process proc = Runtime.getRuntime().exec(cmd);
@@ -212,7 +188,7 @@ public class Main {
         ArrayList<File> texFiles = new ArrayList<>();
         
         String tableFileName = inputArgs.getOutputFile();
-        File tableFile = MakeUniqueNamedFile(tableFileName);
+        File tableFile = OtherUtils.MakeUniqueNamedFile(tableFileName);
         tableFile.mkdir();
         tableFileName =  tableFile.getAbsolutePath();
         
@@ -273,7 +249,7 @@ public class Main {
             markedForRemoval.delete();
         }
         System.out.println("Result is saved.");
-       
+        
         // stops time 
         Long timeEnd = System.currentTimeMillis();
         Long runTime = timeEnd - timeStart;

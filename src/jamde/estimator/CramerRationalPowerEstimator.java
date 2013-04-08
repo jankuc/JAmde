@@ -6,6 +6,7 @@ package jamde.estimator;
 
 import jamde.distribution.Distribution;
 import java.util.ArrayList;
+import jamde.OtherUtils;
 
 /**
  * Generalized Cramer. Instead of (F-Fn)^2 it is (F-Fn)^(p/q)
@@ -51,7 +52,7 @@ public class CramerRationalPowerEstimator extends Estimator{
 
     @Override
     public String getClassicTableName() {
-        return("$ \\mathrm{KC}^\\frac{p}{q}, p="+this.getPar(0) + ", \\quad q="+this.getPar(1) + "$");
+        return("$ \\mathrm{KC}^\\frac{p}{q}, p="+OtherUtils.num2str(getPar(0)) + ", \\quad q="+OtherUtils.num2str(getPar(1)) + "$");
     }
     
 }

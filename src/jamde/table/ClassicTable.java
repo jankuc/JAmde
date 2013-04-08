@@ -159,13 +159,17 @@ public class ClassicTable {
         }
         w.write(" & \\\\ \n"); // ending of line with sizes of sample
         w.write("\\hline \n"); // borderline
-        if (input.getParamsCounted().equals("first") || input.getParamsCounted().equals("both") || input.getParamsCounted().equals("all")){ // line in the head of the parameter mu
+        if (input.getParamsCounted().equals("first") 
+                || input.getParamsCounted().equals("both") 
+                || input.getParamsCounted().equals("all")){ // line in the head of the parameter mu
             for (int i = 0; i < sizeOfSample.length; i++) {
                 w.write("& $m("+p1+")$ & $s("+p1+")$ & $eref("+p1+")$ ");
             }
             w.write("\\\\ \n");
         }
-        if (input.getParamsCounted().equals("second") || input.getParamsCounted().equals("both") || input.getParamsCounted().equals("all")) { // line in the head of the parameter sigma
+        if (input.getParamsCounted().equals("second") 
+                || input.getParamsCounted().equals("both") 
+                || input.getParamsCounted().equals("all")) { // line in the head of the parameter sigma
             for (int i = 0; i < sizeOfSample.length; i++) {
                 w.write("& $m("+p2+")$ & $s("+p2+")$ & $eref("+p2+")$ ");
             }
@@ -202,9 +206,16 @@ public class ClassicTable {
          */
         String sContaminated;
         if (input.getContaminated().toString().equals("Weibull")) {
-            sContaminated = String.format("\\mathrm{%c}(%.1f,%.1f,%.1f)", input.getContaminated().toString().charAt(0), input.getContaminated().getP1(), input.getContaminated().getP2(), input.getContaminated().getP3());
+            sContaminated = String.format("\\mathrm{%c}(%.0f,%.0f,%.0f)",
+                    input.getContaminated().toString().charAt(0),
+                    input.getContaminated().getP1(),
+                    input.getContaminated().getP2(),
+                    input.getContaminated().getP3());
         } else {
-            sContaminated = String.format("\\mathrm{%c}(%.1f,%.1f)", input.getContaminated().toString().charAt(0), input.getContaminated().getP1(), input.getContaminated().getP2());
+            sContaminated = String.format("\\mathrm{%c}(%.0f,%.0f)",
+                    input.getContaminated().toString().charAt(0),
+                    input.getContaminated().getP1(),
+                    input.getContaminated().getP2());
         }
         w.write("\\caption{" + eBs.get(1).getType() + ": $p = " + sContaminated + "$, data: "); // caption creation       
         if (input.getContaminating() == null) {
@@ -218,7 +229,12 @@ public class ClassicTable {
                     orders[i] = ((double[])orderErrors.get(i))[0];
                     probs[i] = ((double[])orderErrors.get(i))[1];
                     prob -= probs[i]; 
-                    distrs[i] = String.format("%.1f\\mathrm{%c}_{%.1fx}(%.1f,%.1f)",probs[i],input.getContaminated().toString().charAt(0),orders[i], input.getContaminated().getP1(), input.getContaminated().getP2());
+                    distrs[i] = String.format("%.1f\\mathrm{%c}_{%.1fx}(%.0f,%.0f)",
+                            probs[i],
+                            input.getContaminated().toString().charAt(0),
+                            orders[i],
+                            input.getContaminated().getP1(),
+                            input.getContaminated().getP2());
                 }
                 w.write("$" + prob + sContaminated);
                 for (int i = 0; i < distrs.length; i++) {
@@ -226,16 +242,27 @@ public class ClassicTable {
                 }
                 w.write("$, $K = " + input.getSizeOfEstimator() + "$} \n");    
             } else { // data were loaded from a file
-                w.write(" Data načtena ze souboru " + input.getPathToDataFile() +". \n");
+                w.write(" Data načtena ze souboru " + 
+                        input.getPathToDataFile() +". \n");
             }
         } else { // data were created as a mixture of distributions
             String sContaminating;
             if (input.getContaminating().toString().equals("Weibull")) {
-                sContaminating = String.format("\\mathrm{%c}(%.1f,%.1f,%.1f)", input.getContaminating().toString().charAt(0), input.getContaminating().getP1(), input.getContaminating().getP2(), input.getContaminating().getP3());
+                sContaminating = String.format("\\mathrm{%c}(%.0f,%.0f,%.0f)",
+                        input.getContaminating().toString().charAt(0),
+                        input.getContaminating().getP1(),
+                        input.getContaminating().getP2(),
+                        input.getContaminating().getP3());
             } else {
-                sContaminating = String.format("\\mathrm{%c}(%.1f,%.1f)", input.getContaminating().toString().charAt(0), input.getContaminating().getP1(), input.getContaminating().getP2());
+                sContaminating = String.format("\\mathrm{%c}(%.0f,%.0f)",
+                        input.getContaminating().toString().charAt(0),
+                        input.getContaminating().getP1(),
+                        input.getContaminating().getP2());
             }
-            w.write("$(1-\\varepsilon)" + sContaminated + " + \\varepsilon " + sContaminating + "$, $\\varepsilon =  " + input.getContamination() + "$, $K = " + input.getSizeOfEstimator() + "$} \n");
+            w.write("$(1-\\varepsilon)" + sContaminated + " + \\varepsilon " +
+                    sContaminating + "$, $\\varepsilon =  " + 
+                    input.getContamination() + "$, $K = " + 
+                    input.getSizeOfEstimator() + "$} \n");
         }
         w.write("\\end{center}\n");
         w.write("\\end{table}\n");
@@ -256,30 +283,46 @@ public class ClassicTable {
         
         FileWriter ww = new FileWriter(file, true); // so it appends
         PrintWriter w = new PrintWriter(ww);
-        if (input.getParamsCounted().equals("first") || input.getParamsCounted().equals("both") || input.getParamsCounted().equals("all")) { // printing of first parameter statistics
+        if (input.getParamsCounted().equals("first") 
+                || input.getParamsCounted().equals("both") 
+                || input.getParamsCounted().equals("all")) { // printing of first parameter statistics
             w.write(est.getClassicTableName());
             for (int sizeOfSample : input.getSizeOfSample()) {
-                w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $", output.getMeanValue(estimator, sizeOfSample, 1), output.getDeviation(estimator, sizeOfSample, 1), output.getEfficiency(estimator, sizeOfSample, 1));
+                w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $",
+                        output.getMeanValue(estimator, sizeOfSample, 1),
+                        output.getDeviation(estimator, sizeOfSample, 1),
+                        output.getEfficiency(estimator, sizeOfSample, 1));
             }
             w.write("\\\\ \n");
         }
-        if (input.getParamsCounted().equals("second") || input.getParamsCounted().equals("both") || input.getParamsCounted().equals("all")) {// printing of second parameter statistics
+        if (input.getParamsCounted().equals("second") 
+                || input.getParamsCounted().equals("both") 
+                || input.getParamsCounted().equals("all")) {// printing of second parameter statistics
             if (input.getParamsCounted().equals("second")) {
                 w.write(est.getClassicTableName());
                 for (int sizeOfSample : input.getSizeOfSample()) {
-                    w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $", output.getMeanValue(estimator, sizeOfSample, 1), output.getDeviation(estimator, sizeOfSample, 1), output.getEfficiency(estimator, sizeOfSample, 1));
+                    w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $",
+                            output.getMeanValue(estimator, sizeOfSample, 1),
+                            output.getDeviation(estimator, sizeOfSample, 1),
+                            output.getEfficiency(estimator, sizeOfSample, 1));
                 }
                 w.write("\\\\ \n");
             } else {
                 for (int sizeOfSample : input.getSizeOfSample()) {
-                    w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $", output.getMeanValue(estimator, sizeOfSample, 2), output.getDeviation(estimator, sizeOfSample, 2), output.getEfficiency(estimator, sizeOfSample, 2));
+                    w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $",
+                            output.getMeanValue(estimator, sizeOfSample, 2),
+                            output.getDeviation(estimator, sizeOfSample, 2),
+                            output.getEfficiency(estimator, sizeOfSample, 2));
                 }
                 w.write("\\\\ \n");
             }
         }
         if (input.getParamsCounted().equals("all")) { // printing of third parameter statistics
             for (int sizeOfSample : input.getSizeOfSample()) {
-                w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $", output.getMeanValue(estimator, sizeOfSample, 3), output.getDeviation(estimator, sizeOfSample, 3), output.getEfficiency(estimator, sizeOfSample, 3));
+                w.format(" & $ %.3f $ & $ %.3f $ & $ %.3f $",
+                        output.getMeanValue(estimator, sizeOfSample, 3),
+                        output.getDeviation(estimator, sizeOfSample, 3),
+                        output.getEfficiency(estimator, sizeOfSample, 3));
             }
             w.write("\\\\ \n");
         }
