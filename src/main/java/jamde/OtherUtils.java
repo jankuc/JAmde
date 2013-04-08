@@ -4,7 +4,20 @@
  */
 package jamde;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Properties;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 /**
  *
@@ -34,6 +47,16 @@ public class OtherUtils {
             tableFile = new File(newTableFileName);
         }
         return tableFile;
+    }
+    
+    public static void executeWithOutput(String cmd) throws IOException {    
+            Process proc = Runtime.getRuntime().exec(cmd);
+            // copies output of pdflatex process to output of main.java
+            BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            String line;
+            while((line=input.readLine()) != null) {
+                System.out.println(line);
+            }
     }
     
     /**
@@ -76,4 +99,75 @@ public class OtherUtils {
         }
         return String.format("%.5f", d);
     }
+    
+    /**
+     * Sends mail notifying of the end of the computation.
+     * 
+     * @param to ... email address of the recipient
+     */
+    public static void sendMail(String to) {
+ 
+        final String username = "jamde.gams@gmail.com";
+        final String password = "OdhadujmeSCitem";
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+
+        Session session = Session.getInstance(props,
+                new javax.mail.Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, password);
+                    }
+                });
+
+        try {
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress("jamde.gams@gmail.com"));
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(to));
+            message.setSubject("JAmde doběhlo");
+            message.setText("Milý uživateli, \n\nprávě jsem skončil výpočet, "
+                    + "takže můžeš dát vkstatu další nálož. \n\n"
+                    + "S pozdravem, tvůj milující \n\n"
+                    + "JAmde ");
+
+            Transport.send(message);
+
+            System.out.println("Mail sent.");
+
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    
+    /**
+     * Runs pdflatex on all .tex files. If name of the machine contains "jethro",
+     * runs evince, which displays the .pdf files.
+     * 
+     * @param texFiles
+     * @throws IOException 
+     */
+    static void pdfLatex(ArrayList<File> texFiles) throws IOException {
+        for (File texFile : texFiles) {
+            executeWithOutput("pdflatex -output-directory " + texFile.getParent() + " " + texFile.getAbsolutePath());
+            
+            if (InetAddress.getLocalHost().getHostName().contains("jethro")) {
+                Runtime.getRuntime().exec("evince " + texFile.getAbsolutePath().replaceAll("tex", "pdf"));
+            }
+                
+            // deletes .log and .aux files of pdflatex 
+            File markedForRemoval = new File(texFile.getAbsolutePath().replaceFirst(".tex", ".log"));
+            markedForRemoval.delete();
+            markedForRemoval = new File(texFile.getAbsolutePath().replaceFirst(".tex", ".aux"));
+            markedForRemoval.delete();
+        }
+        System.out.println("Result is saved.");
+    }
+    
 }

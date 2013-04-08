@@ -39,4 +39,35 @@
                 <exec.workingdir>/home/honza/Documents/FJFI/Renyi/JAmde</exec.workingdir>
             </properties>
         </action>
+        <action>
+            <actionName>build</actionName>
+            <goals>
+                <goal>install</goal>
+                <goal>package</goal>
+                
+                
+            </goals>
+        </action>
+        <action>
+            <actionName>clean</actionName>
+            <goals>
+                <goal>clean</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>rebuild</actionName>
+            <goals>
+                <goal>clean</goal>
+                <goal>install</goal>
+                <goal>package</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>build-with-dependencies</actionName>
+            <reactor>also-make</reactor>
+            <goals>
+                <goal>install</goal>
+                <goal>package</goal>
+            </goals>
+        </action>
     </actions>

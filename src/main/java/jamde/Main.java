@@ -6,11 +6,14 @@ package jamde;
 
 import jamde.table.*;
 import java.io.*;
+import java.net.InetAddress;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.codehaus.plexus.util.DirectoryScanner;
+import org.omg.PortableInterceptor.USER_EXCEPTION;
+import jamde.OtherUtils;
 
 /* importy com.google.common.io.Files a org.codehaus.plexus.util.DirectoryScanner 
  * jsou soucasti apache. To znamena bud si googlem vyhledat *.jar, ktery bude tuto
@@ -29,22 +32,14 @@ import org.codehaus.plexus.util.DirectoryScanner;
  */
 public class Main {
     
-    public static void executeWithOutput(String cmd) throws IOException {    
-            Process proc = Runtime.getRuntime().exec(cmd);
-            // copies output of pdflatex process to output of main.java
-            BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            String line;
-            while((line=input.readLine()) != null) {
-                System.out.println(line);
-            }
-    }
+    
     
     
     private static final class InputArgs{
         private boolean tableClassicBool = false;
         private boolean tableRawBool = false;
         private boolean printDistanceFunctionsBool = false;
-        
+
         private String inputFile = "none";
         private int numOfThreads = 25;
         private String outputFile = System.getProperty("user.home") + "/tables/default/defaultTable";
@@ -186,7 +181,7 @@ public class Main {
         
         // List of *.tex files on which pdflatex will be called
         ArrayList<File> texFiles = new ArrayList<>();
-        
+        System.out.println("184");
         String tableFileName = inputArgs.getOutputFile();
         File tableFile = OtherUtils.MakeUniqueNamedFile(tableFileName);
         tableFile.mkdir();
@@ -235,20 +230,13 @@ public class Main {
                 
             }
         }
+        OtherUtils.pdfLatex(texFiles);
         
-        // pdfLatex on all .tex files
-        Runtime rt = Runtime.getRuntime();
-        for (File texFile : texFiles) {
-            executeWithOutput("pdflatex -output-directory " + texFile.getParent() + " " + texFile.getAbsolutePath());
-            
-            rt.exec("evince " + texFile.getAbsolutePath().replaceAll("tex", "pdf"));
-            // deletes .log and .aux files of pdflatex 
-            File markedForRemoval = new File(texFile.getAbsolutePath().replaceFirst(".tex", ".log"));
-            markedForRemoval.delete();
-            markedForRemoval = new File(texFile.getAbsolutePath().replaceFirst(".tex", ".aux"));
-            markedForRemoval.delete();
+        // if JAmde runs on vkstat, sends the user mail notifying of the end of the computation.
+        // email address username@fjfi.cvut.cz is decided from the username of the user, who started the program on vkstat.
+        if (InetAddress.getLocalHost().getHostName().contains("vkstat")) {
+            OtherUtils.sendMail(System.getProperty("user.name") + "@fjfi.cvut.cz");
         }
-        System.out.println("Result is saved.");
         
         // stops time 
         Long timeEnd = System.currentTimeMillis();

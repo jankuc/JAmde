@@ -5,6 +5,7 @@
 package jamde.table;
 
 import jamde.Main;
+import jamde.OtherUtils;
 import jamde.estimator.EstimatorBuilder;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -194,7 +195,7 @@ public class RawTable {
         
         File pathsFile = new File("pathsToDistanceFiles");
         printPathsToFile(pathsFile, pathsToDistanceFiles);
-        Main.executeWithOutput("./script_drawDistances.sh " + pathsFile.getAbsolutePath());
+        OtherUtils.executeWithOutput("./script_drawDistances.sh " + pathsFile.getAbsolutePath());
     }
 
     private void printPathsToFile(File file, ArrayList<String> pathsToDistanceFiles) throws IOException {
