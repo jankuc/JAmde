@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package jamde;
 
 import jamde.table.*;
@@ -13,30 +10,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.codehaus.plexus.util.DirectoryScanner;
 
-/* importy com.google.common.io.Files a org.codehaus.plexus.util.DirectoryScanner 
- * jsou soucasti apache. To znamena bud si googlem vyhledat *.jar, ktery bude tuto
- * tridu obsahovat, nebo nainstalovat apache a potom pridat jeho knihovny 
- * (tedy APACHE_HOME\lib\*.jar) do knihoven, ktere bude prostredi prohledavat pri 
- * kompilaci tohoto projektu. Tedy neco jako "project properties"->libraries->add .jar files.
- * 
- * Druhou moznosti je umazat radky (nepotrebne), ktere tyto knihovny pouzivaji.
- * Jsou to radky zacinajici "// Copies all the distance pictures"
- * a koncici "// End of copying"
- */
-
 /**
  *
  * @author kucerj28@fjfi.cvut.cz
  */
 public class Main {
     
-    
-    
-    
     private static final class InputArgs{
         private boolean tableClassicBool = false;
         private boolean tableRawBool = false;
         private boolean printDistanceFunctionsBool = false;
+        private boolean sendEmailBool = false;
 
         private String inputFile = "none";
         private int numOfThreads = 25;
@@ -56,6 +40,10 @@ public class Main {
 
         public boolean isPrintDistanceFunctionsBool() {
             return printDistanceFunctionsBool;
+        }
+
+        public boolean isSendEmailBool() {
+            return sendEmailBool;
         }
         
         public String getInputFile() {
@@ -94,6 +82,9 @@ public class Main {
                         break;
                     case "threads":
                         numOfThreads = Integer.parseInt(args[i + 1]);
+                        break;
+                    case "email":
+                        sendEmailBool = true;
                         break;
                     case "print":
                         switch (args[i + 1]) {
@@ -143,8 +134,9 @@ public class Main {
             return;
         } 
         
-        long timeStart = System.currentTimeMillis();      
-       
+        long timeStart = System.currentTimeMillis();
+
+
         Table table = new Table();
         File inputFile = new File(inputArgs.getInputFile());
         
@@ -171,9 +163,6 @@ public class Main {
         if (countOutput == 1){ // Only the distanceTable was printed to the file
           return;
         }
-        /**
-         * TODO vytvorit funkci pro vykreslovani vzdalenostnich obrazku
-         */
         
         // OUTPUT
         
@@ -229,9 +218,10 @@ public class Main {
         }
         OtherUtils.pdfLatex(texFiles);
         
-        // if JAmde runs on vkstat, sends the user mail notifying of the end of the computation.
+        // if JAmde runs on vkstat and if argument "email" is present during the start of an app,
+        // sends the user mail notifying of the end of the computation.
         // email address username@fjfi.cvut.cz is decided from the username of the user, who started the program on vkstat.
-        if (InetAddress.getLocalHost().getHostName().contains("vkstat")) {
+        if (InetAddress.getLocalHost().getHostName().contains("vkstat") && inputArgs.isSendEmailBool()) {
             OtherUtils.sendMail(System.getProperty("user.name") + "@fjfi.cvut.cz");
         }
         
