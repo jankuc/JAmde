@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.omg.PortableInterceptor.USER_EXCEPTION;
-import jamde.OtherUtils;
 
 /* importy com.google.common.io.Files a org.codehaus.plexus.util.DirectoryScanner 
  * jsou soucasti apache. To znamena bud si googlem vyhledat *.jar, ktery bude tuto
@@ -181,7 +179,6 @@ public class Main {
         
         // List of *.tex files on which pdflatex will be called
         ArrayList<File> texFiles = new ArrayList<>();
-        System.out.println("184");
         String tableFileName = inputArgs.getOutputFile();
         File tableFile = OtherUtils.MakeUniqueNamedFile(tableFileName);
         tableFile.mkdir();

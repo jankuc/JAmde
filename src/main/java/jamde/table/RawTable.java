@@ -4,7 +4,6 @@
  */
 package jamde.table;
 
-import jamde.Main;
 import jamde.OtherUtils;
 import jamde.estimator.EstimatorBuilder;
 import java.io.File;
@@ -13,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.List;
 
 public class RawTable {
     private Table table;
