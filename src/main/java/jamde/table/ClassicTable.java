@@ -244,7 +244,7 @@ public class ClassicTable {
                 w.write("$, $K = " + input.getSizeOfEstimator() + "$} \n");    
             } else { // data were loaded from a file
                 w.write(" Data načtena ze souboru " + 
-                        input.getPathToDataFile() +". \n");
+                        input.getPathToDataFile() +"} \n");
             }
         } else { // data were created as a mixture of distributions
             String sContaminating;

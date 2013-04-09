@@ -209,27 +209,25 @@ public class Table {
         return null;
     }
 
-    private static void loadDataFromFile2Array(String pathToDataFile, double[] dataArray) {
+    private static double[] loadDataFromFile2Array(String pathToDataFile) throws FileNotFoundException {
         Scanner sc = null;
-        try {
-            sc = new Scanner(new File(pathToDataFile));
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Table.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
+        sc = new Scanner(new File(pathToDataFile));
 
         int numOfData = 0;
         while (sc.hasNext()) {
             sc.next();
             numOfData++;
         }
-        sc.reset();
-        dataArray = new double[numOfData];
+        sc = new Scanner(new File(pathToDataFile));
+        double[] dataArray = new double[numOfData];
         
         int i = 0;
         while(sc.hasNextDouble()) {
             dataArray[i] = sc.nextDouble();
             i++;
         }
+        return dataArray;
     }
     
     /**
@@ -515,10 +513,15 @@ public class Table {
         double contamination = input.getContamination();
 
         if (contaminating == null) { // if true then it's not mixture of distributions
-            if (input.getOrderErrors() == null) { // if true then data was loaded from file
-                // FILE input
-                loadDataFromFile2Array(input.getPathToDataFile(),dataArray);
-                //System.arraycopy(input.getData(), 0, dataArray, 0, dataArray.length);
+            if (input.getOrderErrors() == null) {// if true then data was loaded from file
+                try {
+                    // FILE input
+                    dataArray = loadDataFromFile2Array(input.getPathToDataFile());
+                    //System.arraycopy(input.getData(), 0, dataArray, 0, dataArray.length);
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(Table.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
             } else { // data will be created as a distribution with errors in order\
                 ArrayList Errors = input.getOrderErrors();
                 double[] orderError = new double[Errors.size() + 1];
