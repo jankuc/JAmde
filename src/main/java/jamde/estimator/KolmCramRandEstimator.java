@@ -26,24 +26,30 @@ public class KolmCramRandEstimator extends Estimator{
         this.par.add( exp);
         this.selection = selection;
     }
+
+    KolmCramRandEstimator(int p, int q, int m, Double k, Double exp) {
+        this(p, q, m, k, exp, new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+    }
     
     @Override
     public double countDistance(Distribution distr, double[] data) {
-        int p = (int) Math.round(getPar(0));
-        int q = (int) Math.round(getPar(1));
-        int m = (int) Math.round(getPar(2)); 
-        int k = (int) Math.round(getPar(3));
+        double p = Math.round(getPar(0));
+        double q = Math.round(getPar(1));
+        double m = Math.round(getPar(2)); 
+        double k = getPar(3);
         double exp = getPar(4);
         double dist = 0;
         double y;
         
         double[] d = new double[2*data.length];
         double h = Math.min(m-2,2 * data.length - 1);
-
+        
+        Arrays.sort(data);
+        
         for (int i = 0; i < data.length; i++) {
             y = distr.getFunctionValue(data[i]);
-            d[i] = Math.pow(Math.abs((i + 1) / data.length - y), (double) p / q);
-            d[2 * data.length - 1 - i] = Math.pow(Math.abs(i / data.length - y), (double) p / q);
+            d[i] = Math.pow(Math.abs((((double)i) + 1) / data.length - y), ((double) p) / q);
+            d[2 * data.length - 1 - i] = Math.pow(Math.abs(((double)i) / data.length - y), (double) p / q);
         }
 
         Arrays.sort(d); // nebo naopak?
@@ -51,11 +57,11 @@ public class KolmCramRandEstimator extends Estimator{
         int U;
         for (int i = 0; i <= h; i++) {
             U = selection[i];
-            dist = dist + Math.pow(2 * data.length - U, exp) * d[U];
+            dist = dist + Math.pow(2 * data.length - (double ) U, exp) * d[U];
         }
         
 
-        dist = dist / Math.pow(m, exp + 1);
+        dist = dist / Math.pow((double) m, exp + 1);
         dist = dist + d[2* data.length - 1] / (k * m);
         
         return dist;
