@@ -61,7 +61,16 @@ public class EstimatorBuilder {
             estimator = new KolmCramEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), (int) Math.round(par.get(2)));
         }
         if (type.equals("KolmCramBeta")) {
-            estimator = new KolmCramBetaEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), Math.round(par.get(2)));
+            estimator = new KolmCramBetaEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), par.get(2));
+        }
+        if (type.equals("KolmCramRand")) { // chybi dopsat nejaka implementace int[] selection
+            estimator = new KolmCramRandEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), (int) Math.round(par.get(2)), par.get(3), par.get(4));
+        }
+        if (type.equals("KolmCramFRand")) { // chybi dopsat nejaka implementace int[] selection
+            estimator = new KolmCramFRandEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), par.get(2), par.get(3), par.get(4));
+        }
+        if (type.equals("KolmCramBetaRand")) { // chybi dopsat nejaka implementace int[] selection
+            estimator = new KolmCramRandBetaEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), par.get(2), par.get(3), par.get(4));
         }
     }
 
