@@ -17,6 +17,10 @@ public class KolmCramRandBetaEstimator extends Estimator{
     
     int[] selection;
     
+    public KolmCramRandBetaEstimator(int p, int q, double b, double k, double exp) {
+        this(p, q, b, k, exp, new int[] {0,1,2,3,4,5,6,7,8,9});
+    }
+    
     public KolmCramRandBetaEstimator(int p, int q, double b, double k, double exp, int[] selection) {
         this.par = new ArrayList<>();
         this.par.add((double) p); 
@@ -29,10 +33,10 @@ public class KolmCramRandBetaEstimator extends Estimator{
     
     @Override
     public double countDistance(Distribution distr, double[] data) {
-        int p = (int) Math.round(getPar(0));
-        int q = (int) Math.round(getPar(1));
-        double m = 2* Math.pow(data.length, getPar(2)); // m = 2*n^b
-        int k = (int) Math.round(getPar(3));
+        double p = Math.round(getPar(0));
+        double q = Math.round(getPar(1));
+        double m = 2 * Math.pow(data.length, getPar(2)); // m = 2*n^b
+        double k = getPar(3);
         double exp = getPar(4);
         double dist = 0;
         double y;
@@ -40,10 +44,12 @@ public class KolmCramRandBetaEstimator extends Estimator{
         double[] d = new double[2*data.length];
         double h = Math.min(m-2,2 * data.length - 1);
 
+        Arrays.sort(data);
+        
         for (int i = 0; i < data.length; i++) {
             y = distr.getFunctionValue(data[i]);
-            d[i] = Math.pow(Math.abs((i + 1) / data.length - y), (double) p / q);
-            d[2 * data.length - 1 - i] = Math.pow(Math.abs(i / data.length - y), (double) p / q);
+            d[i] = Math.pow(Math.abs((((double)i) + 1) / data.length - y), ((double) p) / q);
+            d[2 * data.length - 1 - i] = Math.pow(Math.abs(((double)i) / data.length - y), ((double) p) / q);
         }
 
         Arrays.sort(d); // nebo naopak?
@@ -51,11 +57,11 @@ public class KolmCramRandBetaEstimator extends Estimator{
         int U;
         for (int i = 0; i <= h; i++) {
             U = selection[i];
-            dist = dist + Math.pow(2 * data.length - U, exp) * d[U];
+            dist = dist + Math.pow(2.0 * data.length - U, exp) * d[U];
         }
         
 
-        dist = dist / Math.pow(m, exp + 1);
+        dist = dist / Math.pow((double)m, exp + 1.0);
         dist = dist + d[2* data.length - 1] / (k * m);
         
         return dist;

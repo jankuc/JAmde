@@ -27,7 +27,7 @@ public class KolmCramRandEstimator extends Estimator{
         this.selection = selection;
     }
 
-    KolmCramRandEstimator(int p, int q, int m, Double k, Double exp) {
+    KolmCramRandEstimator(int p, int q, int m, double k, double exp) {
         this(p, q, m, k, exp, new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
     }
     
