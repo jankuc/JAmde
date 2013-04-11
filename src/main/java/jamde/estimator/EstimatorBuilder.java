@@ -69,7 +69,7 @@ public class EstimatorBuilder {
         if (type.equals("KolmCramFRand")) { // chybi dopsat nejaka implementace int[] selection
             estimator = new KolmCramFRandEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), par.get(2), par.get(3), par.get(4));
         }
-        if (type.equals("KolmCramRandBeta")) { // chybi dopsat nejaka implementace int[] selection
+        if (type.equals("KolmCramBetaRand")) { // chybi dopsat nejaka implementace int[] selection
             estimator = new KolmCramRandBetaEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), par.get(2), par.get(3), par.get(4));
         }
     }

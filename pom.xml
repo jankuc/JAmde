@@ -68,5 +68,10 @@
       <version>1.4.1</version>
       <type>jar</type>
     </dependency>
+    <dependency>
+        <groupId>com.mathworks</groupId>
+        <artifactId>matlabcontrol</artifactId>
+        <version>1.0</version>
+    </dependency>
   </dependencies>
 </project>

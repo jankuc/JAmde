@@ -12,6 +12,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import matlabcontrol.MatlabConnectionException;
+import matlabcontrol.MatlabInvocationException;
 
 public class RawTable {
     private Table table;
@@ -193,7 +197,17 @@ public class RawTable {
         
         File pathsFile = new File("pathsToDistanceFiles");
         printPathsToFile(pathsFile, pathsToDistanceFiles);
-        OtherUtils.executeWithOutput("./script_drawDistances.sh " + pathsFile.getAbsolutePath());
+        try {
+            //matlab -nodisplay -r "drawDistances('$1',1)"
+            //String cmd = "matlab -nodisplay -r \"drawDistances(\'pathsToDistanceFiles\',1)\"";//drawDistances(1)\"";
+            //OtherUtils.runCommand("matlab -nodisplay -r \"disp('ahoj')\"");
+            //OtherUtils.runCommand("./script_drawDistances.sh " + pathsFile.getAbsolutePath());
+            OtherUtils.runMatlabCommand("drawDistances('pathsToDistanceFiles',0)");
+        } catch (MatlabConnectionException ex) {
+            Logger.getLogger(RawTable.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MatlabInvocationException ex) {
+            Logger.getLogger(RawTable.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void printPathsToFile(File file, ArrayList<String> pathsToDistanceFiles) throws IOException {

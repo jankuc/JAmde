@@ -18,6 +18,12 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import matlabcontrol.MatlabConnectionException;
+import matlabcontrol.MatlabInvocationException;
+import matlabcontrol.MatlabProxy;
+import matlabcontrol.MatlabProxyFactory;
+import matlabcontrol.MatlabProxyFactoryOptions;
+//import matlabcontrol.*;
 
 /**
  *
@@ -155,7 +161,7 @@ public class OtherUtils {
      */
     static void pdfLatex(ArrayList<File> texFiles) throws IOException {
         for (File texFile : texFiles) {
-            executeWithOutput("pdflatex -output-directory " + texFile.getParent() + " " + texFile.getAbsolutePath());
+            runCommand("pdflatex -output-directory " + texFile.getParent() + " " + texFile.getAbsolutePath());
             
             if (InetAddress.getLocalHost().getHostName().contains("jethro")) {
                 Runtime.getRuntime().exec("evince " + texFile.getAbsolutePath().replaceAll("tex", "pdf"));
@@ -168,6 +174,50 @@ public class OtherUtils {
             markedForRemoval.delete();
         }
         System.out.println("Result is saved.");
+    }
+    
+    public static void runCommand(String arg) {
+
+        String s = null;
+
+        try {
+            Process p = Runtime.getRuntime().exec(arg);
+
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+            // read the output from the command
+            System.out.println("OtherUtils.runCommand.stdOut:\n");
+            while ((s = stdInput.readLine()) != null) {
+                System.out.println(s);
+            }
+
+            // read any errors from the attempted command
+            System.out.println("OtherUtils.runCommand.stdErr:\n");
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
+        } catch (IOException e) {
+            System.out.println("exception happened - here's what I know: ");
+            e.printStackTrace();
+        }
+    }
+    
+    public static void runMatlabCommand(String cmd) throws MatlabConnectionException, MatlabInvocationException {
+        //Create a proxy, which we will use to control MATLAB
+        
+        MatlabProxyFactoryOptions options = new MatlabProxyFactoryOptions.Builder()
+                                         .setHidden(true)
+                                         .build();
+        MatlabProxyFactory factory = new MatlabProxyFactory(options);
+        MatlabProxy proxy = factory.getProxy();
+        
+        //Display 'hello world' just like when using the demo
+        proxy.eval(cmd);
+
+        //Disconnect the proxy from MATLAB
+        proxy.disconnect();
     }
     
 }
