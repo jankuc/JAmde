@@ -218,7 +218,7 @@ public class ClassicTable {
                     OtherUtils.num2str(input.getContaminated().getP1()),
                     OtherUtils.num2str(input.getContaminated().getP2()));
         }
-        w.write("\\caption{" + eBs.get(0).getType() + ": $p = " + sContaminated + "$, data: "); // caption creation       
+        w.write("\\caption{Estimators: $p = " + sContaminated + "$, data: "); // caption creation       
         if (input.getContaminating() == null) {
             if (input.getPathToDataFile()== null) { // we need to make orderErrors caption
                 ArrayList orderErrors = input.getOrderErrors();
