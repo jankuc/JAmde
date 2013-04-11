@@ -33,10 +33,12 @@ public class KolmCramBetaEstimator extends Estimator{
         double[] d = new double[2*data.length];
         double h = Math.max(2 * data.length - m, 0);
 
+        Arrays.sort(data);
+        
         for (int i = 0; i < data.length; i++) {
             y = distr.getFunctionValue(data[i]);
-            d[i] = Math.pow(Math.abs((i + 1) / data.length - y), (double) p / q);
-            d[2 * data.length - 1 - i] = Math.pow(Math.abs(i / data.length - y), (double) p / q);
+            d[i] = Math.pow(Math.abs((i + 1.0) / data.length - y), ((double) p)/ q);
+            d[2 * data.length - 1 - i] = Math.pow(Math.abs((double) i / data.length - y), ((double) p) / q);
         }
 
         Arrays.sort(d); // nebo naopak?
