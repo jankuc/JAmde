@@ -8,27 +8,27 @@ import jamde.OtherUtils;
 import jamde.distribution.Distribution;
 
 /**
- * 
- * 
+ *
  * @author honza
  */
-public class KolmCramBetaEstimator extends KolmCram{
-    private double b;
+public class KolmCramMEstimator extends KolmCram{
+    private double m;
     
-    public KolmCramBetaEstimator(int p, int q, double b) {
+    public KolmCramMEstimator(int p, int q, int m) {
         super(p,q);
-        this.b = b;
+        this.m = m;
     }
     
     @Override
     public double countDistance(Distribution distr, double[] data) {
-        double m = 2* Math.pow(data.length, b);
         return super.countDistance(distr, data, m);
     }
 
     @Override
     public String getClassicTableName() {
-        return("$ \\mathrm{KC}^\\frac{p}{q}_{2n^\\beta}, p="+OtherUtils.num2str(p) + ", \\quad q="+OtherUtils.num2str(q) + ", \\quad \\beta=" +OtherUtils.num2str(b) + "$");
+        return("$ \\mathrm{KC}^\\frac{p}{q}_m, p="+OtherUtils.num2str(p) + ", \\quad q="+OtherUtils.num2str(q) + ", \\quad m=" +OtherUtils.num2str(m) + "$");
     }
+
+   
     
 }

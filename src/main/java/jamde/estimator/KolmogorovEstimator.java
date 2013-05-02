@@ -15,7 +15,6 @@ import java.util.Arrays;
 public class KolmogorovEstimator extends Estimator{
 
     public KolmogorovEstimator(){
-        super.par = null;
     }
     
     @Override
@@ -23,10 +22,11 @@ public class KolmogorovEstimator extends Estimator{
         double dist[] = {-1,-1,-1};
         double y;
         Arrays.sort(data);
-        for (int i = 0; i < data.length; i++) {
+        int n = data.length;
+        for (int i = 0; i < n; i++) {
             y = distr.getFunctionValue(data[i]);
-            dist[1] = Math.abs(y - (((double) i)/data.length));
-            dist[2] = Math.abs(y - (((double) (i+1))/data.length));
+            dist[1] = Math.abs(y - (((double) i)/n));
+            dist[2] = Math.abs(y - (((double) (i+1.0))/n));
             dist[0] = MathUtil.max(dist);
         }
         return dist[0];

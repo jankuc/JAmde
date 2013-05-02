@@ -9,6 +9,7 @@ package jamde;
  * @author kucerj28@fjfi.cvut.cz
  */
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * TODO komentar
@@ -227,4 +228,18 @@ public class MathUtil{
         return data[ (int) Math.ceil(k) - 1];
     }
 
+    /**
+     * Fisher-Yates shuffle of an array
+     * @param ar 
+     */
+    public static void shuffleArray(int[] ar) {
+        Random rnd = new Random();
+        for (int i = ar.length - 1; i >= 0; i--) {
+            int index = rnd.nextInt(i + 1);
+            // Simple swap
+            int a = ar[index];
+            ar[index] = ar[i];
+            ar[i] = a;
+        }
+    }
 }

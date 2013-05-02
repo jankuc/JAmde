@@ -38,6 +38,18 @@ public class EstimatorBuilder {
      * Sets type and parameter of estimator
      * types: "Renyi", "LeCam", "Kolmogorov"
      * 
+     * Exasmples:
+     * Renyi 0.3
+     * Kolmogorov
+     * CramerRationalPower 34 19
+     * CramerRationalPower 10 19
+     * KolmCram 10 19 20
+     * KolmCramBeta 8 5 0.3
+     * KolmCramRand 1 5 20 0.3 0.7
+     * KolmCramFRand 34 19 0.4 0.5 0.6
+     * KolmCramBetaRand 10 19 0.4 0.5 0.6
+     * 
+     * 
      * @param type
      * @param par 
      */
@@ -45,32 +57,35 @@ public class EstimatorBuilder {
         this.par.clear();
         this.par.addAll(par);
         this.type = type;
-        if (type.equals("Renyi")) {
+        if (type.equals("Renyi")) { 
             estimator = new RenyiEstimator(par.get(0));
-        }
+        } 
         if (type.equals("LeCam")) {
             estimator = new LeCamEstimator(par.get(0));
         }
         if (type.equals("Kolmogorov")) {
             estimator = new KolmogorovEstimator();
         }
-        if (type.equals("CramerRationalPower")) {
-            estimator = new CramerRationalPowerEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)));
+        if (type.equals("CramGen")) {
+            estimator = new CramGenEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)));
         }
-        if (type.equals("KolmCram")) {
-            estimator = new KolmCramEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), (int) Math.round(par.get(2)));
+        if (type.equals("KolmCramM")) {
+            estimator = new KolmCramMEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), (int) Math.round(par.get(2)));
         }
         if (type.equals("KolmCramBeta")) {
             estimator = new KolmCramBetaEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), par.get(2));
         }
-        if (type.equals("KolmCramRand")) { // chybi dopsat nejaka implementace int[] selection
-            estimator = new KolmCramRandEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), (int) Math.round(par.get(2)), par.get(3), par.get(4));
+        if (type.equals("KolmCramRandM")) { // chybi dopsat nejaka implementace int[] selection
+            estimator = new KolmCramRandMEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), (int) Math.round(par.get(2)), par.get(3), par.get(4));
         }
-        if (type.equals("KolmCramFRand")) { // chybi dopsat nejaka implementace int[] selection
-            estimator = new KolmCramFRandEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), par.get(2), par.get(3), par.get(4));
+        if (type.equals("KolmCramRandF")) { // chybi dopsat nejaka implementace int[] selection
+            estimator = new KolmCramRandFEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), par.get(2), par.get(3), par.get(4));
         }
-        if (type.equals("KolmCramBetaRand")) { // chybi dopsat nejaka implementace int[] selection
+        if (type.equals("KolmCramRandBeta")) { // chybi dopsat nejaka implementace int[] selection
             estimator = new KolmCramRandBetaEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), par.get(2), par.get(3), par.get(4));
+        }
+        if (type.equals("Power")) {
+        	estimator = new PowerEstimator(par.get(0));
         }
     }
 

@@ -6,70 +6,38 @@ package jamde.estimator;
 
 import jamde.OtherUtils;
 import jamde.distribution.Distribution;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  *
  * @author honza
  */
-public class KolmCramRandBetaEstimator extends Estimator{
-    
-    int[] selection;
+public class KolmCramRandBetaEstimator extends KolmCramRand{
+    private double b;
     
     public KolmCramRandBetaEstimator(int p, int q, double b, double k, double exp) {
-        this(p, q, b, k, exp, new int[] {0,1,2,3,4,5,6,7,8,9});
+        super(p, q, k, exp);
+        this.b = b;
     }
-    
-    public KolmCramRandBetaEstimator(int p, int q, double b, double k, double exp, int[] selection) {
-        this.par = new ArrayList<>();
-        this.par.add((double) p); 
-        this.par.add((double) q);
-        this.par.add( b);
-        this.par.add((double) k);
-        this.par.add( exp);
-        this.selection = selection;
+
+    KolmCramRandBetaEstimator() {
+        this(2,1,1,1,1);
     }
     
     @Override
     public double countDistance(Distribution distr, double[] data) {
-        double p = Math.round(getPar(0));
-        double q = Math.round(getPar(1));
-        double m = 2 * Math.pow(data.length, getPar(2)); // m = 2*n^b
-        double k = getPar(3);
-        double exp = getPar(4);
-        double dist = 0;
-        double y;
-        
-        double[] d = new double[2*data.length];
-        double h = Math.min(m-2,2 * data.length - 1);
-
-        Arrays.sort(data);
-        
-        for (int i = 0; i < data.length; i++) {
-            y = distr.getFunctionValue(data[i]);
-            d[i] = Math.pow(Math.abs((((double)i) + 1) / data.length - y), ((double) p) / q);
-            d[2 * data.length - 1 - i] = Math.pow(Math.abs(((double)i) / data.length - y), ((double) p) / q);
-        }
-
-        Arrays.sort(d); // nebo naopak?
-        
-        int U;
-        for (int i = 0; i <= h; i++) {
-            U = selection[i];
-            dist = dist + Math.pow(2.0 * data.length - U, exp) * d[U];
-        }
-        
-
-        dist = dist / Math.pow((double)m, exp + 1.0);
-        dist = dist + d[2* data.length - 1] / (k * m);
-        
-        return dist;
+        return super.countDistance(distr, data, 2 * Math.pow(data.length, b));
     }
 
     @Override
     public String getClassicTableName() {
-        return("$ \\mathrm{KCRB}^\\frac{p}{q}_{2n^\\beta, k}, p="+OtherUtils.num2str(getPar(0)) + ", \\quad q="+OtherUtils.num2str(getPar(1)) + ", \\quad \\beta=" +OtherUtils.num2str(getPar(2)) + ", \\quad k=" +OtherUtils.num2str(getPar(3)) + "$");
+        return("$ \\mathrm{KCRB}^\\frac{p}{q}_{2n^\\beta, k}, p=" 
+                + OtherUtils.num2str(p) + ", \\quad q="+OtherUtils.num2str(q) 
+                + ", \\quad \\beta=" +OtherUtils.num2str(b) + ", \\quad k=" 
+                + OtherUtils.num2str(k) + "$");
     }
-    
+
+    @Override
+    public String toString() {
+        return "KolmCramRandBetaEstimator{" + '}';
+    }
 }

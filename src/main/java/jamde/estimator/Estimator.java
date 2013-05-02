@@ -24,6 +24,63 @@ public abstract class Estimator {
      * TODO do estimatoru pridat minimalizovanou ditribuci.
      */
     
+    public Estimator(){
+        par = new ArrayList<>();
+    }
+    
+    /**
+     * Array of parameters of the estimator
+     */
+    private ArrayList<Double> par;
+
+    /**
+     * Returns the "whichPar" parameter of the estimator...par[whichPar]
+     * 
+     * @param whichPar... which parameter of par[] should be returned.
+     * @return par[whichPar]
+     */
+    public double getPar(int whichPar) {
+        return par.get(whichPar);
+    }
+    
+    /**
+     * Returns First parameter of the estimator... par[0].
+     * 
+     * @return par[0]
+     */
+    public double getPar(){
+        return getPar(0);
+    }
+    
+    public void addPar(double parVal) {
+        par.add(parVal);
+    }
+    
+    /**
+     * Shouldn't be used, becuase all estimators should be built from
+     * EstimatorBuilder
+     *
+     * Sets Value of First parameter of the estimator...par[0].
+     * 
+     * @param whichPar...which parameter  of the estimator should be changed
+     * @param par...value of the new parameter
+     */
+    public void setPar(int whichPar,double parVal) {
+        this.par.set(whichPar, parVal);
+    }
+
+    /**
+     * Shouldn't be used, becuase all estimators should be built from
+     * EstimatorBuilder
+     *
+     * Sets Value of First parameter of the estimator...par[0].
+     * 
+     * @param par...new value of the first parameter.
+     */
+    public void setPar(double parVal) {
+        setPar(0,parVal);
+    }
+    
     /** Point (p1,p2,p3) characterizing parameters of the distribution.
      * 
      */
@@ -68,55 +125,6 @@ public abstract class Estimator {
             return ("[" + this.p1 + ", " + this.p2 + ", " + this.p3 + ", " + this.dist + "]");
         }
     }
-
-    /**
-     * Array of parameters of the estimator
-     */
-    protected ArrayList<Double> par;
-
-    /**
-     * Returns the "whichPar" parameter of the estimator...par[whichPar]
-     * 
-     * @param whichPar... which parameter of par[] should be returned.
-     * @return par[whichPar]
-     */
-    public double getPar(int whichPar) {
-        return par.get(whichPar);
-    }
-    
-    /**
-     * Returns First parameter of the estimator... par[0].
-     * 
-     * @return par[0]
-     */
-    public double getPar(){
-        return getPar(0);
-    }
-
-    /**
-     * Shouldn't be used, becuase all estimators should be built from
-     * EstimatorBuilder
-     *
-     * Sets Value of First parameter of the estimator...par[0].
-     * 
-     * @param whichPar...which parameter  of the estimator should be changed
-     * @param par...value of the new parameter
-     */
-    public void setPar(int whichPar,double par) {
-        this.par.set(whichPar, par);
-    }
-
-    /**
-     * Shouldn't be used, becuase all estimators should be built from
-     * EstimatorBuilder
-     *
-     * Sets Value of First parameter of the estimator...par[0].
-     * 
-     * @param par...new value of the first parameter.
-     */
-    public void setPar(double par) {
-        setPar(0,par);
-    }
     
     /**
      * Abstarct method, which is implemented by the estimators with respect to distributions, because the
@@ -128,6 +136,44 @@ public abstract class Estimator {
      */
     public abstract double countDistance(Distribution distr, double[] data);
 
+    
+    /**
+     * Counts distances of few points in the vicinity of current point.  
+     * 
+     * @param distr
+     * @param dataArray
+     * @return 
+     */
+    private double countPlateDistance(Distribution distr, double[] dataArray) {
+        double r = 0.3; //radius of the neighbourhood of extimated parameters.
+        int P = 2; // radius of the mask. The mask has dimensions 2r+1 x 2r+1
+        double[][] mask = new double[2*P+1][2*P+1];
+        
+        double x = distr.getP1();
+        double y = distr.getP2();
+        
+        //averaging mask
+        for(double[] row : mask) {
+            Arrays.fill(row, 1.0/((double) mask.length * mask[0].length));
+        }
+        
+        double dist = 0;
+        double res; //resolution (num of points / area)
+        int numOfPoints = 0;
+        
+        for (int i = 0; i < mask.length; i++) { // iteration through rows
+            for (int j = 0; j < mask[0].length; j++) { // iteration through columns
+                res = 2*r/(P-1);
+                if (y - r + (j-1)*res>0) {
+                    distr.setParameters(x - r + (i-1)*res, y - r + (j-1)*res, 0);
+                    dist += countDistance(distr, dataArray);
+                    numOfPoints ++;
+                }
+            }
+        }
+        return dist/numOfPoints;
+    }
+    
     /**
      * 
      * @return Renyi, a=0.1 
@@ -264,29 +310,35 @@ public abstract class Estimator {
     public Distribution estimateSecondPar(Distribution distr, double[] dataArray) {
         if (getPar() == 0) { // MLE estimators, or something close to them
             double estimatedPar;
-            if (distr.toString().equals("Cauchy")) {
-                double p = 0.5565;
-                p = 0.75;
-                estimatedPar = (MathUtil.quantile(dataArray, p) - MathUtil.quantile(dataArray, 1 - p)) / 2;
-                distr.setParameters(distr.getP1(), estimatedPar, 0);
-            } else if (distr.toString().equals("Laplace")) {
-                estimatedPar = MathUtil.getLAD(distr.getP1(), dataArray);
-                distr.setParameters(distr.getP1(), estimatedPar, 0);
-            } else if (distr.toString().equals("Exponential")) {
-                estimatedPar = MathUtil.getExpVal(dataArray);
-                distr.setParameters(distr.getP1(), estimatedPar, 0);
-            } else if (distr.toString().equals("Weibull")) {
-                double k, m, l;
-                m = distr.getP1();
-                l = distr.getP2();
-                k = distr.getP3();
-                for (int i = 0; i < dataArray.length; i++) {
-                    l += Math.pow(dataArray[i] - m, k);
-                }
-                l = Math.pow(l / dataArray.length, 1 / k);
-                distr.setParameters(m,l,k);
-            } else {
-                distr.setParameters(distr.getP1(), MathUtil.getStandDev(distr.getP1(), dataArray), distr.getP3());
+            switch (distr.toString()) {
+                case "Cauchy":
+                    double p = 0.5565;
+                    p = 0.75;
+                    estimatedPar = (MathUtil.quantile(dataArray, p) - MathUtil.quantile(dataArray, 1 - p)) / 2;
+                    distr.setParameters(distr.getP1(), estimatedPar, 0);
+                    break;
+                case "Laplace":
+                    estimatedPar = MathUtil.getLAD(distr.getP1(), dataArray);
+                    distr.setParameters(distr.getP1(), estimatedPar, 0);
+                    break;
+                case "Exponential":
+                    estimatedPar = MathUtil.getExpVal(dataArray);
+                    distr.setParameters(distr.getP1(), estimatedPar, 0);
+                    break;
+                case "Weibull":
+                    double k, m, l;
+                    m = distr.getP1();
+                    l = distr.getP2();
+                    k = distr.getP3();
+                    for (int i = 0; i < dataArray.length; i++) {
+                        l += Math.pow(dataArray[i] - m, k);
+                    }
+                    l = Math.pow(l / dataArray.length, 1 / k);
+                    distr.setParameters(m,l,k);
+                    break;
+                default:
+                    distr.setParameters(distr.getP1(), MathUtil.getStandDev(distr.getP1(), dataArray), distr.getP3());
+                    break;
             }
         } else {
             distr = hillClimber1DPar2(distr, dataArray);
@@ -330,8 +382,14 @@ public abstract class Estimator {
      * points around actual position so it minimizes the distance the most. If
      * the minimum is in it's current position the epsilon-neighborhood is
      * halved. It ends when the epsilon-neighborhood is smaller or equal to eps
-     * = 0.0009. It can't handle local optima.
-     *
+     * = 0.0009. It can't handle local optima. <br>
+     * <br>
+     * Placement of tried points: 
+     * <br><br>
+     * 7  &nbsp;  6  &nbsp;  5 <br>
+     * 8  &nbsp;  0  &nbsp;  4 <br>
+     * 1  &nbsp;  2  &nbsp;  3 <br>
+     * <br>
      * @param distr
      * @param dataArray
      * @return
@@ -348,7 +406,7 @@ public abstract class Estimator {
         int iMin = 0;
         distr.setParameters(x[0], y[0], 0);
         distance[0] = countDistance(distr, dataArray);
-        while (eps > 0.0000001) {
+        while (eps > 0.00001) {
             x[1] = x[0] - eps;
             x[7] = x[1];
             x[8] = x[1];
@@ -364,7 +422,7 @@ public abstract class Estimator {
             y[8] = y[0];
             y[7] = y[0] + eps;
             y[6] = y[7];
-            y[6] = y[7];
+            y[5] = y[7];
             for (int i = 1; i < distance.length; i++) {
                 if (distr.isParametersOK(x[i], y[i], 0)) {
                     distr.setParameters(x[i], y[i], 0);
@@ -387,6 +445,62 @@ public abstract class Estimator {
         distr.setParameters(x[0], y[0], 0);
         return distr;
     }
+    
+    
+    
+    private Distribution hillClimberPlate2D(Distribution distr, double[] dataArray) {
+        double[] x = new double[9];
+        double[] y = new double[9];
+        do {
+            x[0] = distr.getP1() - 0.5 + Math.random(); // initiation position is near the supposed minimum
+            y[0] = distr.getP2() - 0.5 + Math.random(); // initiation position is near the supposed minimum
+        } while (!distr.isParametersOK(x[0], y[0], 0));
+        double[] distance = new double[9];
+        double eps = 0.5;
+        int iMin = 0;
+        distr.setParameters(x[0], y[0], 0);
+        distance[0] = countPlateDistance(distr, dataArray);
+        while (eps > 0.00001) {
+            x[1] = x[0] - eps;
+            x[7] = x[1];
+            x[8] = x[1];
+            x[2] = x[0];
+            x[6] = x[0];
+            x[3] = x[0] + eps;
+            x[4] = x[3];
+            x[5] = x[3];
+            y[1] = y[0] - eps;
+            y[2] = y[1];
+            y[3] = y[1];
+            y[4] = y[0];
+            y[8] = y[0];
+            y[7] = y[0] + eps;
+            y[6] = y[7];
+            y[5] = y[7];
+            for (int i = 1; i < distance.length; i++) {
+                if (distr.isParametersOK(x[i], y[i], 0)) {
+                    distr.setParameters(x[i], y[i], 0);
+                    distance[i] = countPlateDistance(distr, dataArray);
+                    if (distance[i] < distance[iMin]) {
+                        iMin = i;
+                        break;
+                    }
+                }
+            }
+            if (iMin == 0) {
+                eps *= 0.5;
+            } else {
+                x[0] = x[iMin];
+                y[0] = y[iMin];
+                distance[0] = distance[iMin];
+                iMin = 0;
+            }
+        }
+        distr.setParameters(x[0], y[0], 0);
+        distr = hillClimber2D(distr, dataArray);
+        return distr;
+    }
+    
 
     private Distribution hillClimber3D(Distribution distr, double[] dataArray) {
         int numOfPoints = 27;
@@ -805,7 +919,7 @@ public abstract class Estimator {
         
         double eps1 = 0.4;
         int numOfMinimsEps1 = 5;
-        ArrayList<Point> minimsEps1 = new ArrayList<Point>();
+        ArrayList<Point> minimsEps1 = new ArrayList<>();
         double[] range = {distr.lowP1, distr.lowP2, distr.upP1, distr.upP2};
         minimsEps1.addAll(Arrays.asList(findMinimsInRange(numOfMinimsEps1, eps1, distr, dataArray, range)));
         
@@ -814,7 +928,7 @@ public abstract class Estimator {
         
         double eps2 = 0.02;
         int numOfMinimsEps2 = 5;
-        ArrayList<Point> minimsEps2 = new ArrayList<Point>();
+        ArrayList<Point> minimsEps2 = new ArrayList<>();
         for (Point x : minimsEps1) {
              range[0] = x.p1 - eps1 + eps2;
              range[1] = x.p2 - eps1 + eps2;
@@ -830,7 +944,7 @@ public abstract class Estimator {
         
         double eps3 = 0.001;
         int numOfMinimsEps3 = 5;
-        ArrayList<Point> minimsEps3 = new ArrayList<Point>();
+        ArrayList<Point> minimsEps3 = new ArrayList<>();
         for (Point x : minimsEps2.subList(0, numOfMinimsEps2)) {
              range[0] = x.p1 - eps2 + eps3;
              range[1] = x.p2 - eps2 + eps3;
@@ -859,7 +973,7 @@ public abstract class Estimator {
      * @return 
      */
     private Point[] findMinimsInRange(int numOfMinims, double eps, Distribution distr, double[] dataArray, double[] range) {
-        List<Point> mesh = new ArrayList<Point>();
+        List<Point> mesh = new ArrayList<>();
         
         Point[] minims = new Point[numOfMinims + 1];
         Arrays.fill(minims, new Point(1, 1, 1));

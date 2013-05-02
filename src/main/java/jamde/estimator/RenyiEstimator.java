@@ -7,7 +7,6 @@ package jamde.estimator;
 import jamde.MathUtil;
 import jamde.OtherUtils;
 import jamde.distribution.Distribution;
-import java.util.ArrayList;
 
 /**
  * RenyiEstimator extends Estimator. Implements countDistance().
@@ -17,8 +16,7 @@ import java.util.ArrayList;
 public class RenyiEstimator extends Estimator {
 
     public RenyiEstimator(double par) {
-        super.par = new ArrayList<>();
-        super.par.add(par);
+        addPar(par);
     }
     
     /* 
@@ -42,8 +40,8 @@ public class RenyiEstimator extends Estimator {
         double alpha = getPar(); // parameter of the Renyi estimator.
         if (alpha == 0) {
             // TODO je mozne toto udelat pro kazde rozdeleni zvlast a u nekterych tim snizit vypocetni cas.
-            for (int i = 0; i < data.length; i++) {  // viz. Radim Demut (dipl. práce) str 37, (6.57)
-                dist +=  Math.log(distribution.getfunctionValue(data[i]))/data.length; // It's the same for all distributions.
+            for (double x : data) { // viz. Radim Demut (dipl. práce) str 37, (6.57)
+                dist +=  Math.log(distribution.getfunctionValue(x))/data.length; // It's the same for all distributions.
             }
             dist = 1 - (dist);
             return dist;
@@ -52,8 +50,8 @@ public class RenyiEstimator extends Estimator {
                 case "Normal": {  // viz. Radim Demut (dipl. práce) str 38, (6.78)
                     double mu = distribution.getP1();
                     double sigma = distribution.getP2();
-                    for (int i = 0; i < data.length; i++) {
-                        dist += Math.exp(-alpha * Math.pow(data[i] - mu, 2) / (2 * Math.pow(sigma, 2)));
+                    for (double x : data) {
+                        dist += Math.exp(-alpha * Math.pow(x - mu, 2) / (2 * Math.pow(sigma, 2)));
                     }
                     dist = 1 - dist / data.length * Math.pow(sigma, - alpha / (1 + alpha));
                     return dist;
@@ -61,8 +59,8 @@ public class RenyiEstimator extends Estimator {
                 case "Laplace": { // viz. Jan Kučera (vyzkumak) str. 12, (4.3)
                     double mu = distribution.getP1();
                     double theta = distribution.getP2();
-                    for (int i = 0; i < data.length; i++) {
-                        dist += Math.exp(-alpha * Math.abs(data[i] - mu) / theta);
+                    for (double x : data) {
+                        dist += Math.exp(-alpha * Math.abs(x - mu) / theta);
                     }
                     dist = 1 - dist / data.length * Math.pow(2 * theta, -alpha / (1 + alpha));
                     return dist;
@@ -76,8 +74,8 @@ public class RenyiEstimator extends Estimator {
                 case "Cauchy": { // viz. Jan Kučera (vyzkumak) str. 15, (4.15)
                     double mu = distribution.getP1();
                     double sigma = distribution.getP2();
-                    for (int i = 0; i < data.length; i++) {
-                        dist += Math.pow(1 + Math.pow((data[i] - mu) / sigma, 2), -alpha);
+                    for (double x : data) {
+                        dist += Math.pow(1 + Math.pow((x - mu) / sigma, 2), -alpha);
                     }
                     dist = 1 - dist / data.length * Math.pow(sigma, -alpha / (1 + alpha));
                     return dist;
@@ -87,8 +85,8 @@ public class RenyiEstimator extends Estimator {
                     double l = distribution.getP2();
                     double k = distribution.getP3();
                     double z;
-                    for (int i = 0; i < data.length; i++) {
-                        z = (data[i] - m) / l;
+                    for (double x : data) {
+                        z = (x - m) / l;
                         if (z >= 0) {
                             dist += Math.pow(z, alpha * (k - 1)) * Math.exp(-alpha * Math.pow(z, k));
                         }
@@ -103,8 +101,8 @@ public class RenyiEstimator extends Estimator {
                     double m = distribution.getP1();
                     double l = distribution.getP2();
                     double z;
-                    for (int i = 0; i < data.length; i++) {
-                        z = (data[i] - m) / l;
+                    for (double x : data) {
+                        z = (x - m) / l;
                         if (z >= 0) { // Distribution is defined only for z >= 0
                             dist += Math.exp(-alpha * z);
                         }

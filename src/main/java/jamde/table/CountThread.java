@@ -45,25 +45,33 @@ class CountThread extends Thread {
      */
     @Override
     public void run() {
-        Estimator estimator = estimatorBuilder.getEstimator();
+        //Estimator estimator = estimatorBuilder.getEstimator();
         Distribution contaminated = input.getContaminated();
         for (int i = 0; i < estimatorArray.length; i++) { // cycle counting all the best distributions in estimator Array [1:K]
+            Estimator estimator = estimatorBuilder.getEstimator();
             double[] dataArray = Table.createData(input, sizeOfSample);
             // this is where the minimalization begins     
 
             DistributionBuilder dB = new DistributionBuilder(input.getContaminated().toString(), input.getContaminated().getP1(), input.getContaminated().getP2(), input.getContaminated().getP3());
-            if (input.getParamsCounted().equals("both")) {
-                estimatorArray[i] = estimator.estimateFirstAndSecondPar(dB.getDistribution(), dataArray);
-            } else if (input.getParamsCounted().equals("all")) {
-                estimatorArray[i] = estimator.estimateAll3Pars(dB.getDistribution(), dataArray);
-            } else if (input.getParamsCounted().equals("first")) {
-                estimatorArray[i] = estimator.estimateFirstPar(dB.getDistribution(), dataArray);
-            } else if (input.getParamsCounted().equals("second")){
-                estimatorArray[i] = estimator.estimateSecondPar(dB.getDistribution(), dataArray);
-            } else if (input.getParamsCounted().equals("third")) {
-                estimatorArray[i] = estimator.estimateThirdPar(dB.getDistribution(), dataArray);
-            } else if (input.getParamsCounted().equals("second&third")){
-                estimatorArray[i] = estimator.estimateSecondAndThirdPar(dB.getDistribution(), dataArray);
+            switch (input.getParamsCounted()) {
+                case "both":
+                    estimatorArray[i] = estimator.estimateFirstAndSecondPar(dB.getDistribution(), dataArray);
+                    break;
+                case "all":
+                    estimatorArray[i] = estimator.estimateAll3Pars(dB.getDistribution(), dataArray);
+                    break;
+                case "first":
+                    estimatorArray[i] = estimator.estimateFirstPar(dB.getDistribution(), dataArray);
+                    break;
+                case "second":
+                    estimatorArray[i] = estimator.estimateSecondPar(dB.getDistribution(), dataArray);
+                    break;
+                case "third":
+                    estimatorArray[i] = estimator.estimateThirdPar(dB.getDistribution(), dataArray);
+                    break;
+                case "second&third":
+                    estimatorArray[i] = estimator.estimateSecondAndThirdPar(dB.getDistribution(), dataArray);
+                    break;
             }
         } // END for (i = 0; estimatorArray[i])
     }

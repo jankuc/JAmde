@@ -4,9 +4,9 @@
  */
 package jamde.estimator;
 
+import jamde.OtherUtils;
 import jamde.distribution.Distribution;
 import java.util.ArrayList;
-import jamde.OtherUtils;
 import java.util.Arrays;
 
 /**
@@ -14,18 +14,17 @@ import java.util.Arrays;
  * 
  * @author honza
  */
-public class CramerRationalPowerEstimator extends Estimator{
+public class CramGenEstimator extends Estimator{
 
-    public CramerRationalPowerEstimator(int p, int q) {
-        this.par = new ArrayList<>();
-        this.par.add((double) p); 
-        this.par.add((double) q);
+    public CramGenEstimator(int p, int q) {
+        addPar((double) p); 
+        addPar((double) q);
     }
     
     @Override
     public double countDistance(Distribution distr, double[] data) {
-        int p = (int) Math.round(this.par.get(0));
-        int q = (int) Math.round(this.par.get(1));
+        double p = getPar(0);
+        double q = getPar(1);
         double a,b,y, dist = 0;
 
         Arrays.sort(data);
@@ -43,7 +42,7 @@ public class CramerRationalPowerEstimator extends Estimator{
             } else {
                 b = 1.0;
             }
-            dist = dist + a * Math.pow(Math.abs(y - ((double) i) / data.length), ((double) p) / q + 1.0) - b * Math.pow(Math.abs(y - (i + 1.0) / data.length), ((double) p) / q + 1.0);
+            dist = dist + a * Math.pow(Math.abs(y - ((double) i) / data.length), p/q + 1) - b * Math.pow(Math.abs(y - ((double) i + 1.0) / data.length), p/q + 1);
         }
         dist =  dist / (((double) p) / q + 1.0);
 
