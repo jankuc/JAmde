@@ -75,17 +75,29 @@ public class EstimatorBuilder {
         if (type.equals("KolmCramBeta")) {
             estimator = new KolmCramBetaEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), par.get(2));
         }
-        if (type.equals("KolmCramRandM")) { // chybi dopsat nejaka implementace int[] selection
+        if (type.equals("KolmCramRandM")) { 
             estimator = new KolmCramRandMEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), (int) Math.round(par.get(2)), par.get(3), par.get(4));
         }
-        if (type.equals("KolmCramRandF")) { // chybi dopsat nejaka implementace int[] selection
+        if (type.equals("KolmCramRandF")) { 
             estimator = new KolmCramRandFEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), par.get(2), par.get(3), par.get(4));
         }
-        if (type.equals("KolmCramRandBeta")) { // chybi dopsat nejaka implementace int[] selection
+        if (type.equals("KolmCramRandBeta")) { 
             estimator = new KolmCramRandBetaEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), par.get(2), par.get(3), par.get(4));
         }
-        if (type.equals("Power")) {
+        if (type.equals("Power")) { // should be the same as PowerH
         	estimator = new PowerEstimator(par.get(0));
+        }
+        if (type.equals("PowerH")) {
+        	estimator = new PowerEstimator(par.get(0), PowerEstimator.DensityType.HISTOGRAM);
+        }
+        if (type.equals("PowerHS")) {
+        	estimator = new PowerEstimator(par.get(0), PowerEstimator.DensityType.HISTOGRAM_STOCH);
+        }
+        if (type.equals("PowerK")) {
+        	estimator = new PowerEstimator(par.get(0), PowerEstimator.DensityType.KERNEL);
+        }
+        if (type.equals("PowerKT")) {
+        	estimator = new PowerEstimator(par.get(0), PowerEstimator.DensityType.KERNEL_TRIAG);
         }
     }
 
