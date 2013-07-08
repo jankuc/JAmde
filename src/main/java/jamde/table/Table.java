@@ -488,7 +488,7 @@ public class Table {
             }
             w.format(" \n ");
             w.close();
-            System.out.println("Vypsani Distance souboru skonceno.");
+            System.out.println("Printout of distance file has ended..");
         } catch (FileNotFoundException ex) {
             /*
              * TODO catch the exception
