@@ -21,11 +21,27 @@ public class CramGenEstimator extends Estimator{
         addPar((double) q);
     }
     
-    @Override
+        @Override
     public double countDistance(Distribution distr, double[] data) {
+        double d = 0,y;
         double p = getPar(0);
         double q = getPar(1);
-        double a,b,y, dist = 0;
+        Arrays.sort(data);
+        
+        for (int i = 0; i < data.length; i++) {
+            y = distr.getFunctionValue(data[i]);
+            d = d + Math.pow(Math.abs(((i + 1) * 1.0) / data.length - y), p / q);
+        }
+
+        d = d / data.length;
+        return d;
+
+    }
+
+    public double countDistanceIntegral(Distribution distr, double[] data) {
+        double p = getPar(0);
+        double q = getPar(1);
+        double a, b, y, dist = 0;
 
         Arrays.sort(data);
 
