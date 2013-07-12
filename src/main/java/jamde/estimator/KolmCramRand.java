@@ -39,9 +39,9 @@ public abstract class KolmCramRand extends KolmCram {
 
         double dist = 0;
         double y;
-
-        int n = data.length;
         
+        int n = data.length;
+        m = Math.min(m,n);
         double[] d = new double[2 * n];
 
         if (h == -1) { // selection wasn't initialized, so we have to do so

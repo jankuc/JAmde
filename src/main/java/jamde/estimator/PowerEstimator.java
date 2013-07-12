@@ -520,7 +520,7 @@ public class PowerEstimator extends Estimator {
 			i = (int) (ceil * sizeOfSample);
 			// double x0 = (data[i] + data[i+1])/2;
 			double x0 = (data[i] + data[i + 1]);
-			x0 = x0 + sizeOfSample * (data[i + 2] - data[i])
+			x0 = x0 + sizeOfSample * (data[i + 1] - data[i])
 					* (ceil - ((double) i) / sizeOfSample);
 			x0 = x0 / 2;
 			if (data[i + 1] < x0) {

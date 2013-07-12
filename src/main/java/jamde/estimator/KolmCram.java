@@ -31,18 +31,18 @@ public abstract class KolmCram extends Estimator{
      */
     protected double countDistance(Distribution distr, double[] data, double m) {
         double dist = 0;
-        double y;
+        double y,y1;
         int n = data.length;
-        
-        double[] d = new double[2*n];
-        double h = Math.max(2 * n - m, 0);
+        m = Math.min(m,n);
+        double[] d = new double[n];
+        double h = Math.max(n - m, 0);
 
         Arrays.sort(data);
         
+        DistributionFunctionCont distributionFunctionCont = new DistributionFunctionCont(data);
         for (int i = 0; i < n; i++) {
             y = distr.getFunctionValue(data[i]);
             d[i] = Math.pow(Math.abs(((double) i + 1.0) / n - y), p/ q);
-            d[2 * n - 1 - i] = Math.pow(Math.abs( ((double)i) / n - y), p / q);
         }
 
         Arrays.sort(d);

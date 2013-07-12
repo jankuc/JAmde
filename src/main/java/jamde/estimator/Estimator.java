@@ -20,9 +20,6 @@ import java.util.List;
  * @author kucerj28@fjfi.cvut.cz
  */
 public abstract class Estimator {
-    /*
-     * TODO do estimatoru pridat minimalizovanou ditribuci.
-     */
     
     public Estimator(){
         par = new ArrayList<>();
@@ -136,7 +133,6 @@ public abstract class Estimator {
      */
     public abstract double countDistance(Distribution distr, double[] data);
 
-    
     /**
      * Counts distances of few points in the vicinity of current point.  
      * 

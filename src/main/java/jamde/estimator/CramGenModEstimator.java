@@ -14,24 +14,25 @@ import java.util.Arrays;
  * 
  * @author honza
  */
-public class CramGenEstimator extends Estimator{
+public class CramGenModEstimator extends Estimator{
 
-    public CramGenEstimator(int p, int q) {
+    public CramGenModEstimator(int p, int q) {
         addPar((double) p); 
         addPar((double) q);
     }
     
         @Override
     public double countDistance(Distribution distr, double[] data) {
-        double d = 0, y;
+        double d = 0;
         double p = getPar(0);
         double q = getPar(1);
         Arrays.sort(data);
         
-        
+        DistributionFunctionCont distributionFunctionCont = new DistributionFunctionCont(data);
         for (int i = 0; i < data.length; i++) {
-            y = distr.getFunctionValue(data[i]);
-            d = d + Math.pow(Math.abs(((i + 1) * 1.0) / data.length - y), p / q);
+            //y = distr.getFunctionValue(data[i]);
+            d = d + distributionFunctionCont.getFunctionValue(data[i]);
+            //d = d + Math.pow(Math.abs(((i + 1) * 1.0) / data.length - y), p / q);
         }
 
         d = d / data.length;
@@ -68,7 +69,7 @@ public class CramGenEstimator extends Estimator{
 
     @Override
     public String getClassicTableName() {
-        return("$ \\mathrm{KC}^\\frac{p}{q}, p="+OtherUtils.num2str(getPar(0)) + ", \\quad q="+OtherUtils.num2str(getPar(1)) + "$");
+        return("$ \\mathrm{KC}^\\frac{p}{q}_{\\mathrm{mod}}, p="+OtherUtils.num2str(getPar(0)) + ", \\quad q="+OtherUtils.num2str(getPar(1)) + "$");
     }
     
 }

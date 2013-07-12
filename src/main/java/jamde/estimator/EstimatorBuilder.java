@@ -69,6 +69,12 @@ public class EstimatorBuilder {
         if (type.equals("CramGen")) {
             estimator = new CramGenEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)));
         }
+        if (type.equals("CramGenMod")) {
+            estimator = new CramGenModEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)));
+        }
+        if (type.equals("CramGenInt")) {
+            estimator = new CramGenIntEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)));
+        }
         if (type.equals("KolmCramM")) {
             estimator = new KolmCramMEstimator((int) Math.round(par.get(0)), (int) Math.round(par.get(1)), (int) Math.round(par.get(2)));
         }
