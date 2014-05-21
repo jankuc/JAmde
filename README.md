@@ -26,21 +26,27 @@ jamde infile /home/kucerj28/JAmde-config threads 20 outfile ./defaultTable print
 Tento příkaz spustí program, který načte konfigurační soubor /home/kucerj28/JAmde-config, bude počítat na 20 jádrech, vytvoří v aktuální složce (./) složku defaultTable, do ní uloží všechny druhy výstupu a po ukončení pošle email na adresu username@fjfi.cvut.cz.
 Konfigurační soubor:
 Každá “tabulka” je oddělena # na samostatném řádku. Každá tabulka je pak charakterizována čtyřmi povinnými a pak n volitelnými řádky.
+
 První řádek - zdroj dat
 První řádek vždy specifikuje zdroj dat, na kterých se bude odhadovat.
-1. Normal 0 1 0 Weibull 1 10 1 0.2
+
+Normal 0 1 0 Weibull 1 10 1 0.2
 TypeA parA1 parA2 parA3 TypeB parB1 parB2 parB3 epsilon
 
 data jsou generována jako směs znečišťovaného Normálního(0,1) a znečisťujícího Weibullova(1,10,1) rozdělení se znečištěním  = 0.2. 
-2. Normal 0 1 0 error 0.1 0.05 100 0.02
+Normal 0 1 0 error 0.1 0.05 100 0.02
 Type par1 par2 par3 error err1 prob1 … errN probN
 data jsou generována jako Normální rozdělení s tím, že byly simulovány chyby v řádu (špatný přepis desetinné čárky. Po slově error následuje libovolně dlouhý seznam změn následovaných jejich pravděpodobností. V tomto případě tedy bude 5% hodnot násobeno koeficientem 0.1 a 2% hodnot násobeno koeficientem 100.
-3. file ~/tabulky/kVypoctu Normal 0 1 0
+
+file ~/tabulky/kVypoctu Normal 0 1 0
 Program data načte ze souboru (očekává jedno datum na každém řádku) a pro odhady, které to potřebují jim řekne, který typ rozdělení mají očekávat. 	
+
 Druhý řádek - odhadované parametry a počet odhadů
+
 both 1000
 Obsahuje příznak určující, které parametry se budou odhadovat následovaný počtem odhadů K.
 Příznaky mohou být: both, first, second, all (pro odhad všech tří parametrů Weibulla).
+
 Třetí řádek - velikost datových souborů
 20 50 100 200 500
 Obsahuje libovolně dlouhý seznam počtů dat, ze kterých se bude rozdělení odhadovat.
@@ -54,7 +60,7 @@ Obsahuje libovolně dlouhý seznam odhadů následovaných hodnotami jejich para
 
 Příklad konfiguračního souboru:
 #
-Normal 0 1 0 Normal 0 10 0 0
+Normal 0 1 0 Normal 0 10 0 0¨
 both 1000
 20 50 100 200 500
 Renyi 0
