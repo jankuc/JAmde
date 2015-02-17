@@ -10,7 +10,7 @@ Everything regarding building the application is clear from the Maven project fi
 
 Parametry pro spouštění aplikace:
 
-zadává se vždy druh název parky ametru následovaný jeho hodnotou:
+zadává se vždy druh název parametru následovaný jeho hodnotou:
 infile - absolutní cesta ke vstupnímu konfiguračnímu souboru.
 outfile - na tomto umístění program vytvoří složku a výsledky ukládá do ní.
 threads - počet jader, na kterých bude program počítat.
